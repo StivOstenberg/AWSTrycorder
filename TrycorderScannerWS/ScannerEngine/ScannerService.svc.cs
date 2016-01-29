@@ -14,14 +14,23 @@ namespace ScannerEngine
     {
         // This section will hold the private data the functions will interact with
         //Accounts List with Credentials and an Enable/Disable field  Last success +  Fail Count.
+        //AWSRegionList(RegionEnglish, Region Name, Enable)
         //AWS Component Table [Enable, Last Complete Scan,  Last Incomplete,  ScanStatus]
-        //Scanner Status
-        //EC2 Table
+        //Scanner Status (Running, Stopping, Ready)
+
+
+        //Tables shall be Dictionary(String,Dictionary,(string,List)
+        //EC2 Table  
         //S3 Table
         //IAM Table
         //VPC table
         //RDS Table
 
+        //Settings Stuff
+        //External MySQL (Endpoint, Port, User, Password, Certificate?)
+
+        //This section will hold private functions to update our data objects and maybe to log out to external data collectors
+        //ScanAll for each component type
 
 
         public string GetData(int value)
