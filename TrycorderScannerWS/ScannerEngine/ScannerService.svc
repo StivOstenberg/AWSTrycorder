@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="ScannerEngine.Service1" CodeBehind="ScannerService.svc.cs" %>

@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSTrycorderClientUI", "AWSTrycorderClientUI\AWSTrycorderClientUI.csproj", "{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StivAWSLib", "AWSFunctions\StivAWSLib.csproj", "{D94734C8-90E5-412F-A675-D6BD2CA812B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerTestUI", "ScannerTestUI\ScannerTestUI.csproj", "{BF618B21-5F98-4626-B8B9-FD1A68F7C47D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerEngine", "ScannerEngine\ScannerEngine.csproj", "{36EF950F-C699-4D13-99F1-5247E0521B21}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D94734C8-90E5-412F-A675-D6BD2CA812B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D94734C8-90E5-412F-A675-D6BD2CA812B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D94734C8-90E5-412F-A675-D6BD2CA812B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D94734C8-90E5-412F-A675-D6BD2CA812B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF618B21-5F98-4626-B8B9-FD1A68F7C47D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF618B21-5F98-4626-B8B9-FD1A68F7C47D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF618B21-5F98-4626-B8B9-FD1A68F7C47D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF618B21-5F98-4626-B8B9-FD1A68F7C47D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36EF950F-C699-4D13-99F1-5247E0521B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36EF950F-C699-4D13-99F1-5247E0521B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36EF950F-C699-4D13-99F1-5247E0521B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36EF950F-C699-4D13-99F1-5247E0521B21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
