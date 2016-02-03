@@ -13,6 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using AWSFunctions;
+
+
+
 namespace ScannerTestUI
 {
     /// <summary>
@@ -20,9 +24,30 @@ namespace ScannerTestUI
     /// </summary>
     public partial class MainWindow : Window
     {
+    AWSFunctions.ScanAWS Scanner = new ScanAWS();
+
         public MainWindow()
         {
             InitializeComponent();
+            ProfilesComboBox.ItemsSource = Scanner.GetProfileNames();
+            FillRegions();
+        }
+
+        private void FillRegions()
+        {
+            RegionListcomboBox.ItemsSource = Scanner.GetRegionNames(); 
+        }
+        private void GetProfilesClick(object sender, RoutedEventArgs e)
+        {
+            
+             ProfilesComboBox.ItemsSource = Scanner.GetProfileNames();
+            
+            
+        }
+
+        private void ProfilesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

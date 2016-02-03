@@ -16,8 +16,14 @@
                 <MenuItem Header="File">
                     <MenuItem Header="GetCreds" HorizontalAlignment="Left" Width="144.8"/>
                 </MenuItem>
-                <MenuItem Header="Function"/>
+                <MenuItem Header="Function">
+                    <MenuItem Header="ListProfiles" HorizontalAlignment="Left" Width="144.8" Click="GetProfilesClick"/>
+                </MenuItem>
             </Menu>
+            <ComboBox x:Name="ProfilesComboBox" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ProfilesComboBox_SelectionChanged"/>
+            <Label x:Name="ProfilesLabel" Content="ProfileList" HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top"/>
+            <ComboBox x:Name="RegionListcomboBox" HorizontalAlignment="Left" Margin="157,51,0,0" VerticalAlignment="Top" Width="174" RenderTransformOrigin="0.482,1.491"/>
+            <Label x:Name="label" Content="RegionList" HorizontalAlignment="Left" Margin="157,29,0,0" VerticalAlignment="Top"/>
         </Grid>
 
     </Grid>
