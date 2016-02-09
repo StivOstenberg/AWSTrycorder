@@ -49,5 +49,18 @@ namespace ScannerTestUI
         {
 
         }
+
+        private void ListUsersMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProfilesComboBox.SelectedItem.ToString().Length > 2)
+            {
+                Scanner.GetIAMUsers(ProfilesComboBox.SelectedItem.ToString());
+            }
+            else
+            {
+                MessageBox.Show("You fool, you must select a profile!");
+            }
+
+        }
     }
 }

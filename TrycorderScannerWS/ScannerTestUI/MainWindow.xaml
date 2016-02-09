@@ -18,6 +18,7 @@
                 </MenuItem>
                 <MenuItem Header="Function">
                     <MenuItem Header="ListProfiles" HorizontalAlignment="Left" Width="144.8" Click="GetProfilesClick"/>
+                    <MenuItem x:Name="ListUsersMenuItem" Header="ListUsers" HorizontalAlignment="Left" Width="144.8" Click="ListUsersMenuItem_Click"/>
                 </MenuItem>
             </Menu>
             <ComboBox x:Name="ProfilesComboBox" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ProfilesComboBox_SelectionChanged"/>
