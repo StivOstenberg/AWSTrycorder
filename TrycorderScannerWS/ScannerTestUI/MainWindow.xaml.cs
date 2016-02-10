@@ -62,5 +62,17 @@ namespace ScannerTestUI
             }
 
         }
+
+        private void ListEC2MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProfilesComboBox.SelectedItem.ToString().Length > 2 & RegionListcomboBox.SelectedItem.ToString().Length >2 )
+            {
+                Scanner.GetEC2Instances(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            }
+            else
+            {
+                MessageBox.Show("You fool, you must select a profile and region to scan EC2!");
+            }
+        }
     }
 }
