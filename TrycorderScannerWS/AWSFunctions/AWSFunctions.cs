@@ -162,17 +162,28 @@ namespace AWSFunctions
         }
 
 
-        public Dictionary<string, object> GetEC2Instances(string aprofile, string Region2Scan)
+        public Dictionary<string, Dictionary<String,String>> GetEC2Instances(string aprofile, string Region2Scan)
         {
             
             Amazon.Runtime.AWSCredentials credential;
             string accountid = "";
-            Dictionary<string, object> ToReturn = new Dictionary<string, object>();
+            Dictionary<string, Dictionary<String,String>> ToReturn = new Dictionary<string, Dictionary<String,String>>();
             credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
             //Need to convert Region2Scan to endpoint
            
             var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, RegionEndpoint.USEast1);
 
+            //These steps just get the account ID
+            var iam = new AmazonIdentityManagementServiceClient(credential);
+            var myUserList = iam.ListUsers().Users;
+            try
+            {
+                accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID
+            }
+            catch
+            {
+                accountid = "?";
+            }
 
             var request = new DescribeInstanceStatusRequest();
             request.IncludeAllInstances = true;
@@ -288,6 +299,20 @@ namespace AWSFunctions
                 if (String.IsNullOrEmpty(publicDNS)) publicDNS = "";
 
 
+                ////
+                string subnetlist = "";
+                var subnets = (from t in reservations
+                                where t.Instances[0].InstanceId.Equals(instanceid)
+                                select t.Instances[0].SubnetId).ToArray();
+                if (subnets.Count() <1) { subnetlist = ""; }
+                else
+                {
+                    foreach(string asubnet in subnets)
+                    {
+                        if (subnetlist.Length > 2) subnetlist += asubnet + "\n";
+                        else subnetlist += asubnet;
+                    }
+                }
 
 
                 //Virtualization type (HVM, Paravirtual)
@@ -330,6 +355,8 @@ namespace AWSFunctions
                            where t.Instances[0].InstanceId.Equals(instanceid)
                            select t.Instances[0].SecurityGroups);
 
+
+
                 string sglist = "";
 
 
@@ -351,14 +378,35 @@ namespace AWSFunctions
                 if (String.IsNullOrEmpty(instancename)) instancename = "";
                 string rabbit = accountid + profile + myregion + instancename + instanceid + AZ + status + eventnumber + eventlist + tags + Priv_IP + publicIP + publicDNS + istate + ivirtType + instancetype + sglist;
 
-                if (instancename.Contains("p1-job"))
-                {
-                    string yup = "y";
-                }
 
 
                 //EC2DetailsTable.Rows.Add(accountid, profile, myregion, instancename, instanceid, AMI, AMIDesc, AZ, platform, status, eventnumber, eventlist, tags, Priv_IP, publicIP, publicDNS, istate, ivirtType, instancetype, sglist);
+                //Is list for Profile and Region, so can key off of InstanceID. In theory InstanceID is unique
 
+                //Build our dictionary of values and keys for this instance
+                Dictionary<string, string> datafields = new Dictionary<string, string>();
+                datafields.Add("AccountID", accountid);
+                datafields.Add("Profile", profile);
+                datafields.Add("Region", myregion);
+                datafields.Add("InstanceName", instancename);
+                datafields.Add("InstanceID", instanceid);
+                datafields.Add("AMI", AMI);
+                datafields.Add("AMI Desc", AMIDesc);
+                datafields.Add("AZ", AZ);
+                datafields.Add("Status", status);
+                datafields.Add("Events", eventnumber.ToString());
+                datafields.Add("EventList", eventlist);
+                datafields.Add("Tags", tags);
+                datafields.Add("PrivateIP", Priv_IP);
+                datafields.Add("PublicIP", publicIP);
+                datafields.Add("PublicDNS", publicDNS);
+                datafields.Add("InstanceStateName", istate);
+                datafields.Add("VirtualizationType", ivirtType);
+                datafields.Add("InstanceType", instancetype);
+                datafields.Add("SecurityGroups", sglist);
+                //Add this instance to the data returned.
+
+                ToReturn.Add(instanceid, datafields);
 
             }
 
