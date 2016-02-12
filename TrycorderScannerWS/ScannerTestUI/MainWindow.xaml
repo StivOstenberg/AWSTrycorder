@@ -11,7 +11,7 @@
             <ColumnDefinition Width="132*"/>
             <ColumnDefinition Width="127*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="322" VerticalAlignment="Top" Width="518">
+        <Grid Grid.ColumnSpan="2" Margin="0,0,0.4,0.4">
             <Menu x:Name="menu" Height="24" VerticalAlignment="Top">
                 <MenuItem Header="File">
                     <MenuItem Header="GetCreds" HorizontalAlignment="Left" Width="144.8"/>
@@ -22,10 +22,11 @@
                     <MenuItem x:Name="ListEC2MenuItem" Header="ListEC2" HorizontalAlignment="Left" Width="144.8" Click="ListEC2MenuItem_Click" />
                 </MenuItem>
             </Menu>
-            <ComboBox x:Name="ProfilesComboBox" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ProfilesComboBox_SelectionChanged"/>
-            <Label x:Name="ProfilesLabel" Content="ProfileList" HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top"/>
-            <ComboBox x:Name="RegionListcomboBox" HorizontalAlignment="Left" Margin="157,51,0,0" VerticalAlignment="Top" Width="174" RenderTransformOrigin="0.482,1.491"/>
-            <Label x:Name="label" Content="RegionList" HorizontalAlignment="Left" Margin="157,29,0,0" VerticalAlignment="Top"/>
+            <ComboBox x:Name="ProfilesComboBox" HorizontalAlignment="Left" Margin="24,50,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="ProfilesComboBox_SelectionChanged"/>
+            <Label x:Name="ProfilesLabel" Content="ProfileList" HorizontalAlignment="Left" Margin="10,24,0,0" VerticalAlignment="Top"/>
+            <ComboBox x:Name="RegionListcomboBox" HorizontalAlignment="Left" Margin="272,50,0,0" VerticalAlignment="Top" Width="174" RenderTransformOrigin="0.482,1.491"/>
+            <Label x:Name="label" Content="RegionList" HorizontalAlignment="Left" Margin="272,24,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.159,0.289"/>
+            <DataGrid x:Name="DasGrid" Margin="10,82,19,10"/>
         </Grid>
 
     </Grid>

@@ -9,6 +9,7 @@ using Amazon.S3.Model;
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 
@@ -48,10 +49,6 @@ namespace AWSFunctions
             return RegionNames;
 
         }
-
-
-
-      
 
 
         public Dictionary<string, Dictionary<string, string>> GetIAMUsers(string aprofile)
@@ -162,16 +159,29 @@ namespace AWSFunctions
         }
 
 
-        public Dictionary<string, Dictionary<String,String>> GetEC2Instances(string aprofile, string Region2Scan)
+        public DataTable GetEC2Instances(string aprofile, string Region2Scan)
         {
+            DataTable ToReturn = AWSTables.GetEC2DetailsTable();
             
+
             Amazon.Runtime.AWSCredentials credential;
             string accountid = "";
-            Dictionary<string, Dictionary<String,String>> ToReturn = new Dictionary<string, Dictionary<String,String>>();
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            Dictionary<string, Dictionary<String,String>> OldReturn = new Dictionary<string, Dictionary<String,String>>();
             credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-            //Need to convert Region2Scan to endpoint
+            
+            
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach(var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if(aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
            
-            var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, RegionEndpoint.USEast1);
+            var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
 
             //These steps just get the account ID
             var iam = new AmazonIdentityManagementServiceClient(credential);
@@ -190,9 +200,10 @@ namespace AWSFunctions
             var instatresponse = ec2.DescribeInstanceStatus(request);
             var indatarequest = new DescribeInstancesRequest();
 
+
+            //Get a list of the InstanceIDs.
             foreach (var instat in instatresponse.InstanceStatuses)
             {
-
                 indatarequest.InstanceIds.Add(instat.InstanceId);
                 indatarequest.InstanceIds.Sort();
             }
@@ -203,31 +214,43 @@ namespace AWSFunctions
             DescribeInstancesResult DescResult = ec2.DescribeInstances();
 
             int count = instatresponse.InstanceStatuses.Count();
-            int itindex = -1;
+
+            //Build data dictionary of instances
+
+            Dictionary<String, Instance> Bunchadata = new Dictionary<string, Instance>();
+            foreach (var urtburgle in DescResult.Reservations)
+            {
+                foreach (var instancedata in urtburgle.Instances)
+                {
+                    if (instancedata.InstanceId.ToString().Equals("i-3448ade7"))
+                    {
+                        var checkker = instancedata;
+                    }
+                    Bunchadata.Add(instancedata.InstanceId, instancedata);
+                }
+            }
+
+
+
+            //Go through list of instances...
             foreach (var instat in instatresponse.InstanceStatuses)
             {
-                itindex++;
-                //Collect the datases
                 string instanceid = instat.InstanceId;
+                Instance thisinstance = Bunchadata[instanceid];
+                DataRow thisinstancedatarow = ToReturn.NewRow();
+                //Collect the datases
                 string instancename = "";
-
-
                 var status = instat.Status.Status;
                 string AZ = instat.AvailabilityZone;
                 var istate = instat.InstanceState.Name;
-
                 string profile = aprofile;
                 string myregion = Region2Scan;
                 int eventnumber = instat.Events.Count();
-
-                string eventlist = "";
+                List<string> eventlist = new List<string>();
                 var reservations = DescResult.Reservations;
 
                 var myinstance = new  Reservation();
-                if (instanceid.Contains("i-a8535657"))//Troubleshooting....
-                {
-                    var truebert = false;
-                }
+
                 List<String> innies = new List<String>();
                 foreach (Reservation arez in DescResult.Reservations)
                 {
@@ -242,19 +265,20 @@ namespace AWSFunctions
 
 
 
-                string tags = ""; // Holds the list of tags to print out.
 
-                var loadtags = (from t in DescResult.Reservations
-                                where t.Instances[0].InstanceId.Equals(instanceid)
-                                select t.Instances[0].Tags).AsEnumerable();
+                List<string> tags = new List<string>();
+                var loadtags = thisinstance.Tags.AsEnumerable();
+                foreach(var atag in loadtags)
+                {
+                    tags.Add(atag.Key + ": " + atag.Value);
+                    if (atag.Key.Equals( "Name")) instancename = atag.Value;
+                }
+
 
                 Dictionary<string, string> taglist = new Dictionary<string, string>();
                 foreach (var rekey in loadtags)
                 {
-                    foreach (var kvp in rekey)
-                    {
-                        taglist.Add(kvp.Key, kvp.Value);
-                    }
+                        taglist.Add(rekey.Key, rekey.Value);
                 }
 
             
@@ -263,80 +287,68 @@ namespace AWSFunctions
                 {
                     foreach (var anevent in instat.Events)
                     {
-                        eventlist += anevent.Description + "\n";
+                        eventlist.Add(anevent.Description);
                     }
                 }
-
-
-                var platform = (from t in reservations
-                                where t.Instances[0].InstanceId.Equals(instanceid)
-                                select t.Instances[0].Platform).FirstOrDefault();
+                String platform = "";
+                try { platform = thisinstance.Platform.Value; }
+                catch { platform = "Linux"; }
                 if (String.IsNullOrEmpty(platform)) platform = "Linux";
 
 
-
-                var Priv_IP = (from t in DescResult.Reservations
-                               where t.Instances[0].InstanceId.Equals(instanceid)
-                               select t.Instances[0].PrivateIpAddress).FirstOrDefault();
-
-                var disInstance = (from t in reservations
-                                   where t.Instances[0].InstanceId.Equals(instanceid)
-                                   select t).FirstOrDefault();
-
+                String Priv_IP = "";
+                try { Priv_IP = thisinstance.PrivateIpAddress; }
+                catch { }
                 if (String.IsNullOrEmpty(Priv_IP))
                 {
                     Priv_IP = "?";
                 }
 
-                var publicIP = (from t in reservations
-                                where t.Instances[0].InstanceId.Equals(instanceid)
-                                select t.Instances[0].PublicIpAddress).FirstOrDefault();
+                String disinstance = thisinstance.InstanceId;
+
+                String publicIP = "";
+                try { publicIP = thisinstance.PublicIpAddress; }
+                catch { }
                 if (String.IsNullOrEmpty(publicIP)) publicIP = "";
 
-                var publicDNS = (from t in reservations
-                                 where t.Instances[0].InstanceId.Equals(instanceid)
-                                 select t.Instances[0].PublicDnsName).FirstOrDefault();
+                String publicDNS = "";
+                try { publicDNS = thisinstance.PublicDnsName; }
+                catch { }
                 if (String.IsNullOrEmpty(publicDNS)) publicDNS = "";
 
+                string myvpcid = "";
+                try
+                { myvpcid = thisinstance.VpcId; }
+                catch { }
+                if (String.IsNullOrEmpty(myvpcid)) myvpcid = "";
 
-                ////
-                string subnetlist = "";
-                var subnets = (from t in reservations
-                                where t.Instances[0].InstanceId.Equals(instanceid)
-                                select t.Instances[0].SubnetId).ToArray();
-                if (subnets.Count() <1) { subnetlist = ""; }
-                else
-                {
-                    foreach(string asubnet in subnets)
-                    {
-                        if (subnetlist.Length > 2) subnetlist += asubnet + "\n";
-                        else subnetlist += asubnet;
-                    }
-                }
+                string mysubnetid = "";
+                try { mysubnetid = thisinstance.SubnetId; }
+                catch { }
+                if (String.IsNullOrEmpty(mysubnetid)) mysubnetid = "";
 
 
                 //Virtualization type (HVM, Paravirtual)
-                var ivirtType = (from t in reservations
-                                 where t.Instances[0].InstanceId.Equals(instanceid)
-                                 select t.Instances[0].VirtualizationType).FirstOrDefault();
+                string ivirtType = "";
+                try
+                { ivirtType = thisinstance.VirtualizationType; }
+                catch { }
                 if (String.IsNullOrEmpty(ivirtType)) ivirtType = "?";
 
                 // InstanceType (m3/Large etc)
-                var instancetype = (from t in reservations
-                                    where t.Instances[0].InstanceId.Equals(instanceid)
-                                    select t.Instances[0].InstanceType).FirstOrDefault();
+                String instancetype = "";
+                try
+                { instancetype = thisinstance.InstanceType.Value; }
+                catch { }
                 if (String.IsNullOrEmpty(instancetype)) instancetype = "?";
 
 
                 //Test section to try to pull out AMI data
+                string AMI = "";
                 string AMIDesc = "";
-                var AMI = (from t in reservations
-                           where t.Instances[0].InstanceId.Equals(instanceid)
-                           select t.Instances[0].ImageId).FirstOrDefault();
-                if (string.IsNullOrEmpty(AMI))
-                {
-                    AMI = "";
-                }
+                try { AMI = thisinstance.ImageId; }
+                catch { }
+                if (string.IsNullOrEmpty(AMI))  AMI = "";
                 else
                 {
                     DescribeImagesRequest DIR = new DescribeImagesRequest();
@@ -351,64 +363,59 @@ namespace AWSFunctions
                 }
 
                 //
-                var SGs = (from t in reservations
-                           where t.Instances[0].InstanceId.Equals(instanceid)
-                           select t.Instances[0].SecurityGroups);
-
-
-
-                string sglist = "";
-
-
-                if (SGs.Count() > 0)
+                var SGs = thisinstance.SecurityGroups;
+                List<string> SGids = new List<string>();
+                List<String> SGNames = new List<string>();
+                foreach(var wabbit in SGs)
                 {
-                    foreach (var ansg in SGs.FirstOrDefault())
-                    {
-                        if (sglist.Length > 2) { sglist += "\n"; }
-                        sglist += ansg.GroupName;
-                    }
+                    SGids.Add(wabbit.GroupId);
+                    SGNames.Add(wabbit.GroupName);
                 }
-                else
-                {
-                    sglist = "_NONE!_";
-                }
+
+
+
                 //Add to table
-                if (String.IsNullOrEmpty(sglist)) sglist = "NullOrEmpty";
+                if (SGids.Count < 1) SGids.Add("NullOrEmpty");
+                if (SGNames.Count < 1) SGNames.Add("");
+                if (String.IsNullOrEmpty(SGids[0])) SGids[0] = "NullOrEmpty";
+                if (String.IsNullOrEmpty(SGNames[0])) SGNames[0] = "";
 
                 if (String.IsNullOrEmpty(instancename)) instancename = "";
-                string rabbit = accountid + profile + myregion + instancename + instanceid + AZ + status + eventnumber + eventlist + tags + Priv_IP + publicIP + publicDNS + istate + ivirtType + instancetype + sglist;
-
 
 
                 //EC2DetailsTable.Rows.Add(accountid, profile, myregion, instancename, instanceid, AMI, AMIDesc, AZ, platform, status, eventnumber, eventlist, tags, Priv_IP, publicIP, publicDNS, istate, ivirtType, instancetype, sglist);
                 //Is list for Profile and Region, so can key off of InstanceID. In theory InstanceID is unique
 
-                //Build our dictionary of values and keys for this instance
+                //Build our dictionary of values and keys for this instance  This is dependent on the table created by GetEC2DetailsTable()
                 Dictionary<string, string> datafields = new Dictionary<string, string>();
-                datafields.Add("AccountID", accountid);
-                datafields.Add("Profile", profile);
-                datafields.Add("Region", myregion);
-                datafields.Add("InstanceName", instancename);
-                datafields.Add("InstanceID", instanceid);
-                datafields.Add("AMI", AMI);
-                datafields.Add("AMI Desc", AMIDesc);
-                datafields.Add("AZ", AZ);
-                datafields.Add("Status", status);
-                datafields.Add("Events", eventnumber.ToString());
-                datafields.Add("EventList", eventlist);
-                datafields.Add("Tags", tags);
-                datafields.Add("PrivateIP", Priv_IP);
-                datafields.Add("PublicIP", publicIP);
-                datafields.Add("PublicDNS", publicDNS);
-                datafields.Add("InstanceStateName", istate);
-                datafields.Add("VirtualizationType", ivirtType);
-                datafields.Add("InstanceType", instancetype);
-                datafields.Add("SecurityGroups", sglist);
+                thisinstancedatarow["AccountID"] = accountid;
+                thisinstancedatarow["Profile"]= profile ;
+                thisinstancedatarow["Region"] = myregion ;
+                 thisinstancedatarow["InstanceName"] = instancename;
+                 thisinstancedatarow["InstanceID"] = instanceid;
+                 thisinstancedatarow["AMI"] = AMI;
+                 thisinstancedatarow["AMIDescription"] = AMIDesc;
+                 thisinstancedatarow["AvailabilityZone"] = AZ;
+                 thisinstancedatarow["Status"] = status;
+                 thisinstancedatarow["Events"] = eventnumber.ToString();
+                 thisinstancedatarow["EventList"] = eventlist;
+                 thisinstancedatarow["Tags"] = tags;
+                 thisinstancedatarow["PrivateIP"] = Priv_IP;
+                 thisinstancedatarow["PublicIP"] = publicIP;
+                 thisinstancedatarow["PublicDNS"] = publicDNS;
+                 thisinstancedatarow["PublicDNS"] = publicDNS;
+                 thisinstancedatarow["VPC"] = myvpcid;
+                 thisinstancedatarow["SubnetID"] = mysubnetid;
+                 thisinstancedatarow["InstanceState"] = istate.Value;
+                 thisinstancedatarow["VirtualizationType"] = ivirtType;
+                 thisinstancedatarow["InstanceType"] = instancetype;
+                 thisinstancedatarow["SecurityGroups"] = SGids;
+                 thisinstancedatarow["SGNames"] = SGNames;
                 //Add this instance to the data returned.
+                ToReturn.Rows.Add(thisinstancedatarow);
 
-                ToReturn.Add(instanceid, datafields);
 
-            }
+            }//End for of instances
 
 
 
@@ -416,6 +423,122 @@ namespace AWSFunctions
         }//EndGetEC2
 
     }//EndScanAWS
+
+    public class AWSTables
+    {
+        public static DataTable GetEC2DetailsTable()
+        {
+            DataTable table = new DataTable();
+            // Here we create a DataTable .
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("Region", typeof(string));
+            table.Columns.Add("InstanceName", typeof(string));
+            table.Columns.Add("InstanceID", typeof(string));
+            table.Columns.Add("AMI", typeof(string));
+            table.Columns.Add("AMIDescription", typeof(string));
+            table.Columns.Add("AvailabilityZone", typeof(string));
+            table.Columns.Add("Platform", typeof(string));
+            table.Columns.Add("Status", typeof(string));
+            table.Columns.Add("Events", typeof(string));
+            table.Columns.Add("EventList", typeof(List<string>));
+            table.Columns.Add("Tags", typeof(string));
+            table.Columns.Add("PrivateIP", typeof(string));
+            table.Columns.Add("PublicIP", typeof(string));
+            table.Columns.Add("PublicDNS", typeof(string));
+            table.Columns.Add("VPC", typeof(string));
+            table.Columns.Add("SubnetID", typeof(string));
+            table.Columns.Add("InstanceState", typeof(string));
+            table.Columns.Add("VirtualizationType", typeof(string));
+            table.Columns.Add("InstanceType", typeof(string));
+            table.Columns.Add("SecurityGroups", typeof(List<string>));
+            table.Columns.Add("SGNames", typeof(List<string>));
+            
+            //This code ensures we croak if the InstanceID is not unique.  How to catch that?
+            UniqueConstraint makeInstanceIDUnique =
+                new UniqueConstraint(new DataColumn[] { table.Columns["InstanceID"] });
+            table.Constraints.Add(makeInstanceIDUnique);
+
+            //Can we set the view on this table to expand IEnumerables?
+            DataView mydataview = table.DefaultView;
+            
+
+
+            return table;
+        }
+        public static DataTable GetUsersDetailsTable()
+        {
+            // Here we create a DataTable .
+            DataTable table = new DataTable();
+
+            UniqueConstraint makeUserIDUnique =
+                 new UniqueConstraint(new DataColumn[] { table.Columns["UserID"] ,
+                                                          table.Columns["ARN"]}); 
+                 table.Constraints.Add(makeUserIDUnique);
+
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("UserID", typeof(string));
+            //Information from Credential Report
+            table.Columns.Add("Username", typeof(string));//user
+            table.Columns.Add("ARN", typeof(string));//arn
+            table.Columns.Add("CreateDate", typeof(string));//user_creation_time
+            table.Columns.Add("PwdEnabled", typeof(string));//password_enabled
+            table.Columns.Add("PwdLastUsed", typeof(string));//password_last_used
+            table.Columns.Add("PwdLastChanged", typeof(string));//password_last_changed
+            table.Columns.Add("PwdNxtRotation", typeof(string));//password_next_rotation
+            table.Columns.Add("MFA Active", typeof(string));//mfa_active
+
+            table.Columns.Add("AccessKey1-Active", typeof(string));//access_key_1_active
+            table.Columns.Add("AccessKey1-Rotated", typeof(string));//access_key_1_last_rotated
+            table.Columns.Add("AccessKey1-LastUsedDate", typeof(string));//access_key_1_last_used_date
+            table.Columns.Add("AccessKey1-LastUsedRegion", typeof(string));//access_key_1_last_used_region
+            table.Columns.Add("AccessKey1-LastUsedService", typeof(string));//access_key_1_last_used_service
+
+            table.Columns.Add("AccessKey2-Active", typeof(string));//access_key_2_active
+            table.Columns.Add("AccessKey2-Rotated", typeof(string));//access_key_2_last_rotated
+            table.Columns.Add("AccessKey2-LastUsedDate", typeof(string));//access_key_2_last_used_date
+            table.Columns.Add("AccessKey2-LastUsedRegion", typeof(string));//access_key_2_last_used_region
+            table.Columns.Add("AccessKey2-LastUsedService", typeof(string));//access_key_2_last_used_service
+
+            table.Columns.Add("Cert1-Active", typeof(string));//cert_1_active
+            table.Columns.Add("Cert1-Rotated", typeof(string));//cert_1_last_rotated
+            table.Columns.Add("Cert2-Active", typeof(string));//cert_2_active
+            table.Columns.Add("Cert2-Rotated", typeof(string));//cert_2_last_rotated
+
+            table.Columns.Add("User-Policies", typeof(string));
+            table.Columns.Add("Access-Keys", typeof(string));
+            table.Columns.Add("Groups", typeof(string));
+
+
+            return table;
+        }
+        public static DataTable GetS3DetailsTable()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("Bucket", typeof(string));
+            table.Columns.Add("Region", typeof(string));
+            table.Columns.Add("CreationDate", typeof(string));
+            table.Columns.Add("LastAccess", typeof(string));// This works, but data returned is bogus.
+            table.Columns.Add("Owner", typeof(string));
+            table.Columns.Add("Grants", typeof(string));
+
+
+            table.Columns.Add("WebsiteHosting", typeof(string));
+            table.Columns.Add("Logging", typeof(string));
+            table.Columns.Add("Events", typeof(string));
+            table.Columns.Add("Versioning", typeof(string));
+            table.Columns.Add("LifeCycle", typeof(string));
+            table.Columns.Add("Replication", typeof(string));
+            table.Columns.Add("Tags", typeof(string));
+            table.Columns.Add("RequesterPays", typeof(string));
+
+            return table;
+        }
+
+    }
 }//End AWSFunctions
 
         //Da end

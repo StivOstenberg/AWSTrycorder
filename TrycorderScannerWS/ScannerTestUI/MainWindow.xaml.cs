@@ -30,12 +30,14 @@ namespace ScannerTestUI
         {
             InitializeComponent();
             ProfilesComboBox.ItemsSource = Scanner.GetProfileNames();
+            ProfilesComboBox.SelectedIndex = 12;
             FillRegions();
         }
 
         private void FillRegions()
         {
-            RegionListcomboBox.ItemsSource = Scanner.GetRegionNames(); 
+            RegionListcomboBox.ItemsSource = Scanner.GetRegionNames();
+            RegionListcomboBox.SelectedIndex = 0;
         }
         private void GetProfilesClick(object sender, RoutedEventArgs e)
         {
@@ -67,7 +69,8 @@ namespace ScannerTestUI
         {
             if (ProfilesComboBox.SelectedItem.ToString().Length > 2 & RegionListcomboBox.SelectedItem.ToString().Length >2 )
             {
-                Scanner.GetEC2Instances(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+                var datable = Scanner.GetEC2Instances(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+                DasGrid.ItemsSource = datable.DefaultView;
             }
             else
             {
