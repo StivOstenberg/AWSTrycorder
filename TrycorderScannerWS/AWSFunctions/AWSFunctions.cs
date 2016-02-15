@@ -180,9 +180,9 @@ namespace AWSFunctions
                     continue;
                 }
             }
-           
-            var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
 
+            //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
+            var ec2 = new Amazon.EC2.AmazonEC2Client(credential);
             //These steps just get the account ID
             var iam = new AmazonIdentityManagementServiceClient(credential);
             var myUserList = iam.ListUsers().Users;
@@ -211,7 +211,7 @@ namespace AWSFunctions
 
             //DescribeInstancesResult DescResult = ec2.DescribeInstances(indatarequest);
             
-            DescribeInstancesResult DescResult = ec2.DescribeInstances();
+            DescribeInstancesResponse DescResult = ec2.DescribeInstances();
 
             int count = instatresponse.InstanceStatuses.Count();
 
@@ -222,7 +222,7 @@ namespace AWSFunctions
             {
                 foreach (var instancedata in urtburgle.Instances)
                 {
-                    if (instancedata.InstanceId.ToString().Equals("i-3448ade7"))
+                    if (instancedata.InstanceId.ToString().Equals("i-3448ade7"))//This if is for debugging purposes.
                     {
                         var checkker = instancedata;
                     }
