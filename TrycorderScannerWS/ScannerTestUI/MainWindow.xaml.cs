@@ -56,11 +56,13 @@ namespace ScannerTestUI
         {
             if (ProfilesComboBox.SelectedItem.ToString().Length > 2)
             {
-                Scanner.GetIAMUsers(ProfilesComboBox.SelectedItem.ToString());
+                var datable = Scanner.GetIAMUsers(ProfilesComboBox.SelectedItem.ToString());
+                DasGrid.ItemsSource = datable.DefaultView;
             }
             else
             {
                 MessageBox.Show("You fool, you must select a profile!");
+                return;
             }
 
         }

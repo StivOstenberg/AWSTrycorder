@@ -51,19 +51,24 @@ namespace AWSFunctions
         }
 
 
-        public Dictionary<string, Dictionary<string, string>> GetIAMUsers(string aprofile)
+        public DataTable GetIAMUsers(string aprofile)
         {
-            Dictionary<string, Dictionary<string, string>> ToReturn = new Dictionary<string, Dictionary<string, string>>();
-            Dictionary<string, string> UserNameIdMap = new Dictionary<string, string>();
+            DataTable IAMTable = AWSTables.GetUsersDetailsTable(); //Blank table to fill out.
+
+            Dictionary<string, string> UserNameIdMap = new Dictionary<string, string>();//Usernames to UserIDs to fill in row later.
             Amazon.Runtime.AWSCredentials credential;
             string accountid = "";
             try { 
 
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-            var iam = new AmazonIdentityManagementServiceClient(credential);
-
-
+                var iam = new AmazonIdentityManagementServiceClient(credential);
                 var myUserList = iam.ListUsers().Users;
+
+                Dictionary<string, string> unamelookup = new Dictionary<string, string>();
+                foreach(var rabbit in myUserList)
+                {
+                    unamelookup.Add(rabbit.UserId, rabbit.UserName);
+                }
 
                 try
                 {
@@ -79,7 +84,7 @@ namespace AWSFunctions
                     UserNameIdMap.Add(auser.UserName, auser.UserId);
                 }
 
-                    Amazon.IdentityManagement.Model.GetCredentialReportResponse credreport = new GetCredentialReportResponse();
+            Amazon.IdentityManagement.Model.GetCredentialReportResponse credreport = new GetCredentialReportResponse();
             DateTime getreportstart = DateTime.Now;
             DateTime getreportfinish = DateTime.Now;
 
@@ -102,20 +107,57 @@ namespace AWSFunctions
                 Dictionary<string, string> mydata = new Dictionary<string, string>();
                 while (myStringRow != null)
                 {
+                        DataRow auserdata = IAMTable.NewRow();
                     var arow = myStringRow.Split(",".ToCharArray()[0]);
 
                         //Letsa dumpa da data...
-                    
-                        mydata.Add("AccountID", accountid);
-                        mydata.Add("Profile", aprofile);
-                        string userID = UserNameIdMap[arow[0]];
-                        mydata.Add("UserID", userID);
-                        for (int x = 0; x < headers.Length; x++)
+                        auserdata["AccountID"] = accountid;
+                        auserdata["Profile"] = aprofile;
+
+                        string thisid = "";
+                        try {
+                            thisid = UserNameIdMap[arow[0]];
+                            auserdata["UserID"] = thisid;
+                            auserdata["UserName"] = unamelookup[thisid];
+                        }
+                        catch
                         {
-                            mydata.Add(headers[x], arow[x]);
+                            auserdata["UserID"] = "";
+                            auserdata["UserName"] = "<root_account>";
                         }
 
-                        ToReturn.Add(userID, mydata);
+
+
+                        auserdata["ARN"] = arow[1];
+                        auserdata["CreateDate"] = arow[2];
+                        auserdata["PwdEnabled"] = arow[3];
+                        auserdata["PwdLastUsed"] = arow[4];
+                        auserdata["PwdLastChanged"] = arow[5];
+                        auserdata["PwdNxtRotation"] = arow[6].ToString();
+                        auserdata["MFA Active"] = arow[7];
+
+                        auserdata["AccessKey1-Active"] = arow[8];//access_key_1_active
+                        auserdata["AccessKey1-Rotated"] = arow[9];//access_key_1_last_rotated
+                        auserdata["AccessKey1-LastUsedDate"] = arow[10];//access_key_1_last_used_date
+                        auserdata["AccessKey1-LastUsedRegion"] = arow[11];//access_key_1_last_used_region
+                        auserdata["AccessKey1-LastUsedService"] = arow[12];//access_key_1_last_used_service
+
+                        auserdata["AccessKey2-Active"] = arow[13];//access_key_2_active
+                        auserdata["AccessKey2-Rotated"] = arow[14];//access_key_2_last_rotated
+                        auserdata["AccessKey2-LastUsedDate"] = arow[15];//access_key_2_last_used_date
+                        auserdata["AccessKey2-LastUsedRegion"] = arow[16];//access_key_2_last_used_region
+                        auserdata["AccessKey2-LastUsedService"] = arow[17];//access_key_2_last_used_service
+
+                        auserdata["Cert1-Active"] = arow[18];//cert_1_active
+                        auserdata["Cert1-Rotated"] = arow[19];//cert_1_last_rotated
+                        auserdata["Cert2-Active"] = arow[20];//cert_2_active
+                        auserdata["Cert2-Rotated"] = arow[21];//cert_2_last_rotated
+
+
+                        IAMTable.Rows.Add(auserdata);
+
+
+
 
                     myStringRow = sr.ReadLine();
                 }
@@ -127,7 +169,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                string test = "";
+                string atest = "";
                 //Deal with this later if necessary.
             }
 
@@ -137,9 +179,12 @@ namespace AWSFunctions
         }
             catch//The final catch
             {
-
+                string btest = "";
+                //Deal with this later if necessary.
             }
-            return ToReturn;
+            string ctest = "";
+
+            return IAMTable;
         }//EndIamUserScan
 
         /// <summary>
@@ -156,6 +201,17 @@ namespace AWSFunctions
 
 
             return ToReturn;
+        }
+
+        public string List2String(List<string>stringlist)
+        {
+            string toreturn = "";
+            foreach(string astring in stringlist)
+            {
+                if (toreturn.Length > 2) toreturn += "\n";
+                toreturn += astring;
+            }
+            return toreturn;
         }
 
 
@@ -182,7 +238,7 @@ namespace AWSFunctions
             }
 
             //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
-            var ec2 = new Amazon.EC2.AmazonEC2Client(credential);
+            var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
             //These steps just get the account ID
             var iam = new AmazonIdentityManagementServiceClient(credential);
             var myUserList = iam.ListUsers().Users;
@@ -398,8 +454,8 @@ namespace AWSFunctions
                  thisinstancedatarow["AvailabilityZone"] = AZ;
                  thisinstancedatarow["Status"] = status;
                  thisinstancedatarow["Events"] = eventnumber.ToString();
-                 thisinstancedatarow["EventList"] = eventlist;
-                 thisinstancedatarow["Tags"] = tags;
+                 thisinstancedatarow["EventList"] = List2String(eventlist);
+                 thisinstancedatarow["Tags"] = List2String (tags);
                  thisinstancedatarow["PrivateIP"] = Priv_IP;
                  thisinstancedatarow["PublicIP"] = publicIP;
                  thisinstancedatarow["PublicDNS"] = publicDNS;
@@ -409,8 +465,8 @@ namespace AWSFunctions
                  thisinstancedatarow["InstanceState"] = istate.Value;
                  thisinstancedatarow["VirtualizationType"] = ivirtType;
                  thisinstancedatarow["InstanceType"] = instancetype;
-                 thisinstancedatarow["SecurityGroups"] = SGids;
-                 thisinstancedatarow["SGNames"] = SGNames;
+                 thisinstancedatarow["SecurityGroups"] = List2String( SGids);
+                 thisinstancedatarow["SGNames"] = List2String( SGNames);
                 //Add this instance to the data returned.
                 ToReturn.Rows.Add(thisinstancedatarow);
 
@@ -441,7 +497,7 @@ namespace AWSFunctions
             table.Columns.Add("Platform", typeof(string));
             table.Columns.Add("Status", typeof(string));
             table.Columns.Add("Events", typeof(string));
-            table.Columns.Add("EventList", typeof(List<string>));
+            table.Columns.Add("EventList", typeof(string));
             table.Columns.Add("Tags", typeof(string));
             table.Columns.Add("PrivateIP", typeof(string));
             table.Columns.Add("PublicIP", typeof(string));
@@ -451,8 +507,8 @@ namespace AWSFunctions
             table.Columns.Add("InstanceState", typeof(string));
             table.Columns.Add("VirtualizationType", typeof(string));
             table.Columns.Add("InstanceType", typeof(string));
-            table.Columns.Add("SecurityGroups", typeof(List<string>));
-            table.Columns.Add("SGNames", typeof(List<string>));
+            table.Columns.Add("SecurityGroups", typeof(string));
+            table.Columns.Add("SGNames", typeof(string));
             
             //This code ensures we croak if the InstanceID is not unique.  How to catch that?
             UniqueConstraint makeInstanceIDUnique =
@@ -470,11 +526,6 @@ namespace AWSFunctions
         {
             // Here we create a DataTable .
             DataTable table = new DataTable();
-
-            UniqueConstraint makeUserIDUnique =
-                 new UniqueConstraint(new DataColumn[] { table.Columns["UserID"] ,
-                                                          table.Columns["ARN"]}); 
-                 table.Constraints.Add(makeUserIDUnique);
 
             table.Columns.Add("AccountID", typeof(string));
             table.Columns.Add("Profile", typeof(string));
@@ -509,7 +560,8 @@ namespace AWSFunctions
             table.Columns.Add("User-Policies", typeof(string));
             table.Columns.Add("Access-Keys", typeof(string));
             table.Columns.Add("Groups", typeof(string));
-
+            UniqueConstraint makeUserIDUnique = new UniqueConstraint(new DataColumn[] { table.Columns["UserID"] , table.Columns["ARN"]});
+            table.Constraints.Add(makeUserIDUnique);
 
             return table;
         }
