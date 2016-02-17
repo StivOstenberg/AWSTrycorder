@@ -92,5 +92,18 @@ namespace ScannerTestUI
                 MessageBox.Show("You fool, you must select a profile for to scan S3!");
             }
         }
+
+        private void ListSubnetsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProfilesComboBox.SelectedItem.ToString().Length > 2)
+            {
+                var datable = Scanner.GetSubnets(ProfilesComboBox.SelectedItem.ToString(),RegionListcomboBox.SelectedItem.ToString());
+                DasGrid.ItemsSource = datable.DefaultView;
+            }
+            else
+            {
+                MessageBox.Show("You fool, you must select a profile for to scan Subnets!");
+            }
+        }
     }
 }

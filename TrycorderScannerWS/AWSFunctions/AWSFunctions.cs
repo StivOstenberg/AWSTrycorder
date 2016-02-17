@@ -21,7 +21,7 @@ namespace AWSFunctions
     /// </summary>
     public class ScanAWS
     {
-        
+        uint startIP, endIP;
         /// <summary>
         /// Returns the names of the profiles in the Windows AWS Credential Store.
         /// </summary>
@@ -51,11 +51,70 @@ namespace AWSFunctions
         }
 
 
-        public DataTable GetVPCs (string aprofile)
+        public DataTable GetSubnets (string aprofile, string Region2Scan)
         {
-            
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+
+            Amazon.Runtime.AWSCredentials credential;
+            DataTable ToReturn = AWSTables.GetSubnetDetailsTable();
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
+                var subbies = ec2.DescribeSubnets().Subnets;
+                
+                foreach(var asubnet in subbies)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    disone["AvailabilityZone"] = asubnet.AvailabilityZone;
+                    disone["AvailableIPCount"] = asubnet.AvailableIpAddressCount.ToString();
+                    disone["Cidr"] = asubnet.CidrBlock;
+                    //Trickybits.  Cidr to IP
+                    var dater = Network2IpRange(asubnet.CidrBlock);
 
 
+                    ///
+                    disone["DefaultForAZ"] = asubnet.DefaultForAz.ToString();
+                    disone["MapPubIPonLaunch"] = asubnet.MapPublicIpOnLaunch.ToString();
+                    disone["State"] = asubnet.State;
+                    disone["SubnetID"] = asubnet.SubnetId;
+                    var tagger = asubnet.Tags;
+                    List<string> taglist = new List<string>();
+                    foreach(var atag in tagger)
+                    {
+                        taglist.Add(atag.Key + ": " + atag.Value);
+                        if(atag.Key.Equals("Name")) disone["SubnetName"] = atag.Value;
+                    }
+
+                    disone["Tags"] = List2String(taglist);
+                    disone["VpcID"] = asubnet.VpcId;
+
+                    ToReturn.Rows.Add(disone);
+                }
+
+
+            }
+            catch(Exception ex)
+                {
+                string rabbit = "";
+            }
+
+
+
+
+
+
+            return ToReturn;
         }
 
         public DataTable GetS3Buckets(string aprofile)
@@ -412,11 +471,13 @@ namespace AWSFunctions
         public DataTable GetEC2Instances(string aprofile, string Region2Scan)
         {
             DataTable ToReturn = AWSTables.GetEC2DetailsTable();
-            
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+
+
 
             Amazon.Runtime.AWSCredentials credential;
             string accountid = "";
-            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            
             Dictionary<string, Dictionary<String,String>> OldReturn = new Dictionary<string, Dictionary<String,String>>();
             credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
             
@@ -433,6 +494,8 @@ namespace AWSFunctions
 
             //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
             var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
+
+            
             //These steps just get the account ID
             var iam = new AmazonIdentityManagementServiceClient(credential);
             var myUserList = iam.ListUsers().Users;
@@ -480,7 +543,7 @@ namespace AWSFunctions
                 }
             }
 
-
+            
 
             //Go through list of instances...
             foreach (var instat in instatresponse.InstanceStatuses)
@@ -672,6 +735,74 @@ namespace AWSFunctions
             return ToReturn;
         }//EndGetEC2
 
+
+        static Dictionary<string,string> Network2IpRange(string sNetwork)
+        {
+            uint startIP;
+            uint endIP;
+            Dictionary<string, string> ToReturn = new Dictionary<string, string>();
+            uint ip,                /* ip address */
+                    mask,           /* subnet mask */
+                    broadcast,      /* Broadcast address */
+                    network;        /* Network address */
+
+            int bits;
+
+            string[] elements = sNetwork.Split(new Char[] { '/' });
+
+            ip = IP2Int(elements[0]);
+            bits = Convert.ToInt32(elements[1]);
+
+            mask = ~(0xffffffff >> bits);
+
+            network = ip & mask;
+            broadcast = network + ~mask;
+
+            var usableIps = (bits > 30) ? 0 : (broadcast - network - 1);
+
+            if (usableIps <= 0)
+            {
+                startIP = endIP = 0;
+            }
+            else
+            {
+                startIP = network + 1;
+                endIP = broadcast - 1;
+
+
+
+            }
+
+            var a = Convert.ToDecimal(startIP);
+
+
+
+            ToReturn.Add("StartIP", startIP.ToString());
+            
+            ToReturn.Add("EndIP", endIP.ToString());
+            ToReturn.Add("Broadcast", broadcast.ToString());
+            ToReturn.Add("Mask", mask.ToString());
+            ToReturn.Add("Network", network.ToString());
+            ToReturn.Add("UsableIP", usableIps.ToString());
+
+
+            return ToReturn;
+        }
+
+        public static uint IP2Int(string IPNumber)
+        {
+            uint ip = 0;
+            string[] elements = IPNumber.Split(new Char[] { '.' });
+            if (elements.Length == 4)
+            {
+                ip = Convert.ToUInt32(elements[0]) << 24;
+                ip += Convert.ToUInt32(elements[1]) << 16;
+                ip += Convert.ToUInt32(elements[2]) << 8;
+                ip += Convert.ToUInt32(elements[3]);
+            }
+            return ip;
+        }
+
     }//EndScanAWS
 
     public class AWSTables
@@ -788,19 +919,28 @@ namespace AWSFunctions
             return table;
         }
 
-        public static DataTable GetVPCDetailsTable()
+        public static DataTable GetSubnetDetailsTable()
         {
             DataTable ToReturn = new DataTable();
             ToReturn.Columns.Add("AccountID", typeof(string));
             ToReturn.Columns.Add("Profile", typeof(string));
+            //VPC Details
+            ToReturn.Columns.Add("VpcID", typeof(string));
+            ToReturn.Columns.Add("VPCName", typeof(string));
+
             ToReturn.Columns.Add("SubnetID", typeof(string));
             ToReturn.Columns.Add("SubnetName", typeof(string));
-            //Subnet IP Details
-            ToReturn.Columns.Add("VPCid", typeof(string));
-            ToReturn.Columns.Add("VPCName", typeof(string));
-            //VPC Details
-            ToReturn.Columns.Add("RouteTable", typeof(string));
-            //Route Table details.
+            ToReturn.Columns.Add("AvailabilityZone", typeof(string));
+            ToReturn.Columns.Add("Cidr", typeof(string));
+            ToReturn.Columns.Add("AvailableIPCount", typeof(string));
+            ToReturn.Columns.Add("DefaultForAZ", typeof(string));
+            ToReturn.Columns.Add("MapPubIPonLaunch", typeof(string));
+            ToReturn.Columns.Add("State", typeof(string));
+            ToReturn.Columns.Add("Tags", typeof(string));
+
+
+
+
 
 
 
