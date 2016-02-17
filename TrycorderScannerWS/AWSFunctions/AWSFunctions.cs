@@ -50,7 +50,144 @@ namespace AWSFunctions
 
         }
 
+        public DataTable GetS3Buckets(string aprofile)
+        {
+            Amazon.Runtime.AWSCredentials credential;
+            DataTable ToReturn = AWSTables.GetS3DetailsTable();
+            string accountid = "";
+            string S3_KEY = "s3_key";
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                
+                AmazonS3Client S3Client = new AmazonS3Client(credential, Amazon.RegionEndpoint.USEast1);
+                ListBucketsResponse response = S3Client.ListBuckets();
+                foreach (S3Bucket abucket in response.Buckets)
+                {
+                    DataRow abucketrow = ToReturn.NewRow();
+                    var name = abucket.BucketName;
+                    try
+                    {
+                        GetBucketLocationRequest gbr = new GetBucketLocationRequest();
+                        gbr.BucketName = name;
+                        GetBucketLocationResponse location = S3Client.GetBucketLocation(gbr);
+                        
+                        var region = location.Location.Value;
+                        if (region.Equals("")) region = "us-east-1";
+                        var pointy = RegionEndpoint.GetBySystemName(region);
 
+                        //Build a config that references the buckets region.
+                        AmazonS3Config S3C = new AmazonS3Config();
+                        S3C.RegionEndpoint = pointy;
+                        AmazonS3Client BS3Client = new AmazonS3Client(credential, S3C);
+
+                        var authregion = "";
+                        var EP = BS3Client.Config.RegionEndpoint.DisplayName;
+                        if (String.IsNullOrEmpty(BS3Client.Config.RegionEndpoint.DisplayName)) authregion = "";
+                        else {
+                             authregion = BS3Client.Config.AuthenticationRegion; }
+
+                        string authservice = "";
+
+                        if (string.IsNullOrEmpty(BS3Client.Config.AuthenticationServiceName)) authservice = "";
+                        else
+                        {
+                            authservice = BS3Client.Config.AuthenticationServiceName;
+                        }
+
+                        var createddate = abucket.CreationDate;
+                        string owner = "";
+                        string grants = "";
+                        string tags = "";
+                        string lastaccess = "";
+                        string defaultpage = "";
+                        string website = "";
+                        //Now start pulling der einen data.
+
+                        GetACLRequest GACR = new GetACLRequest();
+                        GACR.BucketName = name;
+                        var ACL = BS3Client.GetACL(GACR);
+                        var grantlist = ACL.AccessControlList;
+                        owner = grantlist.Owner.DisplayName;
+                        foreach (var agrant in grantlist.Grants)
+                        {
+                            if (grants.Length > 1) grants += "\n";
+                            var gName = agrant.Grantee.DisplayName;
+                            var gType = agrant.Grantee.Type.Value;
+                            var aMail = agrant.Grantee.EmailAddress;
+
+                            if (gType.Equals("Group"))
+                            {
+                                grants += gType + " - " + agrant.Grantee.URI + " - " + agrant.Permission + " - " + aMail;
+                            }
+                            else
+                            {
+                                grants += gName + " - " + agrant.Permission + " - " + aMail;
+                            }
+                        }
+
+
+
+
+
+
+                        GetBucketWebsiteRequest GBWReq = new GetBucketWebsiteRequest();
+                        GBWReq.BucketName = name;
+                        GetBucketWebsiteResponse GBWRes = BS3Client.GetBucketWebsite(GBWReq);
+
+                        defaultpage = GBWRes.WebsiteConfiguration.IndexDocumentSuffix;
+
+
+                        if (defaultpage != null)
+                        {
+                            website = @"http://" + name + @".s3-website-" + region + @".amazonaws.com/" + defaultpage;
+                        }
+                        abucketrow["AccountID"] = accountid;
+                        abucketrow["Profile"] = aprofile;
+                        abucketrow["Bucket"] = name;
+                        abucketrow["Region"] = region;
+                        abucketrow["RegionEndpoint"] = EP;
+                        abucketrow["AuthRegion"] = authregion;
+                        abucketrow["AuthService"] = authservice;
+
+                        abucketrow["CreationDate"] = createddate.ToString();
+                        abucketrow["LastAccess"] = lastaccess;
+                        abucketrow["Owner"] = owner;
+                        abucketrow["Grants"] = grants;
+
+                        abucketrow["WebsiteHosting"] = website;
+                        abucketrow["Logging"] = "X";
+                        abucketrow["Events"] = "X";
+                        abucketrow["Versioning"] = "X";
+                        abucketrow["LifeCycle"] = "X";
+                        abucketrow["Replication"] = "X";
+                        abucketrow["Tags"] = "X";
+                        abucketrow["RequesterPays"] = "X";
+                        ToReturn.Rows.Add(abucketrow.ItemArray);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        abucketrow["AccountID"] = accountid;
+                        abucketrow["Profile"] = aprofile;
+                        abucketrow["Bucket"] = name;
+                        abucketrow["Region"] = ex.InnerException.Message;
+                        ToReturn.Rows.Add(abucketrow.ItemArray);
+                    }
+                }
+
+
+
+
+                }
+            catch
+            {
+                //Croak
+            }
+
+
+            return ToReturn;
+        }
         public DataTable GetIAMUsers(string aprofile)
         {
             DataTable IAMTable = AWSTables.GetUsersDetailsTable(); //Blank table to fill out.
@@ -62,9 +199,11 @@ namespace AWSFunctions
 
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 var iam = new AmazonIdentityManagementServiceClient(credential);
+                Dictionary<string, string> unamelookup = new Dictionary<string, string>();
+
                 var myUserList = iam.ListUsers().Users;
 
-                Dictionary<string, string> unamelookup = new Dictionary<string, string>();
+                
                 foreach(var rabbit in myUserList)
                 {
                     unamelookup.Add(rabbit.UserId, rabbit.UserName);
@@ -115,10 +254,12 @@ namespace AWSFunctions
                         auserdata["Profile"] = aprofile;
 
                         string thisid = "";
+                        string username = "";
                         try {
                             thisid = UserNameIdMap[arow[0]];
                             auserdata["UserID"] = thisid;
                             auserdata["UserName"] = unamelookup[thisid];
+                            username= unamelookup[thisid];
                         }
                         catch
                         {
@@ -154,6 +295,12 @@ namespace AWSFunctions
                         auserdata["Cert2-Rotated"] = arow[21];//cert_2_last_rotated
 
 
+                        var extradata = GetUserDetails(aprofile, username);
+
+                        auserdata["User-Policies"] = extradata["Policies"];
+                        auserdata["Access-Keys"] = extradata["AccessKeys"];
+                        auserdata["Groups"] = extradata["Groups"];
+
                         IAMTable.Rows.Add(auserdata);
 
 
@@ -182,7 +329,6 @@ namespace AWSFunctions
                 string btest = "";
                 //Deal with this later if necessary.
             }
-            string ctest = "";
 
             return IAMTable;
         }//EndIamUserScan
@@ -192,14 +338,54 @@ namespace AWSFunctions
         /// </summary>
         /// <param name="aprofile">An AWS Profile name stored in Windows Credential Store</param>
         /// <param name="auser">The Name of a User</param>
-        /// <returns>Dictionary containing keys for each type of data[AcessKeys], [Groups], [Policies]</returns>
-            public Dictionary<string,string> GetUserDetails(string aprofile, string auser)
+        /// <returns>Dictionary containing keys for each type of data[AccessKeys], [Groups], [Policies]</returns>
+            public Dictionary<string,string> GetUserDetails(string aprofile, string username)
         {
+            var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+            var iam = new AmazonIdentityManagementServiceClient(credential);
             Dictionary<string, string> ToReturn = new Dictionary<string, string>();
+            string policylist = "";
+            string aklist = "";
+            string groups = "";
+            try {
+                ListAccessKeysRequest LAKREQ = new ListAccessKeysRequest();
+                LAKREQ.UserName = username;
+                var LAKRES = iam.ListAccessKeys(LAKREQ);
+                foreach (var blivet in LAKRES.AccessKeyMetadata)
+                {
+                    if (aklist.Length > 1) aklist += "\n";
+                    aklist += blivet.AccessKeyId + "  :  " + blivet.Status;
+                }
+            }
+            catch { aklist = ""; }
 
+            try {
+                ListAttachedUserPoliciesRequest LAUPREQ = new ListAttachedUserPoliciesRequest();
+                LAUPREQ.UserName = username;
+                var LAUPRES = iam.ListAttachedUserPolicies(LAUPREQ);
+                foreach (var apol in LAUPRES.AttachedPolicies)
+                {
+                    if (policylist.Length > 1) policylist += "\n";
+                    policylist += apol.PolicyName;
+                }
+            }
+            catch { policylist = ""; }
 
+            try {
+                var groopsreq = new ListGroupsForUserRequest();
+                groopsreq.UserName = username;
+                var LG = iam.ListGroupsForUser(groopsreq);
+                foreach (var agroup in LG.Groups)
+                {
+                    if (groups.Length > 1) groups += "\n";
+                    groups += agroup.GroupName;
+                }
+            }
+            catch { groups = ""; }
 
-
+            ToReturn.Add("Groups", groups);
+            ToReturn.Add("Policies", policylist);
+            ToReturn.Add("AccessKeys", aklist);
             return ToReturn;
         }
 
@@ -572,6 +758,10 @@ namespace AWSFunctions
             table.Columns.Add("Profile", typeof(string));
             table.Columns.Add("Bucket", typeof(string));
             table.Columns.Add("Region", typeof(string));
+            table.Columns.Add("RegionEndpoint", typeof(string));
+            table.Columns.Add("AuthRegion", typeof(string));
+            table.Columns.Add("AuthService", typeof(string));
+
             table.Columns.Add("CreationDate", typeof(string));
             table.Columns.Add("LastAccess", typeof(string));// This works, but data returned is bogus.
             table.Columns.Add("Owner", typeof(string));
@@ -590,6 +780,8 @@ namespace AWSFunctions
             return table;
         }
 
+
+        public static string Shrug = "¯\\_(ツ)_/¯";
     }
 }//End AWSFunctions
 

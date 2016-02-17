@@ -79,5 +79,18 @@ namespace ScannerTestUI
                 MessageBox.Show("You fool, you must select a profile and region to scan EC2!");
             }
         }
+
+        private void ListS3MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProfilesComboBox.SelectedItem.ToString().Length > 2 )
+            {
+                var datable = Scanner.GetS3Buckets(ProfilesComboBox.SelectedItem.ToString());
+                DasGrid.ItemsSource = datable.DefaultView;
+            }
+            else
+            {
+                MessageBox.Show("You fool, you must select a profile for to scan S3!");
+            }
+        }
     }
 }

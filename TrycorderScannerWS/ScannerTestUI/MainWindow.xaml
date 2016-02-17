@@ -20,6 +20,7 @@
                     <MenuItem Header="ListProfiles" HorizontalAlignment="Left" Width="144.8" Click="GetProfilesClick"/>
                     <MenuItem x:Name="ListUsersMenuItem" Header="ListUsers" HorizontalAlignment="Left" Width="144.8" Click="ListUsersMenuItem_Click"/>
                     <MenuItem x:Name="ListEC2MenuItem" Header="ListEC2" HorizontalAlignment="Left" Width="144.8" Click="ListEC2MenuItem_Click" />
+                    <MenuItem x:Name="ListS3MenuItem" Header="ListS3" HorizontalAlignment="Left" Width="144.8" Click="ListS3MenuItem_Click"  />
                 </MenuItem>
             </Menu>
             <ComboBox x:Name="ProfilesComboBox" HorizontalAlignment="Left" Margin="24,50,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="ProfilesComboBox_SelectionChanged"/>
