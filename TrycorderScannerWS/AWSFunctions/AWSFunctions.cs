@@ -50,12 +50,20 @@ namespace AWSFunctions
 
         }
 
+
+        public DataTable GetVPCs (string aprofile)
+        {
+            
+
+
+        }
+
         public DataTable GetS3Buckets(string aprofile)
         {
             Amazon.Runtime.AWSCredentials credential;
             DataTable ToReturn = AWSTables.GetS3DetailsTable();
             string accountid = "";
-            string S3_KEY = "s3_key";
+
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
@@ -780,6 +788,24 @@ namespace AWSFunctions
             return table;
         }
 
+        public static DataTable GetVPCDetailsTable()
+        {
+            DataTable ToReturn = new DataTable();
+            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("SubnetID", typeof(string));
+            ToReturn.Columns.Add("SubnetName", typeof(string));
+            //Subnet IP Details
+            ToReturn.Columns.Add("VPCid", typeof(string));
+            ToReturn.Columns.Add("VPCName", typeof(string));
+            //VPC Details
+            ToReturn.Columns.Add("RouteTable", typeof(string));
+            //Route Table details.
+
+
+
+            return ToReturn;
+        }
 
         public static string Shrug = "¯\\_(ツ)_/¯";
     }
