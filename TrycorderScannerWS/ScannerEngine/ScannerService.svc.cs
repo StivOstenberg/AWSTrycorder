@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace ScannerEngine
@@ -22,6 +25,7 @@ namespace ScannerEngine
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
         DataTable SubnetTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         AWSFunctions.ScannerSettings Settings;
+        AWSFunctions.ScanAWS Scanner;
 
         public string Initialize()
         {
@@ -73,21 +77,52 @@ namespace ScannerEngine
 
         public string ScanAll()
         {
-         Settings.State = "Scanning..";
-            if (Settings.doScanEC2) ScanEC2();
+            CancellationTokenSource killme = new CancellationTokenSource(); //Used to terminate Scans.
+            Settings.State = "Scanning..";
+            if (Settings.doScanEC2) ScanEC2(killme);
+
+
+
 
 
 
           Settings.State = "Idle";
+           
            return "Ribbitflux";
         }
 
-        public string ScanEC2()
+        private string ScanEC2(CancellationTokenSource killme)
         {
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
 
+            var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
+
+            ParallelOptions po = new ParallelOptions();
+            po.CancellationToken = killme.Token;
+            po.MaxDegreeOfParallelism = 30;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), Scanner.GetEC2Instances(KVP.Key, KVP.Value));
+                  });
+
+
+            }
+            catch
+            {
+                //Awww..  All dead she
+                string death = "";
+            }
+
+            EC2Table.Clear();
+            foreach(var rabbit in MyData.Values)
+            {
+                EC2Table.Merge(rabbit);
+            }
 
             return "Done EC2";
         }
+
     }
 
 

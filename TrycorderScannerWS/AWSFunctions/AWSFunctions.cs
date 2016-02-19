@@ -1004,9 +1004,69 @@ namespace AWSFunctions
 
     public class ScannerSettings
     {
+        ScanAWS stivlib;
+        public void Initialize()
+        {
+            foreach (string aregion in stivlib.GetRegionNames())
+            {
+                RegionsEnabled.Add(aregion, true);
+            }
+            foreach(string aprofile in stivlib.GetProfileNames())
+            {
+                ProfilesEnabled.Add(aprofile, true);
+            }
+        }
+
+
 
         public Boolean doScanEC2 { get; set; } = true;
         public String State { get; set; } = "Idle";
+
+        public Dictionary<string,bool>RegionsEnabled { get; set; } 
+
+        public void setRegionEnabled(string region, Boolean state)
+        {
+            RegionsEnabled[region] = state;
+        }
+
+        public Dictionary<string,bool>ProfilesEnabled { get; set; }
+        public void setProfileEnabled(string profile, Boolean state)
+        {
+            ProfilesEnabled[profile] = state;
+        }
+
+        public List<string> GetEnabledProfiles
+        {
+            get
+            {
+                List<string> ToReturn = new List<string>();
+                foreach(var profiles in ProfilesEnabled)
+                {
+                    if (profiles.Value) ToReturn.Add(profiles.Key);
+                }
+                return ToReturn;
+            }
+        }
+
+        public Dictionary<string,string> GetEnabledProfileandRegions
+        {
+            get
+            {
+                Dictionary<string, string> ToReturn = new Dictionary<string, string>();
+                foreach (var aprofile in ProfilesEnabled)
+                {
+                    if (aprofile.Value)
+                    {
+                        foreach(var region in RegionsEnabled)
+                        {
+                            if (region.Value) ToReturn.Add(aprofile.Key, region.Key);
+                        }
+                    }
+                }
+
+                return ToReturn; 
+            }
+        }
 
 
     }

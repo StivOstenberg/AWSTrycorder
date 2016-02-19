@@ -105,5 +105,10 @@ namespace ScannerTestUI
                 MessageBox.Show("You fool, you must select a profile for to scan Subnets!");
             }
         }
+
+        private void initializeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
