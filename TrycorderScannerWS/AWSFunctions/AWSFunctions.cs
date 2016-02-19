@@ -44,6 +44,7 @@ namespace AWSFunctions
             var Regions = RegionEndpoint.EnumerableAllRegions;
             foreach (var EP in Regions)
             {
+                if (EP.DisplayName.Contains("China") || EP.DisplayName.Contains("GovCloud")) continue;
                 RegionNames.Add(EP.DisplayName);
             }
             return RegionNames;
@@ -76,6 +77,7 @@ namespace AWSFunctions
                 foreach(var asubnet in subbies)
                 {
                     DataRow disone = ToReturn.NewRow();
+                    disone["Profile"] = aprofile;
                     disone["AvailabilityZone"] = asubnet.AvailabilityZone;
                     disone["AvailableIPCount"] = asubnet.AvailableIpAddressCount.ToString();
                     disone["Cidr"] = asubnet.CidrBlock;
@@ -803,6 +805,45 @@ namespace AWSFunctions
             return ip;
         }
 
+        public DataTable GetVPCList (String aprofile)
+        {
+            DataTable ToReturn = AWSTables.GetVPCDetailsTable();
+            Amazon.Runtime.AWSCredentials credential;
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential);
+                var vippies = ec2.DescribeVpcs().Vpcs;
+                foreach(var avpc in vippies)
+                {
+                    DataRow thisvpc = ToReturn.NewRow();
+                    thisvpc["CidrBlock"] = avpc. CidrBlock;
+                    thisvpc["VpcID"] = avpc.VpcId;
+                    thisvpc["IsDefault"] = avpc.IsDefault.ToString();
+                    thisvpc["DHCPOptionsID"] = avpc.DhcpOptionsId;
+                    thisvpc["InstanceTenancy"] = avpc.InstanceTenancy;
+                    thisvpc["State"] = avpc.State;
+                    var tagger = avpc.Tags;
+                    List<string> tlist = new List<string>();
+                    foreach(var atag in tagger)
+                    {
+                        tlist.Add(atag.Key + ": " + atag.Value);
+                    }
+                    thisvpc["Tags"] = List2String(tlist);
+
+                    ToReturn.Rows.Add(thisvpc);
+                }
+
+
+            }//End of the big Try
+            catch
+            {
+
+            }
+
+            return ToReturn;
+        }
+
     }//EndScanAWS
 
     public class AWSTables
@@ -922,7 +963,7 @@ namespace AWSFunctions
         public static DataTable GetSubnetDetailsTable()
         {
             DataTable ToReturn = new DataTable();
-            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("AccountID", typeof(string));//
             ToReturn.Columns.Add("Profile", typeof(string));
             //VPC Details
             ToReturn.Columns.Add("VpcID", typeof(string));
@@ -937,17 +978,37 @@ namespace AWSFunctions
             ToReturn.Columns.Add("MapPubIPonLaunch", typeof(string));
             ToReturn.Columns.Add("State", typeof(string));
             ToReturn.Columns.Add("Tags", typeof(string));
+            return ToReturn;
+        }
 
+        public static DataTable GetVPCDetailsTable()
+        {
+            DataTable ToReturn = new DataTable();
 
-
-
-
+            ToReturn.Columns.Add("CidrBlock", typeof(string)); 
+            ToReturn.Columns.Add("VpcID", typeof(string)); 
+            ToReturn.Columns.Add("IsDefault", typeof(string)); 
+            ToReturn.Columns.Add("DHCPOptionsID", typeof(string)); 
+            ToReturn.Columns.Add("InstanceTenancy", typeof(string)); 
+            ToReturn.Columns.Add("State", typeof(string)); 
+            ToReturn.Columns.Add("Tags", typeof(string));
+            
 
 
             return ToReturn;
         }
 
         public static string Shrug = "¯\\_(ツ)_/¯";
+    }
+
+
+    public class ScannerSettings
+    {
+
+        public Boolean doScanEC2 { get; set; } = true;
+        public String State { get; set; } = "Idle";
+
+
     }
 }//End AWSFunctions
 

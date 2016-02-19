@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -16,6 +17,27 @@ namespace ScannerEngine
         [OperationContract]
         string GetData(int value);
 
+
+        [OperationContract]
+        string Initialize();
+
+
+        [OperationContract]
+        DataTable GetEC2Table();
+
+        /// <summary>
+        /// Gets a dictionary with the status of the scanner.
+        /// </summary>
+        /// <returns></returns>
+        [OperationContract]
+        String GetStatus();
+
+
+        [OperationContract]
+        string ScanAll();
+
+
+
         [OperationContract]
         CompositeType GetDataUsingDataContract(CompositeType composite);
 
@@ -27,8 +49,9 @@ namespace ScannerEngine
     [DataContract]
     public class CompositeType
     {
-        bool boolValue = true;
+        
         string stringValue = "Hello ";
+        bool boolValue = true;
 
         [DataMember]
         public bool BoolValue
