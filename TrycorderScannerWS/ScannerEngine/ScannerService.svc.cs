@@ -93,6 +93,7 @@ namespace ScannerEngine
 
         private string ScanEC2(CancellationTokenSource killme)
         {
+            var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
 
             var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
@@ -119,8 +120,11 @@ namespace ScannerEngine
             {
                 EC2Table.Merge(rabbit);
             }
+            var end = DateTime.Now;
+            var duration = start - end;
+            string dur = duration.TotalSeconds.ToString();
 
-            return "Done EC2";
+            return "Done EC2 in " + dur + " seconds.";
         }
 
     }
