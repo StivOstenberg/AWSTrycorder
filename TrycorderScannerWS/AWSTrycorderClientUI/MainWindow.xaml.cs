@@ -30,22 +30,24 @@ namespace AWSTrycorderClientUI
         string MyEndpoint = "";
         string MyIP = "";
         string MyPort = "8383";//Need to make this dynamic at some point.
-        IChannelFactory<ScannerEngine.ScannerService> MyScanner;
+        IChannelFactory<ScannerEngine.ScannerInterface> MyScanner;
         NetTcpBinding bindbert = new NetTcpBinding();
 
         public MainWindow()
         {
 
             InitializeComponent();
-            MyEndpoint = "net.tcp://" + "127.0.0.1" + ":8383/AWSTrycorder/";
+            MyEndpoint = "net.tcp://localhost:8383/Scanner";
+
             this.host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
             bindbert.Security.Mode = SecurityMode.None;
             string myid = WindowsIdentity.GetCurrent().Name.Split('\\')[1].ToLower();
-            MyScanner = new ChannelFactory<ScannerEngine.ScannerService >(bindbert);
+            MyScanner = new ChannelFactory<ScannerEngine.ScannerInterface >(bindbert);
             var Trycorder = MyScanner.CreateChannel(new EndpointAddress(MyEndpoint));
             StartWCFService();
 
             var Didit = Trycorder.Initialize();
+
 
         }
 
@@ -61,7 +63,7 @@ namespace AWSTrycorderClientUI
 
                     bindbert.MaxReceivedMessageSize = 400000;
                     bindbert.MaxBufferSize = 400000;
-                    host.AddServiceEndpoint(typeof(ScannerEngine.ScannerClass), bindbert, MyEndpoint);
+                    host.AddServiceEndpoint(typeof(ScannerEngine.ScannerInterface), bindbert, MyEndpoint);
 
 
                     // Enable metadata exchange

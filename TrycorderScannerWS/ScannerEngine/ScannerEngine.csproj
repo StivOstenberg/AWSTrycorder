@@ -68,7 +68,7 @@
     <Compile Include="ScannerService.svc.cs">
       <DependentUpon>ScannerService.svc</DependentUpon>
     </Compile>
-    <Compile Include="ScannerService.cs" />
+    <Compile Include="ScannerInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
