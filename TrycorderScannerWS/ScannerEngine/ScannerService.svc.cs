@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 
 namespace ScannerEngine
 {
+    [ServiceBehavior(UseSynchronizationContext = false)]// This causes each request to process on a different thread,  not use the UI thread.
 
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
-    public class ScannerClass : ScannerInterface
+    public class ScannerClass : ScannerInterfaceDefinition 
     {
 
         DataTable EC2Table = AWSFunctions.AWSTables.GetEC2DetailsTable();
@@ -24,13 +25,29 @@ namespace ScannerEngine
         DataTable UserTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
         DataTable SubnetTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
-        AWSFunctions.ScannerSettings Settings;
-        AWSFunctions.ScanAWS Scanner;
+        AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
+        AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
 
+        /// <summary>
+        /// Sets up the initial list of Profiles and Regions in the Settings File.
+        /// </summary>
+        /// <returns></returns>
         public string Initialize()
         {
-            
-            
+            Settings.doScanEC2 = true;
+            Dictionary<string, bool> Regions2Scan = new Dictionary<string, bool>();
+            foreach(var aregion in Scanner.GetRegionNames())
+            {
+                Regions2Scan.Add(aregion, true);
+            }
+            Settings.RegionsEnabled = Regions2Scan;
+            Dictionary<string, bool> Profiles2Scan = new Dictionary<string, bool>();
+            foreach(var aprofile in Scanner.GetProfileNames())
+            {
+                Profiles2Scan.Add(aprofile, true);
+            }
+            Settings.ProfilesEnabled = Profiles2Scan;
+            Settings.State = "Idle";
             return "Initialized";
         }
 

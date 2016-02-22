@@ -26,55 +26,46 @@ namespace AWSTrycorderClientUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        ServiceHost host = null;
-        string MyEndpoint = "";
-        string MyIP = "";
-        string MyPort = "8383";//Need to make this dynamic at some point.
-        IChannelFactory<ScannerEngine.ScannerInterface> MyScanner;
-        NetTcpBinding bindbert = new NetTcpBinding();
+        string MyEndpoint = "net.tcp://127.0.0.1:8383/Scanner";
+        NetTcpBinding bindbert = new NetTcpBinding(SecurityMode.None,true);
+        ServiceHost host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
+        IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel ;
 
         public MainWindow()
         {
-
             InitializeComponent();
-            MyEndpoint = "net.tcp://localhost:8383/Scanner";
+            MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
+            //var Mycorder = MyScanneriChannel.CreateChannel(new EndpointAddress(MyEndpoint));
+            
+            
 
-            this.host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
-            bindbert.Security.Mode = SecurityMode.None;
-            string myid = WindowsIdentity.GetCurrent().Name.Split('\\')[1].ToLower();
-            MyScanner = new ChannelFactory<ScannerEngine.ScannerInterface >(bindbert);
-            var Trycorder = MyScanner.CreateChannel(new EndpointAddress(MyEndpoint));
             StartWCFService();
 
-            var Didit = Trycorder.Initialize();
-
+            var rabbit = host.State;
 
         }
 
         public void StartWCFService()
         {
-
-
             try
             {
-
-                host = new ServiceHost(typeof(ScannerEngine.ScannerClass), new Uri(MyEndpoint));
+                //host = new ServiceHost(typeof(ScannerEngine.ScannerClass), new Uri(MyEndpoint));
                 {
-
                     bindbert.MaxReceivedMessageSize = 400000;
                     bindbert.MaxBufferSize = 400000;
-                    host.AddServiceEndpoint(typeof(ScannerEngine.ScannerInterface), bindbert, MyEndpoint);
-
-
+                    
+                    host.AddServiceEndpoint(typeof(ScannerEngine.ScannerInterfaceDefinition), bindbert, MyEndpoint);
+                    
                     // Enable metadata exchange
                     ServiceMetadataBehavior smb = new ServiceMetadataBehavior() { HttpGetEnabled = false };
                     host.Description.Behaviors.Add(smb);
-
                     // Enable exeption details
                     ServiceDebugBehavior sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
                     sdb.IncludeExceptionDetailInFaults = true;
-
                     host.Open();
+
+
+
                 }
 
 
@@ -87,7 +78,24 @@ namespace AWSTrycorderClientUI
 
         }
 
+        private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
 
+        private void testbutton_Click(object sender, RoutedEventArgs e)
 
+        {
+
+            var ender = new EndpointAddress(MyEndpoint);
+
+            var statert = MyScanneriChannel.State;
+            var typer = MyScanneriChannel.GetType();
+            
+
+            var Trycorder = MyScanneriChannel.CreateChannel(ender);
+            try { textBox.Text = Trycorder.Initialize(); }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Fuckup type"); }
+        }
     }
 }
