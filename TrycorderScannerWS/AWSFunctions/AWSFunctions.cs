@@ -1009,11 +1009,11 @@ namespace AWSFunctions
         {
             foreach (string aregion in stivlib.GetRegionNames())
             {
-                RegionsEnabled.Add(aregion, true);
+                ScannableRegions.Add(aregion, true);
             }
             foreach(string aprofile in stivlib.GetProfileNames())
             {
-                ProfilesEnabled.Add(aprofile, true);
+                ScannableProfiles.Add(aprofile, true);
             }
         }
 
@@ -1022,17 +1022,34 @@ namespace AWSFunctions
         public Boolean doScanEC2 { get; set; } = true;
         public String State { get; set; } = "Idle";
 
-        public Dictionary<string,bool>RegionsEnabled { get; set; } 
+        public Dictionary<string,bool>ScannableRegions { get; set; } 
 
         public void setRegionEnabled(string region, Boolean state)
         {
-            RegionsEnabled[region] = state;
+            ScannableRegions[region] = state;
         }
 
-        public Dictionary<string,bool>ProfilesEnabled { get; set; }
+        /// <summary>
+        /// A list containing only the names of Profiles with the Scan bit set.
+        /// </summary>
+        /// <returns></returns>
+        public List<String> GetActiveProfiles()
+        {
+            List<string> ToReturn = new List<string>();
+            foreach(var KVP in ScannableProfiles)
+            {
+                if (KVP.Value) ToReturn.Add(KVP.Key);
+            }
+            return ToReturn;
+        }
+
+        /// <summary>
+        /// A Dictionary of Profile names with a boolean indicating whether they are to be scanned.
+        /// </summary>
+        public Dictionary<string,bool>ScannableProfiles { get; set; }
         public void setProfileEnabled(string profile, Boolean state)
         {
-            ProfilesEnabled[profile] = state;
+            ScannableProfiles[profile] = state;
         }
 
         public List<string> GetEnabledProfiles
@@ -1040,7 +1057,7 @@ namespace AWSFunctions
             get
             {
                 List<string> ToReturn = new List<string>();
-                foreach(var profiles in ProfilesEnabled)
+                foreach(var profiles in ScannableProfiles)
                 {
                     if (profiles.Value) ToReturn.Add(profiles.Key);
                 }
@@ -1048,18 +1065,23 @@ namespace AWSFunctions
             }
         }
 
-        public Dictionary<string,string> GetEnabledProfileandRegions
+        public List<KeyValuePair<string,string>> GetEnabledProfileandRegions
         {
             get
             {
-                Dictionary<string, string> ToReturn = new Dictionary<string, string>();
-                foreach (var aprofile in ProfilesEnabled)
+                List<KeyValuePair<string, string>> ToReturn = new List<KeyValuePair<string, string>>();
+                foreach (var aprofile in ScannableProfiles)
                 {
                     if (aprofile.Value)
                     {
-                        foreach(var region in RegionsEnabled)
+                        foreach(var region in ScannableRegions)
                         {
-                            if (region.Value) ToReturn.Add(aprofile.Key, region.Key);
+                            if (region.Value)
+                            {
+                                var KVP = new KeyValuePair<string, string>(aprofile.Key, region.Key);
+                                ToReturn.Add(KVP);
+
+                            }
                         }
                     }
                 }

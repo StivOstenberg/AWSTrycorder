@@ -26,7 +26,7 @@ namespace ScannerEngine
         DataTable GetEC2Table();
 
         /// <summary>
-        /// Gets a dictionary with the status of the scanner.
+        /// Gets a string with the status of the scanner.
         /// </summary>
         /// <returns></returns>
         [OperationContract]
@@ -36,6 +36,12 @@ namespace ScannerEngine
         [OperationContract]
         string ScanAll();
 
+
+        [OperationContract]
+        void SetRegionStatus(string region,bool state);
+
+        [OperationContract]
+        void setProfileStatus(string aprofile, bool state);
 
 
         [OperationContract]
@@ -47,7 +53,7 @@ namespace ScannerEngine
         [OperationContract]
         Dictionary<string, bool> GetRegions();
 
-        // TODO: Add your service operations here
+        void PayPalDonate(string youremail, string description, string country, string currency);
     }
 
 

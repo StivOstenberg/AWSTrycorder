@@ -40,13 +40,13 @@ namespace ScannerEngine
             {
                 Regions2Scan.Add(aregion, true);
             }
-            Settings.RegionsEnabled = Regions2Scan;
+            Settings.ScannableRegions = Regions2Scan;
             Dictionary<string, bool> Profiles2Scan = new Dictionary<string, bool>();
             foreach(var aprofile in Scanner.GetProfileNames())
             {
                 Profiles2Scan.Add(aprofile, true);
             }
-            Settings.ProfilesEnabled = Profiles2Scan;
+            Settings.ScannableProfiles = Profiles2Scan;
             Settings.State = "Idle";
             return "Initialized";
         }
@@ -97,12 +97,6 @@ namespace ScannerEngine
             CancellationTokenSource killme = new CancellationTokenSource(); //Used to terminate Scans.
             Settings.State = "Scanning..";
             if (Settings.doScanEC2) ScanEC2(killme);
-
-
-
-
-
-
           Settings.State = "Idle";
            
            return "Ribbitflux";
@@ -144,14 +138,45 @@ namespace ScannerEngine
             return "Done EC2 in " + dur + " seconds.";
         }
 
+        /// <summary>
+        /// Gets a list of all profiles (accounts) on the system,  and a boolean indicating whether it is to be processed.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, bool> GetProfiles()
         {
-            return Settings.ProfilesEnabled;
+            return Settings.ScannableProfiles;
         }
 
+        /// <summary>
+        /// Gets a list of all regions on the system,  and a boolean indicating whether it is to be processed.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, bool> GetRegions()
         {
-            return Settings.RegionsEnabled;
+            return Settings.ScannableRegions;
+        }
+
+        public void PayPalDonate(string youremail, string description, string country, string currency)
+        {
+            string PayPalURL = "";
+            PayPalURL += "https://www.paypal.com/cgi-bin/webscr" +
+                "?cmd=" + "_donations" +
+                "&business=" + youremail +
+                "&lc=" + country +
+                "&item_name=" + description +
+                "&currency_code=" + currency +
+                "&bn=" + "PP%2dDonationsBF";
+            System.Diagnostics.Process.Start(PayPalURL);
+        }
+
+        public void SetRegionStatus(string region, bool state)
+        {
+            Settings.setRegionEnabled(region, state);
+        }
+
+        public void setProfileStatus(string aprofile, bool state)
+        {
+            Settings.setProfileEnabled(aprofile, state);
         }
     }
 
