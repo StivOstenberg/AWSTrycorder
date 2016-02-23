@@ -30,19 +30,18 @@ namespace AWSTrycorderClientUI
         NetTcpBinding bindbert = new NetTcpBinding(SecurityMode.None,true);
         ServiceHost host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
         IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel ;
+        ScannerEngine.ScannerInterfaceDefinition Trycorder;
 
         public MainWindow()
         {
             InitializeComponent();
             MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
-            //var Mycorder = MyScanneriChannel.CreateChannel(new EndpointAddress(MyEndpoint));
-            
-            
-
             StartWCFService();
-
-            var rabbit = host.State;
-
+            var ender = new EndpointAddress(MyEndpoint);
+            Trycorder = MyScanneriChannel.CreateChannel(ender);
+            Trycorder.Initialize();
+            BuildProfileMenuList();
+                  
         }
 
         public void StartWCFService()
@@ -78,24 +77,58 @@ namespace AWSTrycorderClientUI
 
         }
 
+        #region Event Handlers
+
         private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
         {
             
         }
 
-        private void testbutton_Click(object sender, RoutedEventArgs e)
-
+        private void InitializeTestMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            string initty = Trycorder.Initialize();
+            MessageBox.Show(initty, "Initialize results");
 
-            var ender = new EndpointAddress(MyEndpoint);
-
-            var statert = MyScanneriChannel.State;
-            var typer = MyScanneriChannel.GetType();
-            
-
-            var Trycorder = MyScanneriChannel.CreateChannel(ender);
-            try { textBox.Text = Trycorder.Initialize(); }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "Fuckup type"); }
         }
+        #endregion
+
+        #region UI Setup function
+        public void BuildRegionMenu()
+        {
+            
+        }
+
+        public void BuildProfileMenuList()
+        {
+            System.Windows.Controls.MenuItem Proot = (System.Windows.Controls.MenuItem)this.TopMenu.Items[1];
+            Proot.Items.Clear();
+            System.Windows.Controls.MenuItem mit = new System.Windows.Controls.MenuItem();
+            mit.Header = "Select All";
+            mit.StaysOpenOnClick = true;
+            Proot.Items.Add(mit);
+            System.Windows.Controls.MenuItem mit2 = new System.Windows.Controls.MenuItem();
+            mit2.Header = "Select None";
+            mit2.StaysOpenOnClick = true;
+            Proot.Items.Add(mit2);
+            System.Windows.Controls.MenuItem mit3 = new System.Windows.Controls.MenuItem();
+            Proot.Items.Add(mit3);
+
+            
+            foreach (KeyValuePair<string,bool> KVP  in Trycorder.GetProfiles())
+            {
+
+                System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
+                mi.IsCheckable = true;
+                mi.Header = KVP.Key;
+
+                mi.IsChecked = KVP.Value;
+                mi.StaysOpenOnClick = true;
+                //mi.Click += ProfileChecked;
+                
+                Proot.Items.Add(mi);
+            }
+        }
+
+        #endregion
     }
 }

@@ -90,7 +90,7 @@ namespace ScannerEngine
             return composite;
         }
 
-
+        
 
         public string ScanAll()
         {
@@ -144,6 +144,15 @@ namespace ScannerEngine
             return "Done EC2 in " + dur + " seconds.";
         }
 
+        public Dictionary<string, bool> GetProfiles()
+        {
+            return Settings.ProfilesEnabled;
+        }
+
+        public Dictionary<string, bool> GetRegions()
+        {
+            return Settings.RegionsEnabled;
+        }
     }
 
 

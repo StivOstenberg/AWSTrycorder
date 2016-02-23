@@ -41,6 +41,12 @@ namespace ScannerEngine
         [OperationContract]
         CompositeType GetDataUsingDataContract(CompositeType composite);
 
+        [OperationContract]
+        Dictionary<string, bool> GetProfiles();
+
+        [OperationContract]
+        Dictionary<string, bool> GetRegions();
+
         // TODO: Add your service operations here
     }
 

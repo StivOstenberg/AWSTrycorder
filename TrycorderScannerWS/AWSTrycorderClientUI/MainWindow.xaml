@@ -14,11 +14,13 @@
             <MenuItem x:Name="ProfilesMenuItem" Header="Profiles"/>
             <MenuItem x:Name="RegionsMenuItem" Header="Regions"/>
             <MenuItem x:Name="ComponentsMenuItem" Header="Components"/>
+            <MenuItem x:Name="TestingMenuItem" Header="Testing">
+                <MenuItem x:Name="InitializeTestMenuItem" Header="Initialize" HorizontalAlignment="Left" Width="144.8" Click="InitializeTestMenuItem_Click" />
+            </MenuItem>
         </Menu>
         <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2"/>
         <TextBox x:Name="textBox" Margin="0,0,27.2,5.2" TextWrapping="Wrap" Text="TextBox" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="209"/>
         <ComboBox x:Name="comboBox" Margin="0,0,253.2,5.2" HorizontalAlignment="Right" Width="120" Height="22" VerticalAlignment="Bottom"/>
-        <Button x:Name="testbutton" Content="Mighty Button of Testiness" HorizontalAlignment="Left" Margin="170,528,0,0" VerticalAlignment="Top" Width="173" Click="testbutton_Click"/>
 
     </Grid>
 </Window>
