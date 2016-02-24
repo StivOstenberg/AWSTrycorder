@@ -53,6 +53,12 @@ namespace ScannerEngine
         [OperationContract]
         Dictionary<string, bool> GetRegions();
 
+        [OperationContract]
+        Dictionary<string, bool> GetComponents();
+
+        [OperationContract]
+        void SetComponentScanBit(string component, bool state);
+
         void PayPalDonate(string youremail, string description, string country, string currency);
     }
 

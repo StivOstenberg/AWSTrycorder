@@ -408,7 +408,7 @@ namespace AWSFunctions
         /// <param name="aprofile">An AWS Profile name stored in Windows Credential Store</param>
         /// <param name="auser">The Name of a User</param>
         /// <returns>Dictionary containing keys for each type of data[AccessKeys], [Groups], [Policies]</returns>
-            public Dictionary<string,string> GetUserDetails(string aprofile, string username)
+        public Dictionary<string,string> GetUserDetails(string aprofile, string username)
         {
             var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
             var iam = new AmazonIdentityManagementServiceClient(credential);
@@ -851,6 +851,7 @@ namespace AWSFunctions
         public static DataTable GetEC2DetailsTable()
         {
             DataTable table = new DataTable();
+            table.TableName = "BlankEC2Table";
             // Here we create a DataTable .
             table.Columns.Add("AccountID", typeof(string));
             table.Columns.Add("Profile", typeof(string));
@@ -1004,22 +1005,52 @@ namespace AWSFunctions
 
     public class ScannerSettings
     {
-        ScanAWS stivlib;
+        ScanAWS stivawslib;
         public void Initialize()
         {
-            foreach (string aregion in stivlib.GetRegionNames())
+            foreach (string aregion in stivawslib.GetRegionNames())
             {
                 ScannableRegions.Add(aregion, true);
             }
-            foreach(string aprofile in stivlib.GetProfileNames())
+            foreach(string aprofile in stivawslib.GetProfileNames())
             {
                 ScannableProfiles.Add(aprofile, true);
             }
         }
 
+        /// <summary>
+        /// A list of the components we can scan, along with a setting on to whether we WANT them scanned.
+        /// </summary>
+        public Dictionary<string, bool> Components { get; set; } = new Dictionary<string, bool>()
+        {
+            {"EC2",true },
+            {"IAM",true },
+            {"S3",true},
+            {"Subnets",true}
+        };
 
 
-        public Boolean doScanEC2 { get; set; } = true;
+        /// <summary>
+        /// Sets a flag to indicate whether a component should be scanned or no.
+        /// </summary>
+        /// <param name="Comp">The name of the component</param>
+        /// <param name="status">Boolean true for scan false to not scan</param>
+        public void SetComponentsScan(string Comp, bool status)
+        {
+            Components[Comp] = status;
+        }
+
+
+        public List<String> GetComponents2Scan()
+        {
+            List<string> ToReturn = new List<string>();
+            foreach(KeyValuePair<string,bool> KVP in Components)
+            {
+                if (KVP.Value) ToReturn.Add(KVP.Key);
+            }
+            return ToReturn;
+        }
+
         public String State { get; set; } = "Idle";
 
         public Dictionary<string,bool>ScannableRegions { get; set; } 

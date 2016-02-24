@@ -19,7 +19,7 @@ namespace ScannerEngine
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class ScannerClass : ScannerInterfaceDefinition 
     {
-
+        
         DataTable EC2Table = AWSFunctions.AWSTables.GetEC2DetailsTable();
         DataTable S3Table = AWSFunctions.AWSTables.GetS3DetailsTable();
         DataTable UserTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
@@ -34,7 +34,8 @@ namespace ScannerEngine
         /// <returns></returns>
         public string Initialize()
         {
-            Settings.doScanEC2 = true;
+            
+            
             Dictionary<string, bool> Regions2Scan = new Dictionary<string, bool>();
             foreach(var aregion in Scanner.GetRegionNames())
             {
@@ -94,31 +95,50 @@ namespace ScannerEngine
 
         public string ScanAll()
         {
-            CancellationTokenSource killme = new CancellationTokenSource(); //Used to terminate Scans.
-            Settings.State = "Scanning..";
-            if (Settings.doScanEC2) ScanEC2(killme);
+
+            if (Settings.State.Equals("Scanning...")) return "Already Running!" ;//DOnt run if already running.  What if we croak?
+            try
+            {
+                CancellationTokenSource killme = new CancellationTokenSource(); //Used to terminate Scans.
+                var killtoken = killme.Token;
+                Random rnd = new Random();
+                Settings.State = "Scanning..";
+
+
+                List<Task> tasks = new List<Task>();
+
+                if (Settings.Components["EC2"])
+                {
+                    tasks.Add(Task.Factory.StartNew(() => {
+                        ScanEC2(killtoken);
+                    }));
+                }
+            }
+            catch(Exception ex)
+            {
+                return "Failed meeserably!";
+            }
+
+
+
           Settings.State = "Idle";
-           
-           return "Ribbitflux";
+
+            return "Yay";
         }
 
-        private string ScanEC2(CancellationTokenSource killme)
+        private void ScanEC2(CancellationToken killtoken)
         {
             var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-
             var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
-
             ParallelOptions po = new ParallelOptions();
-            po.CancellationToken = killme.Token;
+            po.CancellationToken = killtoken;
             po.MaxDegreeOfParallelism = 30;
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
                     MyData.TryAdd((KVP.Key + ":" + KVP.Value), Scanner.GetEC2Instances(KVP.Key, KVP.Value));
                   });
-
-
             }
             catch
             {
@@ -132,10 +152,10 @@ namespace ScannerEngine
                 EC2Table.Merge(rabbit);
             }
             var end = DateTime.Now;
-            var duration = start - end;
+            var duration = end - start;
             string dur = duration.TotalSeconds.ToString();
-
-            return "Done EC2 in " + dur + " seconds.";
+            EC2Table.TableName = "EC2 Table: Scan duration= " + dur.ToString();
+            
         }
 
         /// <summary>
@@ -177,6 +197,16 @@ namespace ScannerEngine
         public void setProfileStatus(string aprofile, bool state)
         {
             Settings.setProfileEnabled(aprofile, state);
+        }
+
+        public Dictionary<string, bool> GetComponents()
+        {
+            return Settings.Components;
+        }
+
+        public void SetComponentScanBit(string component, bool state)
+        {
+            Settings.Components[component] = state;
         }
     }
 

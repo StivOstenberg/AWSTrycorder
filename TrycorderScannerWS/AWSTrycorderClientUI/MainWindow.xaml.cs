@@ -39,9 +39,12 @@ namespace AWSTrycorderClientUI
             StartWCFService();
             var ender = new EndpointAddress(MyEndpoint);
             Trycorder = MyScanneriChannel.CreateChannel(ender);
+
             Trycorder.Initialize();
             BuildProfileMenuList();
             BuildRegionMenuList();
+            BuildComponentMenuList();
+            ConfigureComponentSelectComboBox();
 
         }
 
@@ -83,12 +86,16 @@ namespace AWSTrycorderClientUI
         private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
         {
             string startout = Trycorder.GetStatus();
-            Task.Factory.StartNew(Trycorder.ScanAll);
+            if(String.Equals(startout, "Idle")) Task.Factory.StartNew(Trycorder.ScanAll);
+            else
+            {
+                return;
+            }
 
             startout = Trycorder.GetStatus();
             while(!String.Equals(startout,"Idle"))
             {
-                startout = textBox.Text = Trycorder.GetStatus();
+                startout = SearchStringTextbox.Text = Trycorder.GetStatus();
 
             }
 
@@ -96,12 +103,7 @@ namespace AWSTrycorderClientUI
 
         }
 
-        private void InitializeTestMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            string initty = Trycorder.Initialize();
-            MessageBox.Show(initty, "Initialize results");
-
-        }
+ 
         #endregion
 
         #region UI Setup function
@@ -121,8 +123,7 @@ namespace AWSTrycorderClientUI
             mit2.StaysOpenOnClick = true;
             mit2.Click += UCKAllPMI_Click;
             Proot.Items.Add(mit2);
-            System.Windows.Controls.MenuItem mit3 = new System.Windows.Controls.MenuItem();
-            Proot.Items.Add(mit3);
+
 
 
             foreach (KeyValuePair<string, bool> KVP in Trycorder.GetProfiles())
@@ -154,8 +155,6 @@ namespace AWSTrycorderClientUI
             mit2.StaysOpenOnClick = true;
             mit2.Click += UCkAllRMI_Click;
             Proot.Items.Add(mit2);
-            System.Windows.Controls.MenuItem mit3 = new System.Windows.Controls.MenuItem();
-            Proot.Items.Add(mit3);
 
             foreach (var aregion in Trycorder.GetRegions())  //Build the Region Select Menu
             {
@@ -170,10 +169,52 @@ namespace AWSTrycorderClientUI
             }
         }
 
+        public void BuildComponentMenuList()
+        {
+            System.Windows.Controls.MenuItem Proot = (System.Windows.Controls.MenuItem)this.TopMenu.Items[3];
+            System.Windows.Controls.MenuItem mit = new System.Windows.Controls.MenuItem();
+            mit.Header = "Select All";
+            mit.StaysOpenOnClick = true;
+            mit.Click += CKAllCMP_Click;
+            Proot.Items.Add(mit);
+            System.Windows.Controls.MenuItem mit2 = new System.Windows.Controls.MenuItem();
+            mit2.Header = "Select None";
+            mit2.StaysOpenOnClick = true;
+            mit2.Click += UCKAllCMP_Click;
+            Proot.Items.Add(mit2);
+            foreach(var compy in Trycorder.GetComponents())
+            {
+                System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
+                mi.IsCheckable = true;
+                mi.Header = compy.Key;
+                mi.IsChecked = compy.Value;
+                mi.Click += ComponentChecked;
+                mi.StaysOpenOnClick = true;
+                Proot.Items.Add(mi);
+            }
+
+
+
+        }
+
+        public void ConfigureComponentSelectComboBox()
+        {
+            SelectedComponentComboBox.Items.Clear();
+            foreach(var tribble in Trycorder.GetComponents())
+            {
+                if (tribble.Value) SelectedComponentComboBox.Items.Add(tribble.Key);
+            }
+        }
+
         #endregion
 
+        #region EventHandlers
+        private void InitializeTestMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string initty = Trycorder.Initialize();
+            MessageBox.Show(initty, "Initialize results");
 
-        #region Event Handlers
+        }
         private void CKAllPMI_Click(object sender, RoutedEventArgs e)
         {
             //Checks all Profilemenu items
@@ -244,10 +285,80 @@ namespace AWSTrycorderClientUI
             string theregion = gopher.Header.ToString();
             Trycorder.SetRegionStatus(theregion, state);
         }
+        private void CheckStatusMI_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(Trycorder.GetStatus(), "Trycorder Status");
+        }
+        private void ComponentChecked(object sender, RoutedEventArgs e)
+        {
+            var gopher = sender as MenuItem;
+            bool state = gopher.IsChecked;
+            string thecomponent = gopher.Header.ToString();
+            Trycorder.SetComponentScanBit(thecomponent, state);
+            var currentitem = SelectedComponentComboBox.SelectedValue;
+            ConfigureComponentSelectComboBox();
+            try
+            {
+                SelectedComponentComboBox.SelectedValue = currentitem;
+            }
+            catch
+            {
+                SelectedComponentComboBox.SelectedIndex = 0;
+            }
+        }
+        private void CKAllCMP_Click(object sender, RoutedEventArgs e)
+        {
+            //Checks all Profilemenu items
+            foreach (System.Windows.Controls.MenuItem anitem in ProfilesMenuItem.Items)
+            {
+                if (anitem.IsCheckable)
+                {
+                    anitem.IsChecked = true;
+                    Trycorder.SetComponentScanBit(anitem.Header.ToString(), true);
+                }
+            }
+            ConfigureComponentSelectComboBox();
+        }
+        private void UCKAllCMP_Click(object sender, RoutedEventArgs e)
+        {
+            //UnChecks all Profilemenu items
+            foreach (System.Windows.Controls.MenuItem anitem in ComponentsMenuItem.Items)
+            {
+                if (anitem.IsCheckable)
+                {
+                    anitem.IsChecked = false;
+                    Trycorder.SetComponentScanBit(anitem.Header.ToString(), false);
+                }
+            }
+            ConfigureComponentSelectComboBox();
+
+
+        }
+        private void SelectedComponentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string IChooseYou = SelectedComponentComboBox.SelectedValue.ToString();
+
+            //Bring up new table
+            switch(IChooseYou)
+            {
+                case "EC2":
+                    var  DaTable = Trycorder.GetEC2Table();
+                    DasGrid.ItemsSource = DaTable.DefaultView;
+
+                    break;
+                case "IAM":
+                    break;
+                case "S3":
+                    break;
+                case "Subnets":
+                    break;
+            }
+
+            //Configure Columns ComboBox.
 
 
 
 
-
+        }
     }
 }
