@@ -336,7 +336,6 @@ namespace AWSTrycorderClientUI
                     var test = Trycorder.GetDetailedStatus();
                     var  DaTable = Trycorder.GetEC2Table();
                     DasGrid.ItemsSource = DaTable.DefaultView;
-
                     break;
                 case "IAM":
                     DasGrid.ItemsSource = Trycorder.GetIAMTable().DefaultView;
@@ -344,7 +343,11 @@ namespace AWSTrycorderClientUI
                 case "S3":
                     DasGrid.ItemsSource = Trycorder.GetS3Table().DefaultView;
                     break;
+                case "VPC":
+                    DasGrid.ItemsSource = Trycorder.GetSubnetsTable().DefaultView;
+                    break;
                 case "Subnets":
+                    DasGrid.ItemsSource = Trycorder.GetSubnetsTable().DefaultView;
                     break;
             }
 

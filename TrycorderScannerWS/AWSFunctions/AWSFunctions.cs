@@ -960,7 +960,22 @@ namespace AWSFunctions
             table.TableName = "S3Table";
             return table;
         }
+        public static DataTable GetVPCDetailsTable()
+        {
+            DataTable ToReturn = new DataTable();
 
+            ToReturn.Columns.Add("CidrBlock", typeof(string));
+            ToReturn.Columns.Add("VpcID", typeof(string));
+            ToReturn.Columns.Add("IsDefault", typeof(string));
+            ToReturn.Columns.Add("DHCPOptionsID", typeof(string));
+            ToReturn.Columns.Add("InstanceTenancy", typeof(string));
+            ToReturn.Columns.Add("State", typeof(string));
+            ToReturn.Columns.Add("Tags", typeof(string));
+
+            ToReturn.TableName = "VPCTable";
+
+            return ToReturn;
+        }
         public static DataTable GetSubnetDetailsTable()
         {
             DataTable ToReturn = new DataTable();
@@ -983,22 +998,7 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-        public static DataTable GetVPCDetailsTable()
-        {
-            DataTable ToReturn = new DataTable();
 
-            ToReturn.Columns.Add("CidrBlock", typeof(string)); 
-            ToReturn.Columns.Add("VpcID", typeof(string)); 
-            ToReturn.Columns.Add("IsDefault", typeof(string)); 
-            ToReturn.Columns.Add("DHCPOptionsID", typeof(string)); 
-            ToReturn.Columns.Add("InstanceTenancy", typeof(string)); 
-            ToReturn.Columns.Add("State", typeof(string)); 
-            ToReturn.Columns.Add("Tags", typeof(string));
-
-            ToReturn.TableName = "VPCTable";
-
-            return ToReturn;
-        }
 
         public static string Shrug = "¯\\_(ツ)_/¯";
     }
@@ -1027,6 +1027,7 @@ namespace AWSFunctions
             {"EC2",true },
             {"IAM",true },
             {"S3",true},
+            {"VPC",true},
             {"Subnets",true}
         };
 
@@ -1068,7 +1069,8 @@ namespace AWSFunctions
             { "Status","Idle" },
             { "StartTime","" },
             { "EndTime","" },
-            { "Result","" }
+            { "Result","" },
+            { "Instances","" }
         };
 
         public Dictionary<string, string> VPCStatus = new Dictionary<string, string>
@@ -1076,7 +1078,8 @@ namespace AWSFunctions
             { "Status","Idle" },
             { "StartTime","" },
             { "EndTime","" },
-            { "Result","" }
+            { "Result","" },
+            { "Instances","" }
         };
 
         public Dictionary<string, string> IAMStatus = new Dictionary<string, string>
@@ -1084,7 +1087,8 @@ namespace AWSFunctions
             { "Status","Idle" },
             { "StartTime","" },
             { "EndTime","" },
-            { "Result","" }
+            { "Result","" },
+            { "Instances","" }
         };
 
         public Dictionary<string, string> SubnetsStatus = new Dictionary<string, string>
@@ -1092,7 +1096,8 @@ namespace AWSFunctions
             { "Status","Idle" },
             { "StartTime","" },
             { "EndTime","" },
-            { "Result","" }
+            { "Result","" },
+            { "Instances","" }
         };
 
         public string GetTime()

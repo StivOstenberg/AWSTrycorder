@@ -26,7 +26,7 @@ namespace ScannerEngine
         DataTable S3Table = AWSFunctions.AWSTables.GetS3DetailsTable();
         DataTable IAMTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
-        DataTable SubnetTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
+        DataTable SubnetsTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
@@ -54,13 +54,6 @@ namespace ScannerEngine
             return "Initialized";
         }
 
-
-        /// <summary>
-        /// Subscribe to this to be notified when scan complete....
-        /// </summary>
-
-
-
         //Settings Stuff
         //External MySQL (Endpoint, Port, User, Password, Certificate?)
 
@@ -86,7 +79,6 @@ namespace ScannerEngine
             ToReturn += "VPC :" + Settings.VPCStatus["Status"] + "  " + Settings.VPCStatus["EndTime"] + "  " + Settings.VPCStatus["Instances"] + " VPCs\n";
             return ToReturn;
         }
-
 
         public string GetData(int value)
         {
@@ -221,7 +213,37 @@ namespace ScannerEngine
             return ToReturn;
         }
 
+        private DataTable ScanVPC()
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = Settings.GetEnabledProfiles.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (profile) => {
+                    MyData.TryAdd((profile), Scanner.GetVPCList(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                    ToReturn.Merge(rabbit);
+                }
+                catch (Exception ex)
+                {
 
+                }
+            }
+            return ToReturn;
+        }
 
         private void CheckOverallStatus()
         {
@@ -238,7 +260,7 @@ namespace ScannerEngine
                 DaWorks.Tables.Add(EC2Table);
                 DaWorks.Tables.Add(IAMTable);
                 DaWorks.Tables.Add(S3Table);
-                DaWorks.Tables.Add(SubnetTable);
+                DaWorks.Tables.Add(SubnetsTable);
             }
         }
 
@@ -378,8 +400,52 @@ namespace ScannerEngine
             else IAMTable.Clear();
 
             //Subnets Background Worker
+            if (Settings.Components["Subnets"])
+            {
+                Settings.SubnetsStatus["Status"] = "Scanning...";
+                Settings.SubnetsStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = ScanSubnets();
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    SubnetsTable.Clear();
+                    SubnetsTable.Merge(e.Result as DataTable);
+                    Settings.SubnetsStatus["Status"] = "Idle";
+                    Settings.SubnetsStatus["EndTime"] = Settings.GetTime();
+                    Settings.SubnetsStatus["Instances"] = SubnetsTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else SubnetsTable.Clear();
 
-            //
+            //VPC Background worker
+            if (Settings.Components["VPC"])
+            {
+                Settings.VPCStatus["Status"] = "Scanning...";
+                Settings.VPCStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = ScanVPC();
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    VPCTable.Clear();
+                    VPCTable.Merge(e.Result as DataTable);
+                    Settings.VPCStatus["Status"] = "Idle";
+                    Settings.VPCStatus["EndTime"] = Settings.GetTime();
+                    Settings.VPCStatus["Instances"] = VPCTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else IAMTable.Clear();
         }
 
         public DataTable GetIAMTable()
@@ -390,6 +456,16 @@ namespace ScannerEngine
         public DataTable GetS3Table()
         {
             return S3Table;
+        }
+
+        public DataTable GetSubnetsTable()
+        {
+            return SubnetsTable;
+        }
+
+        public DataTable GetVPCTable()
+        {
+            return VPCTable;
         }
     }
 

@@ -41,7 +41,11 @@ namespace ScannerEngine
         [OperationContract]
         DataTable GetS3Table();
 
+        [OperationContract]
+        DataTable GetSubnetsTable();
 
+        [OperationContract]
+        DataTable GetVPCTable();
 
 
         /// <summary>
