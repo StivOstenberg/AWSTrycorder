@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -14,6 +15,10 @@ namespace ScannerEngine
     public interface ScannerInterfaceDefinition
     {
 
+
+        [OperationContract]
+        void ScanAll();
+
         [OperationContract]
         string GetData(int value);
 
@@ -25,6 +30,9 @@ namespace ScannerEngine
         [OperationContract]
         DataTable GetEC2Table();
 
+
+
+
         /// <summary>
         /// Gets a string with the status of the scanner.
         /// </summary>
@@ -33,8 +41,6 @@ namespace ScannerEngine
         String GetStatus();
 
 
-        [OperationContract]
-        string ScanAll();
 
 
         [OperationContract]
@@ -57,10 +63,14 @@ namespace ScannerEngine
         Dictionary<string, bool> GetComponents();
 
         [OperationContract]
+        string GetDetailedStatus();
+
+        [OperationContract]
         void SetComponentScanBit(string component, bool state);
 
         void PayPalDonate(string youremail, string description, string country, string currency);
     }
+    [ServiceContract]
 
 
     // Use a data contract as illustrated in the sample below to add composite types to service operations.

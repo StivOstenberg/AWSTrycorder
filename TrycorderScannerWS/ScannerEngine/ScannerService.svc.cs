@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-
+/// <summary>
+/// An instantiable Class with multithreading to make development of other tools easier.  Note:  TO make things work, will need to 
+/// set the Messagesize attributes to be large, as we dont want to fail because of insufficient resources.  This is what I used.
+///             bindbert.MaxReceivedMessageSize = 2147483647;//Maximum
+///            bindbert.MaxBufferSize=2147483647;//Maximum
+/// </summary>
 namespace ScannerEngine
 {
     [ServiceBehavior(UseSynchronizationContext = false)]// This causes each request to process on a different thread,  not use the UI thread.
@@ -27,6 +29,8 @@ namespace ScannerEngine
         DataTable SubnetTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
+        static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
+
 
         /// <summary>
         /// Sets up the initial list of Profiles and Regions in the Settings File.
@@ -52,27 +56,46 @@ namespace ScannerEngine
             return "Initialized";
         }
 
-        // This section will hold the private data the functions will interact with
-        //Accounts List with Credentials and an Enable/Disable field  Last success +  Fail Count.
-        //AWSRegionList(RegionEnglish, Region Name, Enable)
-        //AWS Component Table [Enable, Last Complete Scan,  Last Incomplete,  ScanStatus]
-        //Scanner Status (Running, Stopping, Ready)
+
+        /// <summary>
+        /// Subscribe to this to be notified when scan complete....
+        /// </summary>
+
 
 
         //Settings Stuff
         //External MySQL (Endpoint, Port, User, Password, Certificate?)
 
         //This section will hold private functions to update our data objects and maybe to log out to external data collectors
-
+        [OperationBehavior]
         public DataTable GetEC2Table()
         {
-            return EC2Table;
+            var rows = EC2Table.Rows.Count;
+            System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            System.IO.MemoryStream stream = new System.IO.MemoryStream();
+            formatter.Serialize(stream, EC2Table);
+            long length = stream.Length;
+
+
+            return EC2Table ;
         }
 
         public string GetStatus()
         {
             return Settings.State;
         }
+
+        public string GetDetailedStatus()
+        {
+            string ToReturn = "";
+            ToReturn += "EC2 :" + Settings.EC2Status["Status"]   +"  " + Settings.EC2Status["EndTime"]+ "  " + Settings.EC2Status["Instances"]+ " rows\n";
+            ToReturn += "S3 :" + Settings.S3Status["Status"] + "\n";
+            ToReturn += "IAM :" + Settings.IAMStatus["Status"] + "\n";
+            ToReturn += "Subnets :" + Settings.SubnetsStatus["Status"] + "\n";
+            return ToReturn;
+        }
+
+
         public string GetData(int value)
         {
             return string.Format("You entered: {0}", value);
@@ -93,69 +116,75 @@ namespace ScannerEngine
 
         
 
-        public string ScanAll()
+        public void ScanAll()
         {
 
-            if (Settings.State.Equals("Scanning...")) return "Already Running!" ;//DOnt run if already running.  What if we croak?
-            try
+            if (Settings.State.Equals("Scanning...")) return ;//Dont run if already running.  What if we croak?
+
+
+            //EC2 Background Worker Setup.
+            Settings.EC2Status["Status"] = "Scanning...";
+            Settings.EC2Status["StartTime"] = Settings.GetTime();
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += (s, e) =>
             {
-                CancellationTokenSource killme = new CancellationTokenSource(); //Used to terminate Scans.
-                var killtoken = killme.Token;
-                Random rnd = new Random();
-                Settings.State = "Scanning..";
-
-
-                List<Task> tasks = new List<Task>();
-
-                if (Settings.Components["EC2"])
-                {
-                    tasks.Add(Task.Factory.StartNew(() => {
-                        ScanEC2(killtoken);
-                    }));
-                }
-            }
-            catch(Exception ex)
+                e.Result= ScanEC2();
+            };
+            worker.RunWorkerCompleted += (s, e) =>
             {
-                return "Failed meeserably!";
-            }
+                EC2Table.Clear();
+                EC2Table.Merge(e.Result as DataTable);
+                Settings.EC2Status["Status"] = "Idle";
+                Settings.EC2Status["EndTime"] = Settings.GetTime();
+                Settings.EC2Status["Instances"] = EC2Table.Rows.Count.ToString();
+            };
+            worker.RunWorkerAsync();
+            ScanCompletedEvent();
 
-
-
-          Settings.State = "Idle";
-
-            return "Yay";
         }
 
-        private void ScanEC2(CancellationToken killtoken)
+     
+
+        private DataTable ScanEC2()
         {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetEC2DetailsTable();
             var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
             ParallelOptions po = new ParallelOptions();
-            po.CancellationToken = killtoken;
-            po.MaxDegreeOfParallelism = 30;
+            po.MaxDegreeOfParallelism = 32;
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
                     MyData.TryAdd((KVP.Key + ":" + KVP.Value), Scanner.GetEC2Instances(KVP.Key, KVP.Value));
                   });
             }
-            catch
+            catch(Exception ex)
             {
-                //Awww..  All dead she
-                string death = "";
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+
             }
 
-            EC2Table.Clear();
             foreach(var rabbit in MyData.Values)
             {
-                EC2Table.Merge(rabbit);
+                ToReturn.Merge(rabbit);
             }
             var end = DateTime.Now;
             var duration = end - start;
             string dur = duration.TotalSeconds.ToString();
-            EC2Table.TableName = "EC2 Table: Scan duration= " + dur.ToString();
-            
+            CheckOverallStatus();
+            return ToReturn;
+        }
+
+
+        private void CheckOverallStatus()
+        {
+            var E = String.Equals("Idle", Settings.EC2Status["Status"]);
+            var S = String.Equals("Idle", Settings.S3Status["Status"]);
+            var I = String.Equals("Idle", Settings.IAMStatus["Status"]);
+            var N = String.Equals("Idle", Settings.SubnetsStatus["Status"]);
+            if (E & S & I & N) Settings.State = "Idle";
         }
 
         /// <summary>
@@ -167,10 +196,7 @@ namespace ScannerEngine
             return Settings.ScannableProfiles;
         }
 
-        /// <summary>
-        /// Gets a list of all regions on the system,  and a boolean indicating whether it is to be processed.
-        /// </summary>
-        /// <returns></returns>
+        
         public Dictionary<string, bool> GetRegions()
         {
             return Settings.ScannableRegions;

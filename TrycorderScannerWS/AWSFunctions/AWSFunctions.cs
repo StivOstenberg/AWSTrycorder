@@ -851,7 +851,7 @@ namespace AWSFunctions
         public static DataTable GetEC2DetailsTable()
         {
             DataTable table = new DataTable();
-            table.TableName = "BlankEC2Table";
+            table.TableName = "EC2Table";
             // Here we create a DataTable .
             table.Columns.Add("AccountID", typeof(string));
             table.Columns.Add("Profile", typeof(string));
@@ -1052,6 +1052,46 @@ namespace AWSFunctions
         }
 
         public String State { get; set; } = "Idle";
+
+        public Dictionary<string, string> EC2Status = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Instances","" }
+        };
+
+        public Dictionary<string, string> S3Status = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" }
+        };
+
+        public Dictionary<string, string> IAMStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" }
+        };
+
+        public Dictionary<string, string> SubnetsStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" }
+        };
+
+        public string GetTime()
+        {
+            string CurrentTime = DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToShortTimeString();
+            return CurrentTime;
+        }
+
 
         public Dictionary<string,bool>ScannableRegions { get; set; } 
 

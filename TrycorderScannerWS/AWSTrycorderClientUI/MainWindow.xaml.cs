@@ -28,13 +28,19 @@ namespace AWSTrycorderClientUI
     {
         string MyEndpoint = "net.tcp://127.0.0.1:8383/Scanner";
         NetTcpBinding bindbert = new NetTcpBinding(SecurityMode.None, true);
+        
         ServiceHost host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
         IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel;
         ScannerEngine.ScannerInterfaceDefinition Trycorder;
+        static Action S_Event2 = delegate { };
+
 
         public MainWindow()
         {
             InitializeComponent();
+            bindbert.MaxReceivedMessageSize = 2147483647;//Maximum
+            bindbert.MaxBufferSize=2147483647;//Maximum
+
             MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
             StartWCFService();
             var ender = new EndpointAddress(MyEndpoint);
@@ -45,6 +51,9 @@ namespace AWSTrycorderClientUI
             BuildRegionMenuList();
             BuildComponentMenuList();
             ConfigureComponentSelectComboBox();
+
+
+            
 
         }
 
@@ -81,30 +90,11 @@ namespace AWSTrycorderClientUI
 
         }
 
-        #region Event Handlers
-
-        private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            string startout = Trycorder.GetStatus();
-            if(String.Equals(startout, "Idle")) Task.Factory.StartNew(Trycorder.ScanAll);
-            else
-            {
-                return;
-            }
-
-            startout = Trycorder.GetStatus();
-            while(!String.Equals(startout,"Idle"))
-            {
-                startout = SearchStringTextbox.Text = Trycorder.GetStatus();
-
-            }
 
 
 
-        }
 
- 
-        #endregion
+
 
         #region UI Setup function
 
@@ -287,7 +277,7 @@ namespace AWSTrycorderClientUI
         }
         private void CheckStatusMI_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(Trycorder.GetStatus(), "Trycorder Status");
+            MessageBox.Show(Trycorder.GetDetailedStatus(), "Trycorder Status");
         }
         private void ComponentChecked(object sender, RoutedEventArgs e)
         {
@@ -342,11 +332,13 @@ namespace AWSTrycorderClientUI
             switch(IChooseYou)
             {
                 case "EC2":
+                    var test = Trycorder.GetDetailedStatus();
                     var  DaTable = Trycorder.GetEC2Table();
                     DasGrid.ItemsSource = DaTable.DefaultView;
 
                     break;
                 case "IAM":
+                    
                     break;
                 case "S3":
                     break;
@@ -360,5 +352,21 @@ namespace AWSTrycorderClientUI
 
 
         }
+        private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string startout = Trycorder.GetStatus();
+            if (String.Equals(startout, "Idle")) Task.Factory.StartNew(Trycorder.ScanAll);
+            else
+            {
+                return;
+            }
+        }
+
+        private void ScanCompleted(object sender, RoutedEventArgs e)
+        {
+
+
+        }
+
     }
 }
