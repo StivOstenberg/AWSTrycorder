@@ -17,6 +17,7 @@
             <MenuItem x:Name="TestingMenuItem" Header="Testing">
                 <MenuItem x:Name="InitializeTestMenuItem" Header="Initialize" HorizontalAlignment="Left" Width="144.8" Click="InitializeTestMenuItem_Click" />
                 <MenuItem x:Name="CheckStatusMI" Header="CheckStatus" HorizontalAlignment="Left" Width="144.8" Click="CheckStatusMI_Click"/>
+                <MenuItem x:Name="SetSuckerMI" Header="SetSucker" HorizontalAlignment="Left" Width="144.8" ToolTip="Pulls a dataset"  Click="SetSuckerMI_Click"/>
             </MenuItem>
         </Menu>
         <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2"/>

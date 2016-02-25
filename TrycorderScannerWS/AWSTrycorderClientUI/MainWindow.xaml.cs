@@ -40,6 +40,7 @@ namespace AWSTrycorderClientUI
             InitializeComponent();
             bindbert.MaxReceivedMessageSize = 2147483647;//Maximum
             bindbert.MaxBufferSize=2147483647;//Maximum
+            
 
             MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
             StartWCFService();
@@ -63,8 +64,8 @@ namespace AWSTrycorderClientUI
             {
                 //host = new ServiceHost(typeof(ScannerEngine.ScannerClass), new Uri(MyEndpoint));
                 {
-                    bindbert.MaxReceivedMessageSize = 400000;
-                    bindbert.MaxBufferSize = 400000;
+                    bindbert.MaxReceivedMessageSize = 2147483647;
+                    bindbert.MaxBufferSize = 2147483647;
 
                     host.AddServiceEndpoint(typeof(ScannerEngine.ScannerInterfaceDefinition), bindbert, MyEndpoint);
 
@@ -338,9 +339,10 @@ namespace AWSTrycorderClientUI
 
                     break;
                 case "IAM":
-                    
+                    DasGrid.ItemsSource = Trycorder.GetIAMTable().DefaultView;
                     break;
                 case "S3":
+                    DasGrid.ItemsSource = Trycorder.GetS3Table().DefaultView;
                     break;
                 case "Subnets":
                     break;
@@ -364,9 +366,16 @@ namespace AWSTrycorderClientUI
 
         private void ScanCompleted(object sender, RoutedEventArgs e)
         {
-
+            string an = "";
 
         }
 
+        private void SetSuckerMI_Click(object sender, RoutedEventArgs e)
+        {
+            var quepaso = Trycorder.GetDetailedStatus();
+            var Gottacatchemall = Trycorder.ScanResults();
+            var EC2Table = Gottacatchemall.Tables["EC2Table"];
+            var contadeena = EC2Table.Rows.Count;
+        }
     }
 }

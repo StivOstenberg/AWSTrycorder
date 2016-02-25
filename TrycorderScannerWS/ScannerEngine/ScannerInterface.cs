@@ -14,7 +14,12 @@ namespace ScannerEngine
     [ServiceContract]
     public interface ScannerInterfaceDefinition
     {
-
+        /// <summary>
+        /// Pulls a Dataset with all der datatables from scans.
+        /// </summary>
+        /// <returns></returns>
+        [OperationContract]
+        DataSet ScanResults();
 
         [OperationContract]
         void ScanAll();
@@ -29,6 +34,12 @@ namespace ScannerEngine
 
         [OperationContract]
         DataTable GetEC2Table();
+
+        [OperationContract]
+        DataTable GetIAMTable();
+
+        [OperationContract]
+        DataTable GetS3Table();
 
 
 

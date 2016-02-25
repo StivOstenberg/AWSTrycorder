@@ -929,7 +929,7 @@ namespace AWSFunctions
             table.Columns.Add("Groups", typeof(string));
             UniqueConstraint makeUserIDUnique = new UniqueConstraint(new DataColumn[] { table.Columns["UserID"] , table.Columns["ARN"]});
             table.Constraints.Add(makeUserIDUnique);
-
+            table.TableName = "IAMTable";
             return table;
         }
         public static DataTable GetS3DetailsTable()
@@ -957,7 +957,7 @@ namespace AWSFunctions
             table.Columns.Add("Replication", typeof(string));
             table.Columns.Add("Tags", typeof(string));
             table.Columns.Add("RequesterPays", typeof(string));
-
+            table.TableName = "S3Table";
             return table;
         }
 
@@ -979,6 +979,7 @@ namespace AWSFunctions
             ToReturn.Columns.Add("MapPubIPonLaunch", typeof(string));
             ToReturn.Columns.Add("State", typeof(string));
             ToReturn.Columns.Add("Tags", typeof(string));
+            ToReturn.TableName = "SubnetsTable";
             return ToReturn;
         }
 
@@ -993,8 +994,8 @@ namespace AWSFunctions
             ToReturn.Columns.Add("InstanceTenancy", typeof(string)); 
             ToReturn.Columns.Add("State", typeof(string)); 
             ToReturn.Columns.Add("Tags", typeof(string));
-            
 
+            ToReturn.TableName = "VPCTable";
 
             return ToReturn;
         }
@@ -1063,6 +1064,14 @@ namespace AWSFunctions
         };
 
         public Dictionary<string, string> S3Status = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" }
+        };
+
+        public Dictionary<string, string> VPCStatus = new Dictionary<string, string>
         {
             { "Status","Idle" },
             { "StartTime","" },

@@ -21,10 +21,10 @@ namespace ScannerEngine
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class ScannerClass : ScannerInterfaceDefinition 
     {
-        
+        DataSet DaWorks = new DataSet();
         DataTable EC2Table = AWSFunctions.AWSTables.GetEC2DetailsTable();
         DataTable S3Table = AWSFunctions.AWSTables.GetS3DetailsTable();
-        DataTable UserTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
+        DataTable IAMTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
         DataTable SubnetTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
@@ -38,8 +38,6 @@ namespace ScannerEngine
         /// <returns></returns>
         public string Initialize()
         {
-            
-            
             Dictionary<string, bool> Regions2Scan = new Dictionary<string, bool>();
             foreach(var aregion in Scanner.GetRegionNames())
             {
@@ -70,13 +68,6 @@ namespace ScannerEngine
         [OperationBehavior]
         public DataTable GetEC2Table()
         {
-            var rows = EC2Table.Rows.Count;
-            System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            System.IO.MemoryStream stream = new System.IO.MemoryStream();
-            formatter.Serialize(stream, EC2Table);
-            long length = stream.Length;
-
-
             return EC2Table ;
         }
 
@@ -88,10 +79,11 @@ namespace ScannerEngine
         public string GetDetailedStatus()
         {
             string ToReturn = "";
-            ToReturn += "EC2 :" + Settings.EC2Status["Status"]   +"  " + Settings.EC2Status["EndTime"]+ "  " + Settings.EC2Status["Instances"]+ " rows\n";
-            ToReturn += "S3 :" + Settings.S3Status["Status"] + "\n";
-            ToReturn += "IAM :" + Settings.IAMStatus["Status"] + "\n";
-            ToReturn += "Subnets :" + Settings.SubnetsStatus["Status"] + "\n";
+            ToReturn += "EC2 :" + Settings.EC2Status["Status"]   +"  " + Settings.EC2Status["EndTime"]+ "  " + Settings.EC2Status["Instances"]+ " instances\n";
+            ToReturn += "S3 :" + Settings.S3Status["Status"] + "  " + Settings.S3Status["EndTime"] + "  " + Settings.S3Status["Instances"] + " buckets\n";
+            ToReturn += "IAM :" + Settings.IAMStatus["Status"] + "  " + Settings.IAMStatus["EndTime"] + "  " + Settings.IAMStatus["Instances"] + " users\n";
+            ToReturn += "Subnets :" + Settings.SubnetsStatus["Status"] + "  " + Settings.SubnetsStatus["EndTime"] + "  " + Settings.SubnetsStatus["Instances"] + " subnets\n";
+            ToReturn += "VPC :" + Settings.VPCStatus["Status"] + "  " + Settings.VPCStatus["EndTime"] + "  " + Settings.VPCStatus["Instances"] + " VPCs\n";
             return ToReturn;
         }
 
@@ -114,37 +106,6 @@ namespace ScannerEngine
             return composite;
         }
 
-        
-
-        public void ScanAll()
-        {
-
-            if (Settings.State.Equals("Scanning...")) return ;//Dont run if already running.  What if we croak?
-
-
-            //EC2 Background Worker Setup.
-            Settings.EC2Status["Status"] = "Scanning...";
-            Settings.EC2Status["StartTime"] = Settings.GetTime();
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (s, e) =>
-            {
-                e.Result= ScanEC2();
-            };
-            worker.RunWorkerCompleted += (s, e) =>
-            {
-                EC2Table.Clear();
-                EC2Table.Merge(e.Result as DataTable);
-                Settings.EC2Status["Status"] = "Idle";
-                Settings.EC2Status["EndTime"] = Settings.GetTime();
-                Settings.EC2Status["Instances"] = EC2Table.Rows.Count.ToString();
-            };
-            worker.RunWorkerAsync();
-            ScanCompletedEvent();
-
-        }
-
-     
-
         private DataTable ScanEC2()
         {
             DataTable ToReturn = AWSFunctions.AWSTables.GetEC2DetailsTable();
@@ -152,7 +113,7 @@ namespace ScannerEngine
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
             ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 32;
+            po.MaxDegreeOfParallelism = 64;
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
@@ -163,9 +124,7 @@ namespace ScannerEngine
             {
                 ToReturn.TableName = ex.Message.ToString();
                 return ToReturn;
-
             }
-
             foreach(var rabbit in MyData.Values)
             {
                 ToReturn.Merge(rabbit);
@@ -173,9 +132,95 @@ namespace ScannerEngine
             var end = DateTime.Now;
             var duration = end - start;
             string dur = duration.TotalSeconds.ToString();
-            CheckOverallStatus();
             return ToReturn;
         }
+
+        private DataTable ScanIAM()
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = Settings.GetEnabledProfiles.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (profile) => {
+                    MyData.TryAdd((profile), Scanner.GetIAMUsers(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            return ToReturn;
+        }
+
+        private DataTable ScanS3()
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = Settings.GetEnabledProfiles.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (profile) => {
+                    MyData.TryAdd((profile), Scanner.GetS3Buckets(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                  ToReturn.Merge(rabbit);
+                }
+                catch(Exception ex)
+                {
+
+                }
+            }
+            return ToReturn;
+        }
+
+        private DataTable ScanSubnets()
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetSubnetDetailsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), Scanner.GetSubnets(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
 
 
         private void CheckOverallStatus()
@@ -183,9 +228,20 @@ namespace ScannerEngine
             var E = String.Equals("Idle", Settings.EC2Status["Status"]);
             var S = String.Equals("Idle", Settings.S3Status["Status"]);
             var I = String.Equals("Idle", Settings.IAMStatus["Status"]);
+            var V = String.Equals("Idle", Settings.VPCStatus["Status"]);
             var N = String.Equals("Idle", Settings.SubnetsStatus["Status"]);
-            if (E & S & I & N) Settings.State = "Idle";
+            if (E & S & I & N)
+            {
+                Settings.State = "Idle";
+                DaWorks.Clear();
+                DaWorks.Tables.Add(VPCTable);
+                DaWorks.Tables.Add(EC2Table);
+                DaWorks.Tables.Add(IAMTable);
+                DaWorks.Tables.Add(S3Table);
+                DaWorks.Tables.Add(SubnetTable);
+            }
         }
+
 
         /// <summary>
         /// Gets a list of all profiles (accounts) on the system,  and a boolean indicating whether it is to be processed.
@@ -233,6 +289,107 @@ namespace ScannerEngine
         public void SetComponentScanBit(string component, bool state)
         {
             Settings.Components[component] = state;
+        }
+
+        public DataSet ScanResults()
+        {
+            return DaWorks;
+        }
+
+        public void ScanAll()
+        {
+
+            if (Settings.State.Equals("Scanning...")) return;//Dont run if already running.  What if we croak?
+
+
+            //EC2 Background Worker Setup.
+            if (Settings.Components["EC2"])
+            {
+                Settings.EC2Status["Status"] = "Scanning...";
+                Settings.EC2Status["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = ScanEC2();
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    EC2Table.Clear();
+                    EC2Table.Merge(e.Result as DataTable);
+                    Settings.EC2Status["Status"] = "Idle";
+                    Settings.EC2Status["EndTime"] = Settings.GetTime();
+                    Settings.EC2Status["Instances"] = EC2Table.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+
+            }
+            else EC2Table.Clear();
+
+
+            //IAM Background Worker
+            if (Settings.Components["IAM"])
+            {
+                Settings.IAMStatus["Status"] = "Scanning...";
+                Settings.IAMStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = ScanIAM();
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    IAMTable.Clear();
+                    IAMTable.Merge(e.Result as DataTable);
+                    Settings.IAMStatus["Status"] = "Idle";
+                    Settings.IAMStatus["EndTime"] = Settings.GetTime();
+                    Settings.IAMStatus["Instances"] = IAMTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+
+            }
+            else IAMTable.Clear();
+
+            //S3 Background Worker
+            if (Settings.Components["S3"])
+            {
+                Settings.S3Status["Status"] = "Scanning...";
+                Settings.S3Status["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = ScanS3();
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    S3Table.Clear();
+                    S3Table.Merge(e.Result as DataTable);
+                    Settings.S3Status["Status"] = "Idle";
+                    Settings.S3Status["EndTime"] = Settings.GetTime();
+                    Settings.S3Status["Instances"] = S3Table.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else IAMTable.Clear();
+
+            //Subnets Background Worker
+
+            //
+        }
+
+        public DataTable GetIAMTable()
+        {
+            return IAMTable;
+        }
+
+        public DataTable GetS3Table()
+        {
+            return S3Table;
         }
     }
 
