@@ -89,6 +89,7 @@ namespace ScannerEngine
             ToReturn += "VPC :" + Settings.VPCStatus["Status"] + "  " + Settings.VPCStatus["EndTime"] + "  " + Settings.VPCStatus["Instances"] + " VPCs\n";
             ToReturn += "RDS :" + Settings.RDSStatus["Status"] + "  " + Settings.RDSStatus["EndTime"] + "  " + Settings.RDSStatus["Instances"] + " RDSs\n";
 
+            if(Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
             return ToReturn;
         }
 
@@ -113,7 +114,15 @@ namespace ScannerEngine
  
 
 
+        public string LastScan()
+        {
+            List<string> Message = new List<string>();
+            TimeSpan duration = Settings.ScanDone -Settings.ScanStart;
+            Message.Add( "Last Scan Completed: " + Settings.ScanDone);
+            Message.Add("Completion time: " +duration.ToString() );
+            return Scanner.List2String(Message);
 
+        }
 
 
 
@@ -136,6 +145,7 @@ namespace ScannerEngine
                 DaWorks.Tables.Add(IAMTable);
                 DaWorks.Tables.Add(S3Table);
                 DaWorks.Tables.Add(SubnetsTable);
+                Settings.ScanDone = DateTime.Now;
             }
         }
 
@@ -197,7 +207,7 @@ namespace ScannerEngine
         {
 
             if (Settings.State.Equals("Scanning...")) return;//Dont run if already running.  What if we croak?
-
+            Settings.ScanStart = DateTime.Now;
 
             //EC2 Background Worker Setup.
             if (Settings.Components["EC2"])

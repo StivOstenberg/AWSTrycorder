@@ -33,6 +33,9 @@ namespace ScannerEngine
 
 
         [OperationContract]
+        string LastScan();
+
+        [OperationContract]
         DataTable GetEC2Table();
 
         [OperationContract]

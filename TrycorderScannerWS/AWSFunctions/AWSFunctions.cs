@@ -1057,7 +1057,7 @@ namespace AWSFunctions
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan;
             ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
+            po.MaxDegreeOfParallelism = 128;
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
@@ -1352,7 +1352,9 @@ namespace AWSFunctions
             {"Subnets",true}
         };
 
+        public DateTime ScanStart = DateTime.Now;
 
+        public DateTime ScanDone = DateTime.Now;
         /// <summary>
         /// Sets a flag to indicate whether a component should be scanned or no.
         /// </summary>

@@ -360,8 +360,13 @@ namespace AWSTrycorderClientUI
             TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName;
             DasGrid.ItemsSource = DaTable.DefaultView;
             //Configure Columns ComboBox.
-
-
+            SelectColumncomboBox.Items.Clear();
+            SelectColumncomboBox.Items.Add("_Any_");
+            foreach (DataColumn head in DaTable.Columns)
+            {
+                SelectColumncomboBox.Items.Add(head.ColumnName);
+                SelectColumncomboBox.SelectedIndex = 0;
+            }
 
 
         }
