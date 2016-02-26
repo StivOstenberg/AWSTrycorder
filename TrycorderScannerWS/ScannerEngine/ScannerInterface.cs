@@ -42,6 +42,9 @@ namespace ScannerEngine
         DataTable GetS3Table();
 
         [OperationContract]
+        DataTable GetRDSTable();
+
+        [OperationContract]
         DataTable GetSubnetsTable();
 
         [OperationContract]

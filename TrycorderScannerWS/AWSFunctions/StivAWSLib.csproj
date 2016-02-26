@@ -82,6 +82,9 @@
       <HintPath>..\packages\AWSSDK.Lambda.3.2.0.0-beta\lib\net45\AWSSDK.Lambda.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="AWSSDK.RDS">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\AWS SDK for .NET\bin\Net45\AWSSDK.RDS.dll</HintPath>
+    </Reference>
     <Reference Include="AWSSDK.Route53, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.Route53.3.2.0.0-beta\lib\net45\AWSSDK.Route53.dll</HintPath>
       <Private>True</Private>

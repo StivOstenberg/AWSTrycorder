@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -327,30 +328,37 @@ namespace AWSTrycorderClientUI
         }
         private void SelectedComponentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string IChooseYou = SelectedComponentComboBox.SelectedValue.ToString();
-
+            string IChooseYou = "";
+            try {IChooseYou= SelectedComponentComboBox.SelectedValue.ToString(); }
+            catch { IChooseYou = ""; }
+            DataTable DaTable = new DataTable();
             //Bring up new table
+            string lastscan = "";
             switch(IChooseYou)
             {
                 case "EC2":
-                    var test = Trycorder.GetDetailedStatus();
-                    var  DaTable = Trycorder.GetEC2Table();
-                    DasGrid.ItemsSource = DaTable.DefaultView;
+                    DaTable = Trycorder.GetEC2Table();
+                    
                     break;
                 case "IAM":
-                    DasGrid.ItemsSource = Trycorder.GetIAMTable().DefaultView;
+                    DaTable = Trycorder.GetIAMTable();
                     break;
                 case "S3":
-                    DasGrid.ItemsSource = Trycorder.GetS3Table().DefaultView;
+                    DaTable = Trycorder.GetS3Table();
                     break;
                 case "VPC":
-                    DasGrid.ItemsSource = Trycorder.GetVPCTable().DefaultView;
+                    DaTable = Trycorder.GetVPCTable();
                     break;
                 case "Subnets":
-                    DasGrid.ItemsSource = Trycorder.GetSubnetsTable().DefaultView;
+                    DaTable = Trycorder.GetSubnetsTable();
                     break;
+                case "RDS":
+                    DaTable = Trycorder.GetRDSTable();
+                    break;
+                   
             }
-
+            TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName;
+            DasGrid.ItemsSource = DaTable.DefaultView;
             //Configure Columns ComboBox.
 
 

@@ -27,6 +27,7 @@ namespace ScannerEngine
         DataTable IAMTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
         DataTable SubnetsTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
+        DataTable RDSTable = AWSFunctions.AWSTables.GetRDSDetailsTable();
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
@@ -68,6 +69,11 @@ namespace ScannerEngine
             return EC2Table ;
         }
 
+        public DataTable GetRDSTable()
+        {
+            return RDSTable;
+        }
+
         public string GetStatus()
         {
             return Settings.State;
@@ -81,6 +87,8 @@ namespace ScannerEngine
             ToReturn += "IAM :" + Settings.IAMStatus["Status"] + "  " + Settings.IAMStatus["EndTime"] + "  " + Settings.IAMStatus["Instances"] + " users\n";
             ToReturn += "Subnets :" + Settings.SubnetsStatus["Status"] + "  " + Settings.SubnetsStatus["EndTime"] + "  " + Settings.SubnetsStatus["Instances"] + " subnets\n";
             ToReturn += "VPC :" + Settings.VPCStatus["Status"] + "  " + Settings.VPCStatus["EndTime"] + "  " + Settings.VPCStatus["Instances"] + " VPCs\n";
+            ToReturn += "RDS :" + Settings.RDSStatus["Status"] + "  " + Settings.RDSStatus["EndTime"] + "  " + Settings.RDSStatus["Instances"] + " RDSs\n";
+
             return ToReturn;
         }
 
@@ -118,7 +126,8 @@ namespace ScannerEngine
             var I = String.Equals("Idle", Settings.IAMStatus["Status"]);
             var V = String.Equals("Idle", Settings.VPCStatus["Status"]);
             var N = String.Equals("Idle", Settings.SubnetsStatus["Status"]);
-            if (E & S & I & N)
+            var R = String.Equals("Idle", Settings.RDSStatus["Status"]);
+            if (E & S & I & N & R)
             {
                 Settings.State = "Idle";
                 DaWorks.Clear();
@@ -288,6 +297,32 @@ namespace ScannerEngine
                 worker.RunWorkerAsync();
             }
             else SubnetsTable.Clear();
+
+            //RDS Background Worker
+            if (Settings.Components["RDS"])
+            {
+                Settings.RDSStatus["Status"] = "Scanning...";
+                Settings.RDSStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanRDS(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    RDSTable.Clear();
+                    RDSTable.Merge(e.Result as DataTable);
+                    Settings.RDSStatus["Status"] = "Idle";
+                    Settings.RDSStatus["EndTime"] = Settings.GetTime();
+                    Settings.RDSStatus["Instances"] = RDSTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else RDSTable.Clear();
+
+
 
             //VPC Background worker
             if (Settings.Components["VPC"])

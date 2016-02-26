@@ -948,6 +948,108 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public DataTable ScanRDS(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetRDSDetailsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetRDS(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+        public DataTable GetRDS(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSTables.GetRDSDetailsTable();
+            string accountid = GetAccountID(aprofile);
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+
+            Amazon.Runtime.AWSCredentials credential;
+
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var RDS = new Amazon.RDS.AmazonRDSClient(credential, Endpoint2scan);
+                var RDSi = RDS.DescribeDBInstances();
+                foreach (var anRDS in RDSi.DBInstances)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    //Handle the List Breakdowns
+                    var sgs = anRDS.DBSecurityGroups;
+                    List<string> sglist = new List<string>();
+                    foreach (var sg in sgs) { sglist.Add(sg.DBSecurityGroupName + ": " + sg.Status); }
+                    var DBSecurityGroups = List2String(sglist);
+
+                    List<string> vsg = new List<string>();
+                    var w = anRDS.VpcSecurityGroups;
+                    foreach (var sg in w) { vsg.Add(sg.VpcSecurityGroupId + ": " + sg.Status); }
+                    var VPCSecurityGroups = List2String(vsg);
+
+                    //StraightMappings + Mappings of breakdowns.
+
+                    disone["AccountID"] = GetAccountID(aprofile);
+                    disone["Profile"] = aprofile;
+                    disone["AvailabilityZone"] = anRDS.AvailabilityZone;
+                    disone["InstanceID"] = anRDS.DBInstanceIdentifier;
+                    disone["Name"] = anRDS.DBName;
+                    disone["Status"] = anRDS.DBInstanceStatus;
+                    disone["EndPoint"] = anRDS.Endpoint.Address+ ":" + anRDS.Endpoint.Port;
+
+                    disone["InstanceClass"] = anRDS.DBInstanceClass;
+                    disone["IOPS"] = anRDS.Iops.ToString();
+
+                    disone["StorageType"] = anRDS.StorageType;
+                    disone["AllocatedStorage"] = anRDS.AllocatedStorage;
+                    disone["Engine"] = anRDS.StorageType;
+                    disone["EngineVersion"] = anRDS.AllocatedStorage;
+                    disone["Created"] = anRDS.InstanceCreateTime.ToString();
+                    ToReturn.Rows.Add(disone);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                string rabbit = "";
+            }
+
+
+
+
+
+
+            return ToReturn;
+        }
+
         public DataTable ScanEC2(List<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
             DataTable ToReturn = AWSFunctions.AWSTables.GetEC2DetailsTable();
@@ -1026,6 +1128,45 @@ namespace AWSFunctions
 
     public class AWSTables
     {
+        public static DataTable GetRDSDetailsTable()
+        {
+            DataTable table = new DataTable();
+            table.TableName = "RDSTable";
+            // Here we create a DataTable .
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("AvailabilityZone", typeof(string));
+            table.Columns.Add("InstanceID", typeof(string));
+            table.Columns.Add("Name", typeof(string));
+            table.Columns.Add("Status", typeof(string));
+
+
+            table.Columns.Add("EndPoint", typeof(string));
+            
+            table.Columns.Add("InstanceClass" , typeof(string));
+            table.Columns.Add("IOPS" , typeof(string));
+            table.Columns.Add("AllocatedStorage" , typeof(string));
+            table.Columns.Add("StorageType", typeof(string));
+
+            table.Columns.Add("Engine", typeof(string));
+            table.Columns.Add("EngineVersion", typeof(string));
+            table.Columns.Add("Created", typeof(string));
+
+
+
+            //This code ensures we croak if the InstanceID is not unique.  How to catch that?
+            // UniqueConstraint makeInstanceIDUnique =
+            //   new UniqueConstraint(new DataColumn[] { table.Columns["InstanceID"] });
+            // table.Constraints.Add(makeInstanceIDUnique);
+
+            //Can we set the view on this table to expand IEnumerables?
+            DataView mydataview = table.DefaultView;
+            
+
+
+
+            return table;
+        }
         public static DataTable GetEC2DetailsTable()
         {
             DataTable table = new DataTable();
@@ -1206,6 +1347,7 @@ namespace AWSFunctions
             {"EC2",true },
             {"IAM",true },
             {"S3",true},
+            {"RDS",true},
             {"VPC",true},
             {"Subnets",true}
         };
@@ -1271,6 +1413,15 @@ namespace AWSFunctions
         };
 
         public Dictionary<string, string> SubnetsStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Instances","" }
+        };
+
+        public Dictionary<string, string> RDSStatus = new Dictionary<string, string>
         {
             { "Status","Idle" },
             { "StartTime","" },
