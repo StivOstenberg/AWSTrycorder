@@ -1079,7 +1079,6 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-
         public DataTable GetVPCList (String aprofile)
         {
             string accountid = GetAccountID(aprofile);
@@ -1120,6 +1119,27 @@ namespace AWSFunctions
                 //Whyfor did it fail?
                 string w = "";
             }
+
+            return ToReturn;
+        }
+
+
+        public DataTable FilterDataTable(DataTable Table2Filter,  string filterstring)
+        {
+            return FilterDataTable(Table2Filter, "_Any", filterstring);
+        }
+        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter , string filterstring)
+        {
+            DataTable ToReturn = new DataTable();
+            string fxp = ""; // The string what will build our query.
+
+            if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
+            bool anycolumn = false;
+            if (column2filter.Equals("_ANY_"))
+            {
+                anycolumn = true;
+            }
+
 
             return ToReturn;
         }

@@ -14,6 +14,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerTestUI", "ScannerTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerEngine", "ScannerEngine\ScannerEngine.csproj", "{36EF950F-C699-4D13-99F1-5247E0521B21}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1690D96A-37AC-4E29-B5AE-CEEE2A5F4F98}"
+	ProjectSection(SolutionItems) = preProject
+		AWSTrycorderClientUI\Ec2m.ico = AWSTrycorderClientUI\Ec2m.ico
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

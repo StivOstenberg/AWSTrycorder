@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AWSTrycorderClientUI"
         mc:Ignorable="d"
-        Title="AWS Trycorder" Height="583.367" Width="949.917">
+        Title="AWS Trycorder" Height="583.367" Width="949.917" Icon="Ec2m.ico">
     <Grid x:Name="TrycorderLayoutGrid">
         <Menu x:Name="TopMenu" Height="27" VerticalAlignment="Top" Margin="0,0,0.2,0">
             <MenuItem x:Name="FileMenu" Header="File">
@@ -20,10 +20,10 @@
                 <MenuItem x:Name="SetSuckerMI" Header="SetSucker" HorizontalAlignment="Left" Width="144.8" ToolTip="Pulls a dataset"  Click="SetSuckerMI_Click"/>
             </MenuItem>
         </Menu>
-        <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2"/>
+        <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2" AlternatingRowBackground="Aqua"/>
         <TextBox x:Name="SearchStringTextbox" Margin="0,0,73.2,5.2" TextWrapping="Wrap" Text="TextBox" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="209"/>
         <ComboBox x:Name="SelectColumncomboBox" Margin="0,0,331.2,5.2" HorizontalAlignment="Right" Width="120" Height="22" VerticalAlignment="Bottom"/>
-        <CheckBox x:Name="CaseCheckbox" Content="CS" Margin="0,0,10.2,9.2" ToolTip="Check to make case sensitive" Height="16" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="47"/>
+        <CheckBox x:Name="CaseCheckbox" Content="CS" Margin="0,0,10.2,9.2" ToolTip="Check to make case sensitive" Height="16" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="47" IsChecked="True"/>
         <ComboBox x:Name="SelectedComponentComboBox" Margin="104,0,0,5.2" Height="22" VerticalAlignment="Bottom" SelectionChanged="SelectedComponentComboBox_SelectionChanged" HorizontalAlignment="Left" Width="120"/>
         <Label x:Name="label" Content="Component" HorizontalAlignment="Left" Margin="10,0,0,1.2" Height="26" VerticalAlignment="Bottom"/>
         <Label x:Name="label1" Content="for" Margin="0,0,290.2,4.2" RenderTransformOrigin="0.438,-0.162" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="31"/>
