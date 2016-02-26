@@ -344,7 +344,7 @@ namespace AWSTrycorderClientUI
                     DasGrid.ItemsSource = Trycorder.GetS3Table().DefaultView;
                     break;
                 case "VPC":
-                    DasGrid.ItemsSource = Trycorder.GetSubnetsTable().DefaultView;
+                    DasGrid.ItemsSource = Trycorder.GetVPCTable().DefaultView;
                     break;
                 case "Subnets":
                     DasGrid.ItemsSource = Trycorder.GetSubnetsTable().DefaultView;

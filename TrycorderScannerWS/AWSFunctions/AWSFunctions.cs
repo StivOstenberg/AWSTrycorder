@@ -9,9 +9,11 @@ using Amazon.S3.Model;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AWSFunctions
 {
@@ -51,9 +53,9 @@ namespace AWSFunctions
 
         }
 
-
         public DataTable GetSubnets (string aprofile, string Region2Scan)
         {
+            string accountid = GetAccountID(aprofile);
             RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
             //Convert the Region2Scan to an AWS Endpoint.
             foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
@@ -77,6 +79,7 @@ namespace AWSFunctions
                 foreach(var asubnet in subbies)
                 {
                     DataRow disone = ToReturn.NewRow();
+                    disone["AccountID"] = accountid;
                     disone["Profile"] = aprofile;
                     disone["AvailabilityZone"] = asubnet.AvailabilityZone;
                     disone["AvailableIPCount"] = asubnet.AvailableIpAddressCount.ToString();
@@ -121,10 +124,9 @@ namespace AWSFunctions
 
         public DataTable GetS3Buckets(string aprofile)
         {
+            string accountid = GetAccountID(aprofile);
             Amazon.Runtime.AWSCredentials credential;
             DataTable ToReturn = AWSTables.GetS3DetailsTable();
-            string accountid = "";
-
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
@@ -257,34 +259,23 @@ namespace AWSFunctions
 
             return ToReturn;
         }
+
         public DataTable GetIAMUsers(string aprofile)
         {
             DataTable IAMTable = AWSTables.GetUsersDetailsTable(); //Blank table to fill out.
 
             Dictionary<string, string> UserNameIdMap = new Dictionary<string, string>();//Usernames to UserIDs to fill in row later.
             Amazon.Runtime.AWSCredentials credential;
-            string accountid = "";
-            try { 
-
+            try {
+                string accountid = GetAccountID(aprofile);
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 var iam = new AmazonIdentityManagementServiceClient(credential);
                 Dictionary<string, string> unamelookup = new Dictionary<string, string>();
 
                 var myUserList = iam.ListUsers().Users;
-
-                
                 foreach(var rabbit in myUserList)
                 {
                     unamelookup.Add(rabbit.UserId, rabbit.UserName);
-                }
-
-                try
-                {
-                    accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID
-                }
-                catch
-                {
-                    accountid = "?";
                 }
                 var createcredreport = iam.GenerateCredentialReport();
                 foreach (var auser in myUserList)
@@ -458,6 +449,11 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        /// <summary>
+        /// Given a List, convert to string with each item on list on separate row.
+        /// </summary>
+        /// <param name="stringlist"></param>
+        /// <returns></returns>
         public string List2String(List<string>stringlist)
         {
             string toreturn = "";
@@ -469,7 +465,33 @@ namespace AWSFunctions
             return toreturn;
         }
 
-
+        /// <summary>
+        /// Given a profile name,  get the AccountID the profile is associated with.
+        /// </summary>
+        /// <param name="aprofile"></param>
+        /// <returns></returns>
+        public string GetAccountID(string aprofile)
+        {
+                string accountid = "";
+                var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var iam = new AmazonIdentityManagementServiceClient(credential);
+                var myUserList = iam.ListUsers().Users;
+                try
+                {
+                    accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID  
+                }
+                catch
+                {
+                    accountid = "?";
+                }
+            return accountid;
+        }
+        /// <summary>
+        /// Gets the data for EC2 Instances in a given Profile and Region.
+        /// </summary>
+        /// <param name="aprofile"></param>
+        /// <param name="Region2Scan"></param>
+        /// <returns></returns>
         public DataTable GetEC2Instances(string aprofile, string Region2Scan)
         {
             DataTable ToReturn = AWSTables.GetEC2DetailsTable();
@@ -478,7 +500,7 @@ namespace AWSFunctions
 
 
             Amazon.Runtime.AWSCredentials credential;
-            string accountid = "";
+
             
             Dictionary<string, Dictionary<String,String>> OldReturn = new Dictionary<string, Dictionary<String,String>>();
             credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
@@ -497,18 +519,9 @@ namespace AWSFunctions
             //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
             var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
 
-            
-            //These steps just get the account ID
-            var iam = new AmazonIdentityManagementServiceClient(credential);
-            var myUserList = iam.ListUsers().Users;
-            try
-            {
-                accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID
-            }
-            catch
-            {
-                accountid = "?";
-            }
+
+
+            string accountid = GetAccountID(aprofile);
 
             var request = new DescribeInstanceStatusRequest();
             request.IncludeAllInstances = true;
@@ -737,7 +750,6 @@ namespace AWSFunctions
             return ToReturn;
         }//EndGetEC2
 
-
         static Dictionary<string,string> Network2IpRange(string sNetwork)
         {
             uint startIP;
@@ -805,20 +817,185 @@ namespace AWSFunctions
             return ip;
         }
 
+        /// <summary>
+        /// Given a list of profiles, return a datatable with VPC details for those profiles.
+        /// </summary>
+        /// <param name="List of Profiles"></param>
+        /// <returns>Datatable of VPC details</returns>
+        public DataTable ScanVPCs(IEnumerable<string> Profiles2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetVPCDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(Profiles2Scan, po, (profile) => {
+                    MyData.TryAdd((profile), GetVPCList(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                    ToReturn.Merge(rabbit);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            return ToReturn;
+        }
+
+        /// <summary>
+        /// Given a List of Profiles, return IAM user data for each.
+        /// </summary>
+        /// <returns></returns>
+        public DataTable ScanIAM(IEnumerable<string> Profiles2Scan)
+        {
+
+            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(Profiles2Scan, po, (profile) => {
+                    MyData.TryAdd((profile), GetIAMUsers(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            return ToReturn;
+        }
+
+        /// <summary>
+        /// Give a list of Profiles, return details on S3 buckets
+        /// </summary>
+        /// <param name="Profiles2Scan"></param>
+        /// <returns></returns>
+        public DataTable ScanS3(IEnumerable<string> Profiles2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(Profiles2Scan, po, (profile) => {
+                    MyData.TryAdd((profile), GetS3Buckets(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                    ToReturn.Merge(rabbit);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            return ToReturn;
+        }
+
+        public DataTable ScanSubnets(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetSubnetDetailsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetSubnets(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+        public DataTable ScanEC2(List<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetEC2DetailsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan;
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetEC2Instances(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+
         public DataTable GetVPCList (String aprofile)
         {
+            string accountid = GetAccountID(aprofile);
             DataTable ToReturn = AWSTables.GetVPCDetailsTable();
             Amazon.Runtime.AWSCredentials credential;
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var ec2 = new Amazon.EC2.AmazonEC2Client(credential);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
                 var vippies = ec2.DescribeVpcs().Vpcs;
                 foreach(var avpc in vippies)
                 {
                     DataRow thisvpc = ToReturn.NewRow();
-                    thisvpc["CidrBlock"] = avpc. CidrBlock;
+                    thisvpc["AccountID"] = accountid;
+                    thisvpc["Profile"] = aprofile;
                     thisvpc["VpcID"] = avpc.VpcId;
+                    thisvpc["CidrBlock"] = avpc. CidrBlock;
                     thisvpc["IsDefault"] = avpc.IsDefault.ToString();
                     thisvpc["DHCPOptionsID"] = avpc.DhcpOptionsId;
                     thisvpc["InstanceTenancy"] = avpc.InstanceTenancy;
@@ -836,9 +1013,10 @@ namespace AWSFunctions
 
 
             }//End of the big Try
-            catch
+            catch(Exception ex)
             {
-
+                //Whyfor did it fail?
+                string w = "";
             }
 
             return ToReturn;
@@ -963,9 +1141,10 @@ namespace AWSFunctions
         public static DataTable GetVPCDetailsTable()
         {
             DataTable ToReturn = new DataTable();
-
-            ToReturn.Columns.Add("CidrBlock", typeof(string));
+            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("Profile", typeof(string));
             ToReturn.Columns.Add("VpcID", typeof(string));
+            ToReturn.Columns.Add("CidrBlock", typeof(string));
             ToReturn.Columns.Add("IsDefault", typeof(string));
             ToReturn.Columns.Add("DHCPOptionsID", typeof(string));
             ToReturn.Columns.Add("InstanceTenancy", typeof(string));
@@ -1106,7 +1285,7 @@ namespace AWSFunctions
             return CurrentTime;
         }
 
-
+        public Dictionary<string,string>ProfileAccountMappings { get; set; }
         public Dictionary<string,bool>ScannableRegions { get; set; } 
 
         public void setRegionEnabled(string region, Boolean state)

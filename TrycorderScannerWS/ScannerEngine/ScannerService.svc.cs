@@ -45,13 +45,17 @@ namespace ScannerEngine
             }
             Settings.ScannableRegions = Regions2Scan;
             Dictionary<string, bool> Profiles2Scan = new Dictionary<string, bool>();
+            List<string> ProfileList = new List<string>();
             foreach(var aprofile in Scanner.GetProfileNames())
             {
                 Profiles2Scan.Add(aprofile, true);
+                ProfileList.Add(aprofile);
             }
             Settings.ScannableProfiles = Profiles2Scan;
             Settings.State = "Idle";
             return "Initialized";
+
+
         }
 
         //Settings Stuff
@@ -98,152 +102,14 @@ namespace ScannerEngine
             return composite;
         }
 
-        private DataTable ScanEC2()
-        {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetEC2DetailsTable();
-            var start = DateTime.Now;
-            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-            var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
-            try
-            {
-                Parallel.ForEach(myscope, po, (KVP) => {
-                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), Scanner.GetEC2Instances(KVP.Key, KVP.Value));
-                  });
-            }
-            catch(Exception ex)
-            {
-                ToReturn.TableName = ex.Message.ToString();
-                return ToReturn;
-            }
-            foreach(var rabbit in MyData.Values)
-            {
-                ToReturn.Merge(rabbit);
-            }
-            var end = DateTime.Now;
-            var duration = end - start;
-            string dur = duration.TotalSeconds.ToString();
-            return ToReturn;
-        }
+ 
 
-        private DataTable ScanIAM()
-        {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
-            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-            var myscope = Settings.GetEnabledProfiles.AsEnumerable();
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
-            try
-            {
-                Parallel.ForEach(myscope, po, (profile) => {
-                    MyData.TryAdd((profile), Scanner.GetIAMUsers(profile));
-                });
-            }
-            catch (Exception ex)
-            {
-                ToReturn.TableName = ex.Message.ToString();
-                return ToReturn;
-            }
-            foreach (var rabbit in MyData.Values)
-            {
-                ToReturn.Merge(rabbit);
-            }
-            return ToReturn;
-        }
 
-        private DataTable ScanS3()
-        {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
-            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-            var myscope = Settings.GetEnabledProfiles.AsEnumerable();
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
-            try
-            {
-                Parallel.ForEach(myscope, po, (profile) => {
-                    MyData.TryAdd((profile), Scanner.GetS3Buckets(profile));
-                });
-            }
-            catch (Exception ex)
-            {
-                ToReturn.TableName = ex.Message.ToString();
-                return ToReturn;
-            }
-            foreach (var rabbit in MyData.Values)
-            {
-                try
-                {
-                  ToReturn.Merge(rabbit);
-                }
-                catch(Exception ex)
-                {
 
-                }
-            }
-            return ToReturn;
-        }
 
-        private DataTable ScanSubnets()
-        {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetSubnetDetailsTable();
-            var start = DateTime.Now;
-            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-            var myscope = Settings.GetEnabledProfileandRegions.AsEnumerable();
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
-            try
-            {
-                Parallel.ForEach(myscope, po, (KVP) => {
-                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), Scanner.GetSubnets(KVP.Key, KVP.Value));
-                });
-            }
-            catch (Exception ex)
-            {
-                ToReturn.TableName = ex.Message.ToString();
-                return ToReturn;
-            }
-            foreach (var rabbit in MyData.Values)
-            {
-                ToReturn.Merge(rabbit);
-            }
-            var end = DateTime.Now;
-            var duration = end - start;
-            string dur = duration.TotalSeconds.ToString();
-            return ToReturn;
-        }
 
-        private DataTable ScanVPC()
-        {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
-            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-            var myscope = Settings.GetEnabledProfiles.AsEnumerable();
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
-            try
-            {
-                Parallel.ForEach(myscope, po, (profile) => {
-                    MyData.TryAdd((profile), Scanner.GetVPCList(profile));
-                });
-            }
-            catch (Exception ex)
-            {
-                ToReturn.TableName = ex.Message.ToString();
-                return ToReturn;
-            }
-            foreach (var rabbit in MyData.Values)
-            {
-                try
-                {
-                    ToReturn.Merge(rabbit);
-                }
-                catch (Exception ex)
-                {
 
-                }
-            }
-            return ToReturn;
-        }
+
 
         private void CheckOverallStatus()
         {
@@ -332,7 +198,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = ScanEC2();
+                    e.Result = Scanner.ScanEC2(Settings.GetEnabledProfileandRegions);
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
@@ -358,7 +224,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = ScanIAM();
+                    e.Result = Scanner.ScanIAM(Settings.GetEnabledProfiles.AsEnumerable());
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
@@ -383,7 +249,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = ScanS3();
+                    e.Result = Scanner.ScanS3(Settings.GetEnabledProfiles.AsEnumerable());
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
@@ -407,7 +273,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = ScanSubnets();
+                    e.Result = Scanner.ScanSubnets(Settings.GetEnabledProfileandRegions);
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
@@ -431,7 +297,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = ScanVPC();
+                    e.Result = Scanner.ScanVPCs(Settings.GetActiveProfiles());
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
