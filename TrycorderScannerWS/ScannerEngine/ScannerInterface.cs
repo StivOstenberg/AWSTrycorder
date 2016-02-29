@@ -25,6 +25,9 @@ namespace ScannerEngine
         void ScanAll();
 
         [OperationContract]
+        string LoadAWSCredentials(string credentialfile);
+
+        [OperationContract]
         string GetData(int value);
 
 

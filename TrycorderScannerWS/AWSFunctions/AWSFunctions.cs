@@ -15,21 +15,180 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+using System.Windows.Forms;
+
 namespace AWSFunctions
 {
-    
+
     /// <summary>
     /// Given credentials and arguments, retrieve data from AWS.
     /// </summary>
     public class ScanAWS
     {
+        /// <summary>
+        /// Opens a file selection dialog box
+        /// </summary>
+        /// <returns></returns>
+        public string Filepicker()
+        {
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.Filter = "All Files|*.*|Script (*.py, *.sh)|*.py*;*.sh";
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+
+                return (ofd.FileName);
+            }
+            return ("");
+        }
+
+        /// <summary>
+        /// Opens a filtered file selection dialog box
+        /// "All Files|*.*" for example
+        /// </summary>
+        /// <param name="Filter"></param>
+        /// <returns></returns>
+        public string Filepicker(string Filter)
+        {
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.Filter = Filter;
+            ofd.InitialDirectory = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                return (ofd.FileName);
+            }
+            return ("");
+        }
+
+
+        public string LoadCredentials(string credfile)
+        {
+            //Loading a credential file.
+            string results = "";
+            //Select file
+
+            //Import creds
+            var txt = File.ReadAllText(credfile);
+            Dictionary<string, Dictionary<string, string>> ini = new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
+
+            Dictionary<string, string> currentSection = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            ini[""] = currentSection;
+
+            foreach (var line in txt.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                       .Where(t => !string.IsNullOrWhiteSpace(t))
+                       .Select(t => t.Trim()))
+            {
+                if (line.StartsWith(";"))
+                    continue;
+
+                if (line.StartsWith("[") && line.EndsWith("]"))
+                {
+                    currentSection = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+                    ini[line.Substring(1, line.LastIndexOf("]") - 1)] = currentSection;
+                    continue;
+                }
+
+                var idx = line.IndexOf("=");
+                if (idx == -1)
+                    currentSection[line] = "";
+                else
+                    currentSection[line.Substring(0, idx)] = line.Substring(idx + 1);
+            }
+
+
+            //Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
+
+            //Build a list of current keys to use to avoid dupes due to changed "profile" names.
+            Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
+
+            foreach (var aprofilename in Amazon.Util.ProfileManager.ListProfileNames())
+            {
+                var acred = Amazon.Util.ProfileManager.GetAWSCredentials(aprofilename).GetCredentials();
+
+                currentaccesskeys.Add(aprofilename, acred.AccessKey);
+            }
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> kvp in ini)
+            {
+                string newprofileName = "";
+                string newaccessKey = "";
+                string newsecretKey = "";
+                if (kvp.Key == "") continue;
+
+                newprofileName = kvp.Key.ToString();
+                newaccessKey = kvp.Value["aws_access_key_id"].ToString();
+                newsecretKey = kvp.Value["aws_secret_access_key"].ToString();
+
+
+                if (Amazon.Util.ProfileManager.ListProfileNames().Contains(newprofileName))
+                {
+                    var daP = Amazon.Util.ProfileManager.GetAWSCredentials(newprofileName).GetCredentials();
+                    if (daP.AccessKey == newaccessKey & daP.SecretKey == newsecretKey)
+                    {
+                        //dey da same
+                    }
+                    else
+                    {
+                        results += newprofileName + " keys do not match existing profile!\n";
+                    }
+
+                }
+                else //Profile does not exist by this name.  
+                {
+                    if (currentaccesskeys.Values.Contains(newaccessKey))//Do we already have that key?
+                    {
+                        //We are trying to enter a duplicate profile name for the same key. 
+                        string existingprofile = "";
+                        foreach (KeyValuePair<string, string> minikvp in currentaccesskeys)
+                        {
+                            if (minikvp.Value == newaccessKey)
+                            {
+                                existingprofile = minikvp.Key.ToString();
+                            }
+                        }
+
+                        results += newprofileName + " already exists as " + existingprofile + "\n";
+                    }
+                    else
+                    {
+                        if (newaccessKey.Length.Equals(20) & newsecretKey.Length.Equals(40))
+                        {
+                            results += newprofileName + " added to credential store!\n";
+                            //Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
+                        }
+                        else
+                        {
+                            results += newprofileName + "'s keys are not the correct length!\n";
+                        }
+                    }
+                }
+
+            }
+            if (results.Equals(""))
+            {
+                string message = ini.Count.ToString() + " profiles in " + credfile + " already in credential store.";
+                return results;
+            }
+            else
+            {
+                return results;
+            }
+
+        }
+
+        
+
+
         uint startIP, endIP;
+
+
         /// <summary>
         /// Returns the names of the profiles in the Windows AWS Credential Store.
         /// </summary>
         /// <returns></returns>
         public IOrderedEnumerable<string> GetProfileNames()
         {
+
+
             var Profiles = Amazon.Util.ProfileManager.ListProfileNames().OrderBy(c => c, StringComparer.CurrentCultureIgnoreCase);
             return Profiles;
         }
