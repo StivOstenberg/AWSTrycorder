@@ -61,7 +61,11 @@ namespace ScannerEngine
         [OperationContract]
         String GetStatus();
 
+        [OperationContract]
+        DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive);
 
+        [OperationContract]
+        DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive);
 
 
         [OperationContract]

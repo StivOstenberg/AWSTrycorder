@@ -53,10 +53,6 @@ namespace AWSTrycorderClientUI
             BuildRegionMenuList();
             BuildComponentMenuList();
             ConfigureComponentSelectComboBox();
-
-
-            
-
         }
 
         public void StartWCFService()
@@ -326,19 +322,15 @@ namespace AWSTrycorderClientUI
 
 
         }
-        private void SelectedComponentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private DataTable GetSelectedDatatable(string Datatable2Get)
         {
-            string IChooseYou = "";
-            try {IChooseYou= SelectedComponentComboBox.SelectedValue.ToString(); }
-            catch { IChooseYou = ""; }
             DataTable DaTable = new DataTable();
             //Bring up new table
-            string lastscan = "";
-            switch(IChooseYou)
+            switch (Datatable2Get)
             {
                 case "EC2":
                     DaTable = Trycorder.GetEC2Table();
-                    
                     break;
                 case "IAM":
                     DaTable = Trycorder.GetIAMTable();
@@ -355,8 +347,19 @@ namespace AWSTrycorderClientUI
                 case "RDS":
                     DaTable = Trycorder.GetRDSTable();
                     break;
-                   
+                default:
+                    DaTable = Trycorder.GetEC2Table();
+                    break;
             }
+            return DaTable;
+
+        }
+        private void SelectedComponentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string IChooseYou = "";
+            try {IChooseYou= SelectedComponentComboBox.SelectedValue.ToString(); }
+            catch { IChooseYou = ""; }
+            DataTable DaTable = GetSelectedDatatable(IChooseYou);
             TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName;
             DasGrid.ItemsSource = DaTable.DefaultView;
             //Configure Columns ComboBox.
@@ -392,6 +395,24 @@ namespace AWSTrycorderClientUI
             var Gottacatchemall = Trycorder.ScanResults();
             var EC2Table = Gottacatchemall.Tables["EC2Table"];
             var contadeena = EC2Table.Rows.Count;
+        }
+
+        private void SearchStringTextbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try {
+                var Table2Scan = GetSelectedDatatable(SelectedComponentComboBox.SelectedItem.ToString());
+                string filterstring = SearchStringTextbox.Text;
+                string column2filter = SelectColumncomboBox.SelectedItem.ToString();
+                bool casesense = (bool)CaseCheckbox.IsChecked;
+                var filttab = Trycorder.FilterDataTablebyCol(Table2Scan, column2filter, filterstring, casesense);
+
+                DasGrid.ItemsSource = filttab.DefaultView;
+            }
+            catch(Exception ex)
+            {
+                string message = ex.Message;
+            }
+            
         }
     }
 }

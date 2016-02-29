@@ -378,6 +378,41 @@ namespace ScannerEngine
         {
             return VPCTable;
         }
+
+        /// <summary>
+        /// Filters a datatable returning all results where ANY column matches the search string.
+        /// </summary>
+        /// <param name="Table2Filter"></param>
+        /// <param name="filterstring"></param>
+        /// <param name="caseinsensitive"></param>
+        /// <returns></returns>
+        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive)
+        {
+            return Scanner.FilterDataTable(Table2Filter, filterstring, caseinsensitive);
+        }
+
+        /// <summary>
+        /// Filters a datatable returning all results where a specified column matches the search string.
+        /// </summary>
+        /// <param name="Table2Filter"></param>
+        /// <param name="column2filter"></param>
+        /// <param name="filterstring"></param>
+        /// <param name="caseinsensitive"></param>
+        /// <returns></returns>
+        public DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive)
+        {
+            string currentname = Table2Filter.TableName;
+            string currentsize = Table2Filter.Rows.Count.ToString();
+
+            DataTable ToReturn = Table2Filter.Copy();
+            ToReturn.Clear();
+            var dareturn = Scanner.FilterDataTable(Table2Filter, column2filter, filterstring, caseinsensitive);
+            ToReturn.Merge(dareturn );
+            string newsize = ToReturn.Rows.Count.ToString();
+            if (currentsize.Equals(newsize)) ToReturn.TableName = currentname;
+            else ToReturn.TableName = currentname + " showing " + newsize + " out of " + currentsize;
+            return ToReturn;
+        }
     }
 
 

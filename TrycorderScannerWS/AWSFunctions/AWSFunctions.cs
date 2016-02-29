@@ -319,11 +319,15 @@ namespace AWSFunctions
                             thisid = UserNameIdMap[arow[0]];
                             auserdata["UserID"] = thisid;
                             auserdata["UserName"] = unamelookup[thisid];
+                            if(unamelookup[thisid] == "<root_account>")
+                            {
+                                auserdata["UserID"] = "*-" + accountid + "-* root";
+                            }
                             username= unamelookup[thisid];
                         }
                         catch
                         {
-                            auserdata["UserID"] = "";
+                            auserdata["UserID"] = "*-"+accountid+"-* root";
                             auserdata["UserName"] = "<root_account>";
                         }
 
@@ -1124,25 +1128,55 @@ namespace AWSFunctions
         }
 
 
-        public DataTable FilterDataTable(DataTable Table2Filter,  string filterstring)
+        public DataTable FilterDataTable(DataTable Table2Filter,  string filterstring, bool caseinsensitive)
         {
-            return FilterDataTable(Table2Filter, "_Any", filterstring);
+            return FilterDataTable(Table2Filter, "_Any_", filterstring, caseinsensitive);
         }
-        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter , string filterstring)
+        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter , string filterstring , bool casesensitive)
         {
             DataTable ToReturn = new DataTable();
-            string fxp = ""; // The string what will build our query.
+            string currentname = Table2Filter.TableName;
+            int originalnumberofrows = Table2Filter.Rows.Count;
 
             if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
             bool anycolumn = false;
-            if (column2filter.Equals("_ANY_"))
+            if (column2filter.Contains("_Any_"))
             {
                 anycolumn = true;
             }
 
+            //Scan any columns
+            if(anycolumn)
+            {
+                if (casesensitive)
+                {
+                    ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(filterstring).ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                }
+                else
+                {
+                    ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(filterstring).Contains(filterstring)).CopyToDataTable();
+                }
+            }
 
+            //Scan one column
+            else
+            {
+                if (casesensitive)
+                {
+                     ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                }
+                else
+                {
+                     ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(filterstring).Contains(filterstring)).CopyToDataTable();
+                }
+            }
+
+            if (ToReturn.Rows.Count == originalnumberofrows) ToReturn.TableName = currentname;
+            else ToReturn.TableName = currentname + " filtered: " + ToReturn.Rows.Count.ToString() + " out of " + originalnumberofrows.ToString();
             return ToReturn;
         }
+
+      
 
     }//EndScanAWS
 
