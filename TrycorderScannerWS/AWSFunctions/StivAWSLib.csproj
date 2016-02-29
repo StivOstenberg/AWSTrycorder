@@ -58,9 +58,9 @@
       <HintPath>..\packages\AWSSDK.DynamoDBv2.3.2.0.0-beta\lib\net45\AWSSDK.DynamoDBv2.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AWSSDK.EC2, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.EC2.3.2.0.0-beta\lib\net45\AWSSDK.EC2.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="AWSSDK.EC2, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\AWS SDK for .NET\bin\Net45\AWSSDK.EC2.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.ECS, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.ECS.3.2.0.0-beta\lib\net45\AWSSDK.ECS.dll</HintPath>
@@ -68,10 +68,6 @@
     </Reference>
     <Reference Include="AWSSDK.IdentityManagement, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.IdentityManagement.3.2.0.0-beta\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.ImportExport, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.ImportExport.3.2.0.0-beta\lib\net45\AWSSDK.ImportExport.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AWSSDK.KeyManagementService, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
@@ -113,6 +109,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />

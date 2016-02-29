@@ -33,6 +33,7 @@ namespace AWSTrycorderClientUI
         ServiceHost host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
         IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel;
         ScannerEngine.ScannerInterfaceDefinition Trycorder;
+        AWSFunctions.ScanAWS StivAWSFunctions = new AWSFunctions.ScanAWS();
         static Action S_Event2 = delegate { };
 
 
@@ -392,6 +393,12 @@ namespace AWSTrycorderClientUI
             var Gottacatchemall = Trycorder.ScanResults();
             var EC2Table = Gottacatchemall.Tables["EC2Table"];
             var contadeena = EC2Table.Rows.Count;
+        }
+
+        private void LoadCredentialsMI_Click(object sender, RoutedEventArgs e)
+        {
+            string credfile = StivAWSFunctions.Filepicker();
+            Trycorder.LoadAWSCredentials(credfile);
         }
     }
 }

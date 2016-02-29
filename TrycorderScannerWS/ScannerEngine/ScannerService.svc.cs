@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.ServiceModel;
-using System.Threading.Tasks;
+using System.IO;
 
 /// <summary>
 /// An instantiable Class with multithreading to make development of other tools easier.  Note:  TO make things work, will need to 
@@ -377,6 +377,19 @@ namespace ScannerEngine
         public DataTable GetVPCTable()
         {
             return VPCTable;
+        }
+
+        public string LoadAWSCredentials(string CredentialsFile)
+        {
+            if(File.Exists(CredentialsFile))
+            {
+                string status = Scanner.LoadCredentials(CredentialsFile);
+                return status;
+            }
+            else
+            {
+                return "Your credentials file was not found";
+            }
         }
     }
 
