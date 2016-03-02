@@ -399,19 +399,24 @@ namespace ScannerEngine
         /// <param name="filterstring"></param>
         /// <param name="caseinsensitive"></param>
         /// <returns></returns>
-        public DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive)
+        public DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool casesensitive)
         {
             string currentname = Table2Filter.TableName;
             string currentsize = Table2Filter.Rows.Count.ToString();
 
             DataTable ToReturn = Table2Filter.Copy();
             ToReturn.Clear();
-            var dareturn = Scanner.FilterDataTable(Table2Filter, column2filter, filterstring, caseinsensitive);
+            var dareturn = Scanner.FilterDataTable(Table2Filter, column2filter, filterstring, casesensitive);
             ToReturn.Merge(dareturn );
             string newsize = ToReturn.Rows.Count.ToString();
             if (currentsize.Equals(newsize)) ToReturn.TableName = currentname;
             else ToReturn.TableName = currentname + " showing " + newsize + " out of " + currentsize;
             return ToReturn;
+        }
+
+        public string LoadAWSCredentials(string credentialfile)
+        {
+            throw new NotImplementedException();
         }
     }
 

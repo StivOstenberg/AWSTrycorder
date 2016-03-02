@@ -362,7 +362,6 @@ namespace AWSTrycorderClientUI
             DataTable DaTable = GetSelectedDatatable(IChooseYou);
             TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName;
             DasGrid.ItemsSource = DaTable.DefaultView;
-            //Configure Columns ComboBox.
             SelectColumncomboBox.Items.Clear();
             SelectColumncomboBox.Items.Add("_Any_");
             foreach (DataColumn head in DaTable.Columns)
@@ -399,7 +398,24 @@ namespace AWSTrycorderClientUI
 
         private void SearchStringTextbox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            try {
+
+            DoScan();
+        }
+
+        private void LoadCredentialsMI_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CaseCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            DoScan();
+        }
+
+        private void DoScan()
+        {
+            try
+            {
                 var Table2Scan = GetSelectedDatatable(SelectedComponentComboBox.SelectedItem.ToString());
                 string filterstring = SearchStringTextbox.Text;
                 string column2filter = SelectColumncomboBox.SelectedItem.ToString();
@@ -408,11 +424,15 @@ namespace AWSTrycorderClientUI
 
                 DasGrid.ItemsSource = filttab.DefaultView;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 string message = ex.Message;
             }
-            
+        }
+
+        private void CaseCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            DoScan();
         }
     }
 }

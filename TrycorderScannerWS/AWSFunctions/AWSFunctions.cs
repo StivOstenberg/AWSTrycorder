@@ -15,8 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-using System.Windows.Forms;
-
 namespace AWSFunctions
 {
 
@@ -1287,9 +1285,48 @@ namespace AWSFunctions
         }
 
 
-        public DataTable FilterDataTable(DataTable Table2Filter,  string filterstring, bool caseinsensitive)
+        public DataTable FilterDataTable(DataTable Table2Filter,  string filterstring, bool casesensitive)
         {
-            return FilterDataTable(Table2Filter, "_Any_", filterstring, caseinsensitive);
+            if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
+            DataTable ToReturn = Table2Filter.Copy();
+            ToReturn.Clear();
+
+            string currentname = Table2Filter.TableName;
+            int originalnumberofrows = Table2Filter.Rows.Count;
+
+            //Loop through Data table provided by datarows
+            foreach(DataRow arow in Table2Filter.AsEnumerable())
+            {
+                //Loop through each column in datarow.
+                foreach(DataColumn acolumn in Table2Filter.Columns)
+                {
+                    string temp = arow[acolumn].ToString();
+
+                    if (casesensitive)
+                    {
+                        if (arow[acolumn].ToString().Contains(filterstring))
+                        {
+                            ToReturn.ImportRow(arow);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (arow[acolumn].ToString().ToUpper().Contains(filterstring.ToUpper()))
+                        {
+                            ToReturn.ImportRow(arow);
+                            break;
+                        }
+                    }
+                }
+
+                //If match (case or caseless) add datarow to toreturn and break search of columns.
+            }
+
+
+
+
+            return ToReturn;
         }
         public DataTable FilterDataTable(DataTable Table2Filter, string column2filter , string filterstring , bool casesensitive)
         {
@@ -1303,18 +1340,33 @@ namespace AWSFunctions
             {
                 anycolumn = true;
             }
+            //Lets try to build sum queeries.
 
-            //Scan any columns
-            if(anycolumn)
+
+
+            string CASEquery = "p=> ";
+            string nocasequery = "p=> ";
+            int colno = Table2Filter.Columns.Count;
+
+            for (int i =0; i < Table2Filter.Columns.Count  ;i++)
             {
-                if (casesensitive)
+                if (i == colno)
                 {
-                    ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(filterstring).ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                    CASEquery +=   @"p.Field<string>(""+Table2Filter.Columns[i]+  "").Contains(FilterTagText.Text) ; ";
+                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToLower().Contains(FilterTagText.Text) ; ";
                 }
                 else
                 {
-                    ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(filterstring).Contains(filterstring)).CopyToDataTable();
+                    CASEquery +=   @"p.Field<string>(""+Table2Filter.Columns[i]+  "").Contains(FilterTagText.Text) || ";
+                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToLower().Contains(FilterTagText.Text) || ";
                 }
+            }
+
+
+            //Scan any columns.  
+            if(anycolumn)
+            {
+                return (FilterDataTable(Table2Filter, filterstring, casesensitive));
             }
 
             //Scan one column
@@ -1322,11 +1374,22 @@ namespace AWSFunctions
             {
                 if (casesensitive)
                 {
-                     ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                     var newt  = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                    if (newt.Rows.Count > 0) ToReturn = newt;
+                    else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
+                    { ToReturn.Merge(Table2Filter);
+                        ToReturn.Clear();
+                            }
                 }
                 else
                 {
-                     ToReturn = Table2Filter.AsEnumerable().Where(p => p.Field<string>(filterstring).Contains(filterstring)).CopyToDataTable();
+                    var newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).Contains(filterstring)).CopyToDataTable();
+                    if (newt.Rows.Count > 0) ToReturn = newt;
+                    else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
+                    {
+                        ToReturn.Merge(Table2Filter);
+                        ToReturn.Clear();
+                    }
                 }
             }
 
