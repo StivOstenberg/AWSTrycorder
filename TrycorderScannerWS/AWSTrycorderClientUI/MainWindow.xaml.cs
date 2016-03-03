@@ -202,17 +202,17 @@ namespace AWSTrycorderClientUI
             System.Windows.Controls.MenuItem mit = new System.Windows.Controls.MenuItem();
             mit.Header = "Select All";
             mit.StaysOpenOnClick = true;
-            mit.Click += CKAllCMP_Click;
+            mit.Click += CKAllCol_Click;
             Proot.Items.Add(mit);
             System.Windows.Controls.MenuItem mit2 = new System.Windows.Controls.MenuItem();
             mit2.Header = "Select None";
             mit2.StaysOpenOnClick = true;
-            mit2.Click += UCKAllCMP_Click;
+            mit2.Click += UCKAllCol_Click;
             Proot.Items.Add(mit2);
             System.Windows.Controls.MenuItem mit3 = new System.Windows.Controls.MenuItem();
             mit3.Header = "MostUsed";
             mit3.StaysOpenOnClick = true;
-            mit3.Click += UCKAllCMP_Click;
+            //mit3.Click += UCKAllCol_Click;
             Proot.Items.Add(mit3);
             foreach (var acol in DasGrid.Columns)
             {
@@ -361,7 +361,7 @@ namespace AWSTrycorderClientUI
         private void CKAllCMP_Click(object sender, RoutedEventArgs e)
         {
             //Checks all Profilemenu items
-            foreach (System.Windows.Controls.MenuItem anitem in ProfilesMenuItem.Items)
+            foreach (System.Windows.Controls.MenuItem anitem in ComponentsMenuItem.Items)
             {
                 if (anitem.IsCheckable)
                 {
@@ -371,6 +371,7 @@ namespace AWSTrycorderClientUI
             }
             ConfigureComponentSelectComboBox();
         }
+
         private void UCKAllCMP_Click(object sender, RoutedEventArgs e)
         {
             //UnChecks all Profilemenu items
@@ -385,6 +386,31 @@ namespace AWSTrycorderClientUI
             ConfigureComponentSelectComboBox();
 
 
+        }
+        private void CKAllCol_Click(object sender, RoutedEventArgs e)
+        {
+            //Checks all Profilemenu items
+            foreach (System.Windows.Controls.MenuItem anitem in ColumnsMenuItem.Items)
+            {
+                if (anitem.IsCheckable)
+                {
+                    anitem.IsChecked = true;
+                }
+                foreach (var acol in DasGrid.Columns) acol.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void UCKAllCol_Click(object sender, RoutedEventArgs e)
+        {
+            //Checks all Profilemenu items
+            foreach (System.Windows.Controls.MenuItem anitem in ColumnsMenuItem.Items)
+            {
+                if (anitem.IsCheckable)
+                {
+                    anitem.IsChecked = false;
+                }
+                foreach (var acol in DasGrid.Columns) acol.Visibility = Visibility.Hidden;
+            }
         }
 
         private DataTable GetSelectedDatatable(string Datatable2Get)

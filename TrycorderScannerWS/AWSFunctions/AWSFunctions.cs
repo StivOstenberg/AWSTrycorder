@@ -1834,7 +1834,21 @@ namespace AWSFunctions
         }
 
 
-    }
+        /// <summary>
+        /// This is where I define the default columns I want to be visible.
+        /// </summary>
+        /// <param name="component">The name of the Amazon component we want columns for.</param>
+        /// <returns></returns>
+        public List<string> GetDefaultColumns(string component)
+        {
+            List<string> ToReturn = new List<string>();
+
+
+            return ToReturn;
+            
+        }
+
+    }//End of settings
 }//End AWSFunctions
 
         //Da end
