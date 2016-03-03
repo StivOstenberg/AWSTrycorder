@@ -15,6 +15,7 @@
             <MenuItem x:Name="ProfilesMenuItem" Header="Profiles"/>
             <MenuItem x:Name="RegionsMenuItem" Header="Regions"/>
             <MenuItem x:Name="ComponentsMenuItem" Header="Components"/>
+            <MenuItem x:Name="ColumnsMenuItem" Header="Columns"/>
             <MenuItem x:Name="TestingMenuItem" Header="Testing">
                 <MenuItem x:Name="InitializeTestMenuItem" Header="Initialize" HorizontalAlignment="Left" Width="144.8" Click="InitializeTestMenuItem_Click" />
                 <MenuItem x:Name="CheckStatusMI" Header="CheckStatus" HorizontalAlignment="Left" Width="144.8" Click="CheckStatusMI_Click"/>

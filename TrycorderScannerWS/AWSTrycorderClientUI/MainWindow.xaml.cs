@@ -193,9 +193,37 @@ namespace AWSTrycorderClientUI
                 mi.StaysOpenOnClick = true;
                 Proot.Items.Add(mi);
             }
+        }
 
-
-
+        public void BuildColumnMenuList()
+        {
+            System.Windows.Controls.MenuItem Proot = (System.Windows.Controls.MenuItem)this.TopMenu.Items[4];
+            Proot.Items.Clear();
+            System.Windows.Controls.MenuItem mit = new System.Windows.Controls.MenuItem();
+            mit.Header = "Select All";
+            mit.StaysOpenOnClick = true;
+            mit.Click += CKAllCMP_Click;
+            Proot.Items.Add(mit);
+            System.Windows.Controls.MenuItem mit2 = new System.Windows.Controls.MenuItem();
+            mit2.Header = "Select None";
+            mit2.StaysOpenOnClick = true;
+            mit2.Click += UCKAllCMP_Click;
+            Proot.Items.Add(mit2);
+            System.Windows.Controls.MenuItem mit3 = new System.Windows.Controls.MenuItem();
+            mit3.Header = "MostUsed";
+            mit3.StaysOpenOnClick = true;
+            mit3.Click += UCKAllCMP_Click;
+            Proot.Items.Add(mit3);
+            foreach (var acol in DasGrid.Columns)
+            {
+                System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
+                mi.IsCheckable = true;
+                mi.IsChecked = true;
+                mi.Header = acol.Header;
+                mi.Click += ColumnChecked;
+                mi.StaysOpenOnClick = true;
+                Proot.Items.Add(mi);
+            }
         }
 
         public void ConfigureComponentSelectComboBox()
@@ -307,6 +335,29 @@ namespace AWSTrycorderClientUI
                 SelectedComponentComboBox.SelectedIndex = 0;
             }
         }
+
+        private void ColumnChecked(object sender, RoutedEventArgs e)
+        {
+
+            var gopher = sender as MenuItem;
+            bool state = gopher.IsChecked;
+            string thecolumn = gopher.Header.ToString();
+            ShowHideColumn(thecolumn, state);
+
+        }
+
+        private void ShowHideColumn(string thecolumn,bool state)
+        {
+
+            foreach (var acol in DasGrid.Columns)
+            {
+                if (acol.Header.Equals(thecolumn))
+                {
+                    if (state) acol.Visibility = Visibility.Visible;
+                    else acol.Visibility = Visibility.Hidden;
+                }
+            }
+        }
         private void CKAllCMP_Click(object sender, RoutedEventArgs e)
         {
             //Checks all Profilemenu items
@@ -382,6 +433,7 @@ namespace AWSTrycorderClientUI
                 SelectColumncomboBox.Items.Add(head.ColumnName);
                 SelectColumncomboBox.SelectedIndex = 0;
             }
+            BuildColumnMenuList();
 
 
         }
