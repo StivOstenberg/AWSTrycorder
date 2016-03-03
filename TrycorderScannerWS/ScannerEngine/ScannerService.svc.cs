@@ -22,12 +22,14 @@ namespace ScannerEngine
     public class ScannerClass : ScannerInterfaceDefinition 
     {
         DataSet DaWorks = new DataSet();
+
         DataTable EC2Table = AWSFunctions.AWSTables.GetEC2DetailsTable();
         DataTable S3Table = AWSFunctions.AWSTables.GetS3DetailsTable();
         DataTable IAMTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
         DataTable SubnetsTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         DataTable RDSTable = AWSFunctions.AWSTables.GetRDSDetailsTable();
+
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
@@ -39,24 +41,9 @@ namespace ScannerEngine
         /// <returns></returns>
         public string Initialize()
         {
-            Dictionary<string, bool> Regions2Scan = new Dictionary<string, bool>();
-            foreach(var aregion in Scanner.GetRegionNames())
-            {
-                Regions2Scan.Add(aregion, true);
-            }
-            Settings.ScannableRegions = Regions2Scan;
-            Dictionary<string, bool> Profiles2Scan = new Dictionary<string, bool>();
-            List<string> ProfileList = new List<string>();
-            foreach(var aprofile in Scanner.GetProfileNames())
-            {
-                Profiles2Scan.Add(aprofile, true);
-                ProfileList.Add(aprofile);
-            }
-            Settings.ScannableProfiles = Profiles2Scan;
+            Settings.Initialize();
             Settings.State = "Idle";
             return "Initialized";
-
-
         }
 
         //Settings Stuff
@@ -140,11 +127,17 @@ namespace ScannerEngine
             {
                 Settings.State = "Idle";
                 DaWorks.Clear();
-                DaWorks.Tables.Add(VPCTable);
-                DaWorks.Tables.Add(EC2Table);
-                DaWorks.Tables.Add(IAMTable);
-                DaWorks.Tables.Add(S3Table);
-                DaWorks.Tables.Add(SubnetsTable);
+                try
+                {
+                    DaWorks.Tables.Add(VPCTable);
+                    DaWorks.Tables.Add(EC2Table);
+                    DaWorks.Tables.Add(IAMTable);
+                    DaWorks.Tables.Add(S3Table);
+                    DaWorks.Tables.Add(SubnetsTable);
+                }
+                catch
+                {
+                }
                 Settings.ScanDone = DateTime.Now;
             }
         }
@@ -417,6 +410,11 @@ namespace ScannerEngine
         public string LoadAWSCredentials(string credentialfile)
         {
             throw new NotImplementedException();
+        }
+
+        public Dictionary<string,string> GetBadProfiles()
+        {
+            return Settings.BadProfiles;
         }
     }
 

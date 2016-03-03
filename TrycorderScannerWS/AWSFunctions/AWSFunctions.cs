@@ -633,14 +633,24 @@ namespace AWSFunctions
         /// <returns></returns>
         public string GetAccountID(string aprofile)
         {
-                string accountid = "";
-                var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var iam = new AmazonIdentityManagementServiceClient(credential);
-                var myUserList = iam.ListUsers().Users;
-                try
-                {
+            List<User> myUserList = new List<User>();
+            string accountid = "";
+            var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+            var iam = new AmazonIdentityManagementServiceClient(credential);
+            
+            try
+            {
+                 myUserList = iam.ListUsers().Users;
+            }
+            catch(Exception ex)
+            {
+                return "Error: " + ex.Message;
+            }
+            try
+            {
+
                     accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID  
-                }
+            }
                 catch
                 {
                     accountid = "?";
@@ -680,15 +690,19 @@ namespace AWSFunctions
             //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
             var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
 
-
-
             string accountid = GetAccountID(aprofile);
-
             var request = new DescribeInstanceStatusRequest();
             request.IncludeAllInstances = true;
-            var instatresponse = ec2.DescribeInstanceStatus(request);
+            DescribeInstanceStatusResponse instatresponse = new DescribeInstanceStatusResponse();
             var indatarequest = new DescribeInstancesRequest();
-
+            try
+            {
+                instatresponse = ec2.DescribeInstanceStatus(request);
+            }
+            catch(Exception ex)
+            {
+                string test = "";//Quepaso? 
+            }
 
             //Get a list of the InstanceIDs.
             foreach (var instat in instatresponse.InstanceStatuses)
@@ -1602,7 +1616,8 @@ namespace AWSFunctions
 
     public class ScannerSettings
     {
-        ScanAWS stivawslib;
+        ScanAWS stivawslib = new ScanAWS();
+
         public void Initialize()
         {
             foreach (string aregion in stivawslib.GetRegionNames())
@@ -1611,8 +1626,30 @@ namespace AWSFunctions
             }
             foreach(string aprofile in stivawslib.GetProfileNames())
             {
-                ScannableProfiles.Add(aprofile, true);
+                try
+                {
+                   string accountid=  stivawslib.GetAccountID(aprofile);
+
+                    if (accountid.StartsWith("Error"))
+                    {
+                        BadProfiles.Add(aprofile, accountid);
+                    }
+                    else
+                    {
+                        ScannableProfiles.Add(aprofile, true);
+                        ProfileAccountMappings.Add(aprofile, accountid);
+                    }
+
+                }
+                catch(Exception ex)
+                {
+                    BadProfiles.Add(aprofile, ex.Message);
+                }
+
+
+
             }
+            return;
         }
 
         /// <summary>
@@ -1714,8 +1751,8 @@ namespace AWSFunctions
             return CurrentTime;
         }
 
-        public Dictionary<string,string>ProfileAccountMappings { get; set; }
-        public Dictionary<string,bool>ScannableRegions { get; set; } 
+        public Dictionary<string, string> ProfileAccountMappings { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, bool> ScannableRegions { get; set; } = new Dictionary<string, bool>();
 
         public void setRegionEnabled(string region, Boolean state)
         {
@@ -1736,10 +1773,23 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public List<String> GetBadProfiles()
+        {
+            List<String> ToReturn = new List<string>();
+
+            foreach(var KVP in ScannableProfiles)
+            {
+                if (KVP.Value) ToReturn.Add(KVP.Key + ": " + KVP.Value);
+            }
+            return ToReturn;
+        }
+
         /// <summary>
         /// A Dictionary of Profile names with a boolean indicating whether they are to be scanned.
         /// </summary>
-        public Dictionary<string,bool>ScannableProfiles { get; set; }
+        public Dictionary<string, bool> ScannableProfiles { get; set; } = new Dictionary<string, bool>();
+
+        public Dictionary<string, string> BadProfiles { get; set; } = new Dictionary<string, string>();
         public void setProfileEnabled(string profile, Boolean state)
         {
             ScannableProfiles[profile] = state;

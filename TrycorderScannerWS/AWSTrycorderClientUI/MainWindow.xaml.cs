@@ -127,6 +127,19 @@ namespace AWSTrycorderClientUI
 
                 Proot.Items.Add(mi);
             }
+
+            foreach(KeyValuePair<string,string> KVP in Trycorder.GetBadProfiles())
+            {
+                System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
+                mi.IsCheckable = false;
+                mi.Header = KVP.Key;
+                mi.StaysOpenOnClick = true;
+                mi.Background = Brushes.Red;
+                mi.ToolTip = KVP.Value;
+                Proot.Items.Add(mi);
+            }
+
+
         }
 
         public void BuildRegionMenuList()

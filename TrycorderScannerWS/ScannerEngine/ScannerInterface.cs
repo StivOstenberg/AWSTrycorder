@@ -85,6 +85,9 @@ namespace ScannerEngine
         Dictionary<string, bool> GetProfiles();
 
         [OperationContract]
+        Dictionary<string, string> GetBadProfiles();
+
+        [OperationContract]
         Dictionary<string, bool> GetRegions();
 
         [OperationContract]
