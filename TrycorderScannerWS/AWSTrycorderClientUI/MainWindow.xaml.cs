@@ -509,7 +509,7 @@ namespace AWSTrycorderClientUI
             {
                 throw new Exception("Environment variable error, there is no 'HOMEDRIVE'");
             }
-            if (File.Exists(awscredsfile)) Trycorder.LoadAWSCredentials(awscredsfile);
+            if (File.Exists(awscredsfile)) MessageBox.Show( Trycorder.LoadAWSCredentials(awscredsfile),"Credential Load Status");
             else MessageBox.Show("Unable to find " + awscredsfile);
 
         }

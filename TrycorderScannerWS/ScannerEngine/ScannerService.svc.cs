@@ -409,7 +409,7 @@ namespace ScannerEngine
 
         public string LoadAWSCredentials(string credentialfile)
         {
-            throw new NotImplementedException();
+           return Scanner.LoadCredentials(credentialfile);
         }
 
         public Dictionary<string,string> GetBadProfiles()
