@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -100,6 +101,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AWSFunctions\StivAWSLib.csproj">
+      <Project>{d94734c8-90e5-412f-a675-d6bd2ca812b3}</Project>
+      <Name>StivAWSLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ScannerEngine\ScannerEngine.csproj">
       <Project>{36ef950f-c699-4d13-99f1-5247e0521b21}</Project>
       <Name>ScannerEngine</Name>

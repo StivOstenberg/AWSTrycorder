@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
-using System.Text;
+
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+
+using DaForm = System.Windows.Forms;
+
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
 
 namespace AWSTrycorderClientUI
 {
@@ -34,7 +28,7 @@ namespace AWSTrycorderClientUI
         IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel;
         ScannerEngine.ScannerInterfaceDefinition Trycorder;
         static Action S_Event2 = delegate { };
-
+        AWSFunctions.ScanAWS StivFunk;
 
         public MainWindow()
         {
@@ -493,8 +487,30 @@ namespace AWSTrycorderClientUI
             DoScan();
         }
 
+
         private void LoadCredentialsMI_Click(object sender, RoutedEventArgs e)
         {
+            string awscredsfile = "";
+            var homeDrive = Environment.GetEnvironmentVariable("HOMEDRIVE");
+            if (homeDrive != null)
+            {
+                var homePath = Environment.GetEnvironmentVariable("HOMEPATH");
+                if (homePath != null)
+                {
+                    var fullHomePath = homeDrive  + homePath;
+                    awscredsfile = Path.Combine(fullHomePath, ".aws\\credentials");
+                }
+                else
+                {
+                    throw new Exception("Environment variable error, there is no 'HOMEPATH'");
+                }
+            }
+            else
+            {
+                throw new Exception("Environment variable error, there is no 'HOMEDRIVE'");
+            }
+            if (File.Exists(awscredsfile)) Trycorder.LoadAWSCredentials(awscredsfile);
+            else MessageBox.Show("Unable to find " + awscredsfile);
 
         }
 

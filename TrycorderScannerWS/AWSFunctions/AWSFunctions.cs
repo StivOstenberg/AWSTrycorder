@@ -29,6 +29,7 @@ namespace AWSFunctions
         /// <returns></returns>
         public string Filepicker()
         {
+            string test = "NoKoy";
             System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
             ofd.Filter = "All Files|*.*|Script (*.py, *.sh)|*.py*;*.sh";
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -96,6 +97,8 @@ namespace AWSFunctions
             //Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
 
             //Build a list of current keys to use to avoid dupes due to changed "profile" names.
+            
+
             Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
 
             foreach (var aprofilename in Amazon.Util.ProfileManager.ListProfileNames())
@@ -1607,8 +1610,6 @@ namespace AWSFunctions
             ToReturn.TableName = "SubnetsTable";
             return ToReturn;
         }
-
-
 
         public static string Shrug = "¯\\_(ツ)_/¯";
     }
