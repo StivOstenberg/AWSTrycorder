@@ -154,7 +154,7 @@ namespace AWSFunctions
                         if (newaccessKey.Length.Equals(20) & newsecretKey.Length.Equals(40))
                         {
                             results += newprofileName + " added to credential store!\n";
-                            //Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
+                            Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
                         }
                         else
                         {
@@ -176,10 +176,46 @@ namespace AWSFunctions
 
         }
 
-        
+        public string ExportCredentials(string filename)
+        {
+            string ToReturn = "";
+            string newfilename = filename + DateTime.Now.DayOfWeek + "-" + DateTime.Now.Hour + DateTime.Now.Minute;
+            string newconfigfile = "# Trycorder Generated Credential Export from .NET credential store #\n";
+            foreach (var aprofilename in Amazon.Util.ProfileManager.ListProfileNames().OrderBy(c => c, StringComparer.CurrentCultureIgnoreCase))
+            {
+                var acred = Amazon.Util.ProfileManager.GetAWSCredentials(aprofilename).GetCredentials();
+                newconfigfile += "[" + aprofilename + "]\n";
+                newconfigfile += "aws_access_key_id=" + acred.AccessKey + "\n";
+                newconfigfile += "aws_secret_access_key=" + acred.SecretKey + "\n\n";
+            }
+
+            if (File.Exists(filename))
+            {
+                
+                try
+                {
+                    File.Move(filename,newfilename);
+                    ToReturn += "Moved " + filename + " to " + newfilename + "\n";
+
+                }
+                catch(Exception ex)
+                {
+                    return "Unable to move original file " + filename + "\n" + ex.Message;
+                }
+            }
+            try
+            {
+                File.WriteAllText(filename, newconfigfile);
+                ToReturn += "Exported credentials to " + filename;
+            }
+            catch { return "Failed write to  " + filename; }
 
 
-        uint startIP, endIP;
+            return ToReturn;
+        }
+
+
+
 
 
         /// <summary>

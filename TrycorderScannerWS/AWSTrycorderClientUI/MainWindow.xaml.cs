@@ -28,7 +28,7 @@ namespace AWSTrycorderClientUI
         IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel;
         ScannerEngine.ScannerInterfaceDefinition Trycorder;
         static Action S_Event2 = delegate { };
-        AWSFunctions.ScanAWS StivFunk;
+        AWSFunctions.ScanAWS StivFunk = new AWSFunctions.ScanAWS();
 
         public MainWindow()
         {
@@ -487,8 +487,7 @@ namespace AWSTrycorderClientUI
             DoScan();
         }
 
-
-        private void LoadCredentialsMI_Click(object sender, RoutedEventArgs e)
+        private string GetDefaultAWSCredFile()
         {
             string awscredsfile = "";
             var homeDrive = Environment.GetEnvironmentVariable("HOMEDRIVE");
@@ -497,7 +496,7 @@ namespace AWSTrycorderClientUI
                 var homePath = Environment.GetEnvironmentVariable("HOMEPATH");
                 if (homePath != null)
                 {
-                    var fullHomePath = homeDrive  + homePath;
+                    var fullHomePath = homeDrive + homePath;
                     awscredsfile = Path.Combine(fullHomePath, ".aws\\credentials");
                 }
                 else
@@ -509,10 +508,16 @@ namespace AWSTrycorderClientUI
             {
                 throw new Exception("Environment variable error, there is no 'HOMEDRIVE'");
             }
+            return awscredsfile;
+        }
+        private void LoadCredentialsMI_Click(object sender, RoutedEventArgs e)
+        {
+            string awscredsfile = GetDefaultAWSCredFile();
             if (File.Exists(awscredsfile)) MessageBox.Show( Trycorder.LoadAWSCredentials(awscredsfile),"Credential Load Status");
             else MessageBox.Show("Unable to find " + awscredsfile);
-
         }
+
+
 
         private void CaseCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
@@ -540,6 +545,12 @@ namespace AWSTrycorderClientUI
         private void CaseCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             DoScan();
+        }
+
+        private void ExportCredentialsMI_Click(object sender, RoutedEventArgs e)
+        {
+            string dafile = GetDefaultAWSCredFile();
+            MessageBox.Show( StivFunk.ExportCredentials(dafile),"Export Status");
         }
     }
 }

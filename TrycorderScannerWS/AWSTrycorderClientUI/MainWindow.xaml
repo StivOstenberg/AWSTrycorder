@@ -10,7 +10,9 @@
         <Menu x:Name="TopMenu" Height="27" VerticalAlignment="Top" Margin="0,0,0.2,0">
             <MenuItem x:Name="FileMenu" Header="File">
                 <MenuItem x:Name="ScanMenuItem" Header="Scan" HorizontalAlignment="Left" Width="144.8" Click="ScanMenuItem_Click"/>
-                <MenuItem x:Name="LoadCredentialsMI" Header="Load Credentials" HorizontalAlignment="Left" Width="145" ToolTip="Load an AWS credentials file to the AWS credential store." Click="LoadCredentialsMI_Click"/>
+                <MenuItem x:Name="LoadCredentialsMI" Header="Load Credentials" HorizontalAlignment="Left" Width="180" ToolTip="Load an AWS credentials file to the AWS credential store." Click="LoadCredentialsMI_Click"/>
+                <MenuItem x:Name="ExportCredentialsMI" Header="Export Credentials" HorizontalAlignment="Left" Width="185" ToolTip="Export Credentials from Store" Click="ExportCredentialsMI_Click" />
+
             </MenuItem>
             <MenuItem x:Name="ProfilesMenuItem" Header="Profiles"/>
             <MenuItem x:Name="RegionsMenuItem" Header="Regions"/>
