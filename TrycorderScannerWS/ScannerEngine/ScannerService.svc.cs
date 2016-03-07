@@ -416,6 +416,13 @@ namespace ScannerEngine
         {
             return Settings.BadProfiles;
         }
+
+        public string RemoveBadProfiles()
+        {
+            string ToReturn = "";
+            ToReturn += Settings.RemoveBadProfilesfromStore();
+            return ToReturn;
+        }
     }
 
 

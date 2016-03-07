@@ -33,14 +33,16 @@ namespace AWSTrycorderClientUI
         public MainWindow()
         {
             InitializeComponent();
-            bindbert.MaxReceivedMessageSize = 2147483647;//Maximum
-            bindbert.MaxBufferSize=2147483647;//Maximum
-            
+            var ender = new EndpointAddress(MyEndpoint);
+            bindbert.MaxReceivedMessageSize = 2147483647;
+            bindbert.MaxBufferSize = 2147483647;
 
             MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
+            Trycorder =  MyScanneriChannel.CreateChannel(ender);
+
+
+
             StartWCFService();
-            var ender = new EndpointAddress(MyEndpoint);
-            Trycorder = MyScanneriChannel.CreateChannel(ender);
 
             Trycorder.Initialize();
             BuildProfileMenuList();
@@ -51,13 +53,13 @@ namespace AWSTrycorderClientUI
 
         public void StartWCFService()
         {
+
             try
             {
                 //host = new ServiceHost(typeof(ScannerEngine.ScannerClass), new Uri(MyEndpoint));
                 {
-                    bindbert.MaxReceivedMessageSize = 2147483647;
-                    bindbert.MaxBufferSize = 2147483647;
 
+                    MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
                     host.AddServiceEndpoint(typeof(ScannerEngine.ScannerInterfaceDefinition), bindbert, MyEndpoint);
 
                     // Enable metadata exchange
@@ -67,8 +69,6 @@ namespace AWSTrycorderClientUI
                     ServiceDebugBehavior sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
                     sdb.IncludeExceptionDetailInFaults = true;
                     host.Open();
-
-
 
                 }
 
@@ -121,9 +121,10 @@ namespace AWSTrycorderClientUI
 
                 Proot.Items.Add(mi);
             }
-
+            bool Baddies = false;
             foreach(KeyValuePair<string,string> KVP in Trycorder.GetBadProfiles())
             {
+                Baddies = true;
                 System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
                 mi.IsCheckable = false;
                 mi.Header = KVP.Key;
@@ -132,7 +133,8 @@ namespace AWSTrycorderClientUI
                 mi.ToolTip = KVP.Value;
                 Proot.Items.Add(mi);
             }
-
+            if (Baddies) RemoveBadMI.Visibility = System.Windows.Visibility.Visible;
+            else RemoveBadMI.Visibility = System.Windows.Visibility.Hidden;
 
         }
 
@@ -515,6 +517,7 @@ namespace AWSTrycorderClientUI
             string awscredsfile = GetDefaultAWSCredFile();
             if (File.Exists(awscredsfile)) MessageBox.Show( Trycorder.LoadAWSCredentials(awscredsfile),"Credential Load Status");
             else MessageBox.Show("Unable to find " + awscredsfile);
+            BuildProfileMenuList();
         }
 
 
@@ -551,6 +554,12 @@ namespace AWSTrycorderClientUI
         {
             string dafile = GetDefaultAWSCredFile();
             MessageBox.Show( StivFunk.ExportCredentials(dafile),"Export Status");
+        }
+
+        private void RemoveBadMI_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show( Trycorder.RemoveBadProfiles(),"Remove Profiles Results");
+            BuildProfileMenuList();
         }
     }
 }

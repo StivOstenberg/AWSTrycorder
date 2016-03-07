@@ -32,6 +32,9 @@ namespace ScannerEngine
 
 
         [OperationContract]
+        string RemoveBadProfiles();
+
+        [OperationContract]
         string Initialize();
 
 

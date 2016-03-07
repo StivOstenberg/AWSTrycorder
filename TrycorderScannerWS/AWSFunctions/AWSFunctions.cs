@@ -29,12 +29,10 @@ namespace AWSFunctions
         /// <returns></returns>
         public string Filepicker()
         {
-            string test = "NoKoy";
             System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
             ofd.Filter = "All Files|*.*|Script (*.py, *.sh)|*.py*;*.sh";
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-
                 return (ofd.FileName);
             }
             return ("");
@@ -212,6 +210,16 @@ namespace AWSFunctions
 
 
             return ToReturn;
+        }
+
+        public string DeleteCredential(string Profilename)
+        {
+            try
+            {
+                Amazon.Util.ProfileManager.UnregisterProfile(Profilename);
+                return Profilename + " deleted.";
+            }
+            catch { return "Unable to whack " + Profilename; }
         }
 
 
@@ -1659,7 +1667,8 @@ namespace AWSFunctions
         {
             foreach (string aregion in stivawslib.GetRegionNames())
             {
-                ScannableRegions.Add(aregion, true);
+                try { ScannableRegions.Add(aregion, true); }
+                catch { }
             }
             foreach(string aprofile in stivawslib.GetProfileNames())
             {
@@ -1809,6 +1818,45 @@ namespace AWSFunctions
             }
             return ToReturn;
         }
+
+        public string RemoveBadProfilesfromStore()
+        {
+            string ToReturn = "";
+
+            var badones =  BadProfiles.Keys.ToList<string>();
+            foreach(var naughty in badones)
+            {
+                try
+                {
+                    if (ToReturn.Length > 2) ToReturn += "\n";
+                    ToReturn += RemoveProfilefromStore(naughty) ;
+                    BadProfiles.Remove(naughty);
+                        
+                }
+                catch(Exception ex)
+                {
+                    ToReturn += "Failed to remove " + naughty + ": " + ex.Message;
+                }
+            }
+            return ToReturn;
+        }
+
+        public string RemoveProfilefromStore(string aprofile)
+        {
+            string ToReturn = "";
+            try
+            {
+                Amazon.Util.ProfileManager.UnregisterProfile(aprofile);
+                ToReturn += "Removed " + aprofile;
+            }
+            catch(Exception ex)
+            {
+                ToReturn += "Failed to remove " + aprofile + ": " + ex.Message;
+            }
+
+            return ToReturn;
+        }
+
 
         public List<String> GetBadProfiles()
         {
