@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSTrycorderClientUI", "AWSTrycorderClientUI\AWSTrycorderClientUI.csproj", "{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSTrycorder", "AWSTrycorderClientUI\AWSTrycorder.csproj", "{ED311630-D9AA-4CEF-8D6F-C2A7CC40DF6C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D94734C8-90E5-412F-A675-D6BD2CA812B3} = {D94734C8-90E5-412F-A675-D6BD2CA812B3}
 	EndProjectSection

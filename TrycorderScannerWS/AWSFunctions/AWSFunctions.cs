@@ -13,6 +13,7 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.IO;
 using System.Linq;
+
 using System.Threading.Tasks;
 
 namespace AWSFunctions
@@ -55,7 +56,6 @@ namespace AWSFunctions
             }
             return ("");
         }
-
 
         public string LoadCredentials(string credfile)
         {
@@ -194,7 +194,6 @@ namespace AWSFunctions
                 {
                     File.Move(filename,newfilename);
                     ToReturn += "Moved " + filename + " to " + newfilename + "\n";
-
                 }
                 catch(Exception ex)
                 {
@@ -221,10 +220,6 @@ namespace AWSFunctions
             }
             catch { return "Unable to whack " + Profilename; }
         }
-
-
-
-
 
         /// <summary>
         /// Returns the names of the profiles in the Windows AWS Credential Store.
@@ -259,7 +254,9 @@ namespace AWSFunctions
 
         public DataTable GetSubnets (string aprofile, string Region2Scan)
         {
+
             string accountid = GetAccountID(aprofile);
+            
             RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
             //Convert the Region2Scan to an AWS Endpoint.
             foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
@@ -289,8 +286,14 @@ namespace AWSFunctions
                     disone["AvailableIPCount"] = asubnet.AvailableIpAddressCount.ToString();
                     disone["Cidr"] = asubnet.CidrBlock;
                     //Trickybits.  Cidr to IP
-                    var dater = Network2IpRange(asubnet.CidrBlock);
+                    //var dater = Network2IpRange(asubnet.CidrBlock);
+                    System.Net.IPNetwork danetwork = System.Net.IPNetwork.Parse(asubnet.CidrBlock);
 
+                    disone["=Network"] = danetwork.Network;
+                    disone["=Netmask"] = danetwork.Netmask;
+                    disone["=Broadcast"] = danetwork.Broadcast;
+                    disone["=FirstUsable"] = danetwork.FirstUsable;
+                    disone["=LastUsable"] = danetwork.LastUsable;
 
                     ///
                     disone["DefaultForAZ"] = asubnet.DefaultForAz.ToString();
@@ -317,12 +320,6 @@ namespace AWSFunctions
                 {
                 string rabbit = "";
             }
-
-
-
-
-
-
             return ToReturn;
         }
 
@@ -972,72 +969,7 @@ namespace AWSFunctions
             return ToReturn;
         }//EndGetEC2
 
-        static Dictionary<string,string> Network2IpRange(string sNetwork)
-        {
-            uint startIP;
-            uint endIP;
-            Dictionary<string, string> ToReturn = new Dictionary<string, string>();
-            uint ip,                /* ip address */
-                    mask,           /* subnet mask */
-                    broadcast,      /* Broadcast address */
-                    network;        /* Network address */
 
-            int bits;
-
-            string[] elements = sNetwork.Split(new Char[] { '/' });
-
-            ip = IP2Int(elements[0]);
-            bits = Convert.ToInt32(elements[1]);
-
-            mask = ~(0xffffffff >> bits);
-
-            network = ip & mask;
-            broadcast = network + ~mask;
-
-            var usableIps = (bits > 30) ? 0 : (broadcast - network - 1);
-
-            if (usableIps <= 0)
-            {
-                startIP = endIP = 0;
-            }
-            else
-            {
-                startIP = network + 1;
-                endIP = broadcast - 1;
-
-
-
-            }
-
-            var a = Convert.ToDecimal(startIP);
-
-
-
-            ToReturn.Add("StartIP", startIP.ToString());
-            
-            ToReturn.Add("EndIP", endIP.ToString());
-            ToReturn.Add("Broadcast", broadcast.ToString());
-            ToReturn.Add("Mask", mask.ToString());
-            ToReturn.Add("Network", network.ToString());
-            ToReturn.Add("UsableIP", usableIps.ToString());
-
-
-            return ToReturn;
-        }
-
-        public static uint IP2Int(string IPNumber)
-        {
-            uint ip = 0;
-            string[] elements = IPNumber.Split(new Char[] { '.' });
-            if (elements.Length == 4)
-            {
-                ip = Convert.ToUInt32(elements[0]) << 24;
-                ip += Convert.ToUInt32(elements[1]) << 16;
-                ip += Convert.ToUInt32(elements[2]) << 8;
-                ip += Convert.ToUInt32(elements[3]);
-            }
-            return ip;
-        }
 
         /// <summary>
         /// Given a list of profiles, return a datatable with VPC details for those profiles.
@@ -1100,7 +1032,20 @@ namespace AWSFunctions
             }
             foreach (var rabbit in MyData.Values)
             {
-                ToReturn.Merge(rabbit);
+                foreach(DataRow arow in rabbit.Rows)
+                {
+                    try
+                    {
+                        ToReturn.ImportRow(arow);
+                    }
+                    catch(Exception ex)
+                    {
+                        string fail = "";
+                    }
+                }
+
+
+               // ToReturn.Merge(rabbit);  Had to remove due to merge constraints. Wanted more granular debugging.
             }
             return ToReturn;
         }
@@ -1647,6 +1592,16 @@ namespace AWSFunctions
             ToReturn.Columns.Add("AvailabilityZone", typeof(string));
             ToReturn.Columns.Add("Cidr", typeof(string));
             ToReturn.Columns.Add("AvailableIPCount", typeof(string));
+
+            ToReturn.Columns.Add("=Network", typeof(string));
+            ToReturn.Columns.Add("=Netmask", typeof(string));
+            ToReturn.Columns.Add("=Broadcast", typeof(string));
+            ToReturn.Columns.Add("=FirstUsable", typeof(string));
+            ToReturn.Columns.Add("=LastUsable", typeof(string));
+
+
+
+
             ToReturn.Columns.Add("DefaultForAZ", typeof(string));
             ToReturn.Columns.Add("MapPubIPonLaunch", typeof(string));
             ToReturn.Columns.Add("State", typeof(string));
