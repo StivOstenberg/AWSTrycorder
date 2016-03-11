@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.ServiceModel;
-using System.Threading.Tasks;
+using System.Threading;
+using System.Timers;
 
 /// <summary>
 /// An instantiable Class with multithreading to make development of other tools easier.  Note:  TO make things work, will need to 
@@ -33,8 +33,8 @@ namespace ScannerEngine
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
-
-
+        private System.Timers.Timer timer;
+        
         /// <summary>
         /// Sets up the initial list of Profiles and Regions in the Settings File.
         /// </summary>
@@ -43,8 +43,26 @@ namespace ScannerEngine
         {
             Settings.Initialize();
             Settings.State = "Idle";
+
+            this.timer = new System.Timers.Timer(1000 * 60 * Settings.ReScanTimerinMinutes);
+            this.timer.Elapsed += OnTimerElapsed;
+            this.timer.AutoReset = true;
+            this.timer.Start();
+
+
             return "Initialized";
+
+
         }
+
+
+
+        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            ScanAll();
+        }
+
+
 
         //Settings Stuff
         //External MySQL (Endpoint, Port, User, Password, Certificate?)

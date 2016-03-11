@@ -769,11 +769,8 @@ namespace AWSFunctions
             {
                 foreach (var instancedata in urtburgle.Instances)
                 {
-                    if (instancedata.InstanceId.ToString().Equals("i-3448ade7"))//This if is for debugging purposes.
-                    {
-                        var checkker = instancedata;
-                    }
-                    Bunchadata.Add(instancedata.InstanceId, instancedata);
+                    try { Bunchadata.Add(instancedata.InstanceId, instancedata); }
+                    catch(Exception ex) ;
                 }
             }
 
@@ -1617,6 +1614,8 @@ namespace AWSFunctions
     public class ScannerSettings
     {
         ScanAWS stivawslib = new ScanAWS();
+
+        public int ReScanTimerinMinutes { get; set; } = 20;
 
         public void Initialize()
         {

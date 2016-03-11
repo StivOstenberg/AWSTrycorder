@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-using DaForm = System.Windows.Forms;
-
 using System.Windows.Media;
 using System.IO;
+using System.Windows.Threading;
 
 namespace AWSTrycorderClientUI
 {
@@ -49,6 +48,26 @@ namespace AWSTrycorderClientUI
             BuildRegionMenuList();
             BuildComponentMenuList();
             ConfigureComponentSelectComboBox();
+
+            ///Get a timer to update status on UI.
+            /// 
+            DispatcherTimer UpdateStatusTimer = new DispatcherTimer();
+            UpdateStatusTimer.Tick += new EventHandler(updateStatusTimer_Tick);
+            UpdateStatusTimer.Interval = new TimeSpan(0, 0, 5);
+            UpdateStatusTimer.Start();
+
+
+        }
+
+        private void updateStatusTimer_Tick(object sender, EventArgs e)
+        {
+            string statusreport = Trycorder.GetDetailedStatus();
+            if (statusreport.ToLower().Contains("scanning")) ;
+            else if(ScanButton.Background!=Brushes.Green)
+                    {
+                ScanButton.Background = Brushes.Green;
+            }
+            
         }
 
         public void StartWCFService()
@@ -561,5 +580,38 @@ namespace AWSTrycorderClientUI
             MessageBox.Show( Trycorder.RemoveBadProfiles(),"Remove Profiles Results");
             BuildProfileMenuList();
         }
+
+        private void Scanbutton_Click(object sender, RoutedEventArgs e)//Scan Button
+        {
+            if (ScanButton.Background == Brushes.Green)
+            {
+                ScanButton.Background = Brushes.Red;
+                Trycorder.ScanAll();
+            }
+            else
+            {
+                MessageBox.Show(Trycorder.GetDetailedStatus(), "Scanning in progress...");
+            }
+
+
+
+        }
+
+        /// <summary>
+        /// Count occurrences of strings.
+        /// </summary>
+        public static int CountStringOccurrences(string text, string pattern)
+        {
+            // Loop through all instances of the string 'text'.
+            int count = 0;
+            int i = 0;
+            while ((i = text.IndexOf(pattern, i)) != -1)
+            {
+                i += pattern.Length;
+                count++;
+            }
+            return count;
+        }
+
     }
 }
