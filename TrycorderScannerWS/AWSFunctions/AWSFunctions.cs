@@ -770,7 +770,7 @@ namespace AWSFunctions
                 foreach (var instancedata in urtburgle.Instances)
                 {
                     try { Bunchadata.Add(instancedata.InstanceId, instancedata); }
-                    catch(Exception ex) ;
+                    catch (Exception ex) { } ;
                 }
             }
 
@@ -1235,7 +1235,25 @@ namespace AWSFunctions
             }
             foreach (var rabbit in MyData.Values)
             {
-                ToReturn.Merge(rabbit);
+                try
+                {
+                    foreach (DataRow arow in rabbit.Rows)
+                    {
+                        try
+                        {
+                            ToReturn.ImportRow(arow);
+                        }
+                        catch
+                        {
+                            var gg = arow;
+                        }
+                    }
+                }
+                catch
+                {
+                    //whyforfail
+
+                }
             }
             var end = DateTime.Now;
             var duration = end - start;
