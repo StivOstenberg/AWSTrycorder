@@ -123,8 +123,7 @@ namespace ScannerEngine
         {
             List<string> Message = new List<string>();
             TimeSpan duration = Settings.ScanDone -Settings.ScanStart;
-            Message.Add( "Last Scan Completed: " + Settings.ScanDone);
-            Message.Add("Completion time: " +duration.ToString() );
+            Message.Add(Settings.ScanDone.ToShortDateString() + " " + Settings.ScanDone.ToShortTimeString() + " in " + duration.Minutes + "m " + duration.Seconds + "s");
             return Scanner.List2String(Message);
 
         }

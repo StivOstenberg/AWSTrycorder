@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace AWSFunctions
 {
@@ -1025,6 +1026,7 @@ namespace AWSFunctions
             catch (Exception ex)
             {
                 ToReturn.TableName = ex.Message.ToString();
+                WriteToEventLog("Failed scanning IAM\n" + ex.Message);
                 return ToReturn;
             }
             foreach (var rabbit in MyData.Values)
@@ -1066,6 +1068,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
+                WriteToEventLog( "Failed scanning S3\n" + ex.Message);
                 ToReturn.TableName = ex.Message.ToString();
                 return ToReturn;
             }
@@ -1231,6 +1234,7 @@ namespace AWSFunctions
             catch (Exception ex)
             {
                 ToReturn.TableName = ex.Message.ToString();
+                WriteToEventLog( "Failed scanning EC2\n" + ex.Message);
                 return ToReturn;
             }
             foreach (var rabbit in MyData.Values)
@@ -1243,9 +1247,9 @@ namespace AWSFunctions
                         {
                             ToReturn.ImportRow(arow);
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            var gg = arow;
+                            WriteToEventLog(arow[0] + "\n" + ex.Message );
                         }
                     }
                 }
@@ -1419,7 +1423,14 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-      
+      static void WriteToEventLog(string sEvent)
+        {
+            var sSource = "ScanAWS Lib";
+            var sLog = "Application";
+            if (!EventLog.SourceExists(sSource))
+                EventLog.CreateEventSource(sSource, sLog);
+            EventLog.WriteEntry(sSource, sEvent);
+        }
 
     }//EndScanAWS
 

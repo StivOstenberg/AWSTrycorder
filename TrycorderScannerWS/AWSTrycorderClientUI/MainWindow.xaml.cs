@@ -62,10 +62,15 @@ namespace AWSTrycorderClientUI
         private void updateStatusTimer_Tick(object sender, EventArgs e)
         {
             string statusreport = Trycorder.GetDetailedStatus();
-            if (statusreport.ToLower().Contains("scanning")) ;
-            else if(ScanButton.Background!=Brushes.Green)
-                    {
+            if (statusreport.ToLower().Contains("scanning"))
+            {
+                ScanButton.Content = "Scanning";
+                ScanButton.Background = Brushes.Yellow;
+            }
+            else if (ScanButton.Background != Brushes.Green)
+            {
                 ScanButton.Background = Brushes.Green;
+                ScanButton.Content = "Scan";
             }
             
         }
@@ -465,7 +470,7 @@ namespace AWSTrycorderClientUI
             try {IChooseYou= SelectedComponentComboBox.SelectedValue.ToString(); }
             catch { IChooseYou = ""; }
             DataTable DaTable = GetSelectedDatatable(IChooseYou);
-            TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName;
+            TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName + " - " + Trycorder.LastScan();
             DasGrid.ItemsSource = DaTable.DefaultView;
             SelectColumncomboBox.Items.Clear();
             SelectColumncomboBox.Items.Add("_Any_");
