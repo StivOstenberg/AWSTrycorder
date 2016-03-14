@@ -49,7 +49,7 @@ namespace ScannerEngine
             this.timer.AutoReset = true;
             this.timer.Start();
 
-
+            Scanner.WriteToEventLog("AWS Scanner started " + DateTime.Now.TimeOfDay);
             return "Initialized";
 
 

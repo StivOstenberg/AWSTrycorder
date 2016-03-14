@@ -1422,8 +1422,11 @@ namespace AWSFunctions
             else ToReturn.TableName = currentname + " filtered: " + ToReturn.Rows.Count.ToString() + " out of " + originalnumberofrows.ToString();
             return ToReturn;
         }
-
-      static void WriteToEventLog(string sEvent)
+        /// <summary>
+        /// Note, must be run once as Administrator to set up the Event Source?
+        /// </summary>
+        /// <param name="sEvent"></param>
+      public void WriteToEventLog(string sEvent)
         {
             var sSource = "ScanAWS Lib";
             var sLog = "Application";
