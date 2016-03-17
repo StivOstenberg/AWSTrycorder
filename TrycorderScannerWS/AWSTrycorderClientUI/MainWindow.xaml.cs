@@ -618,5 +618,10 @@ namespace AWSTrycorderClientUI
             return count;
         }
 
+        private void AddCredMI_Click(object sender, RoutedEventArgs e)
+        {
+            AddCredential acwin = new AddCredential();
+            acwin.Show();
+        }
     }
 }

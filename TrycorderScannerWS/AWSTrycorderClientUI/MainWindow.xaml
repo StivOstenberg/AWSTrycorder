@@ -13,6 +13,7 @@
                 <MenuItem x:Name="LoadCredentialsMI" Header="Load Credentials" HorizontalAlignment="Left" Width="180" ToolTip="Load an AWS credentials file to the AWS credential store." Click="LoadCredentialsMI_Click"/>
                 <MenuItem x:Name="ExportCredentialsMI" Header="Export Credentials" HorizontalAlignment="Left" Width="185" ToolTip="Export Credentials from Store" Click="ExportCredentialsMI_Click" />
                 <MenuItem x:Name="RemoveBadMI" Header="RemoveBadCredentials" HorizontalAlignment="Left" Width="185" ToolTip="Expunge non working credentials from store" Visibility="Hidden" Click="RemoveBadMI_Click" />
+                <MenuItem x:Name="AddCredMI" Header="Add/Del Credential" HorizontalAlignment="Left" Width="185" ToolTip="Add or remove a credential"  Click="AddCredMI_Click"  />
 
             </MenuItem>
             <MenuItem x:Name="ProfilesMenuItem" Header="Profiles"/>

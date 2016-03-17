@@ -219,12 +219,17 @@ namespace AWSFunctions
 
         public string DeleteCredential(string Profilename)
         {
-            try
+            var existingprofiles = GetProfileNames();
+            if (existingprofiles.Contains(Profilename))
             {
-                Amazon.Util.ProfileManager.UnregisterProfile(Profilename);
-                return Profilename + " deleted.";
+                try
+                {
+                    Amazon.Util.ProfileManager.UnregisterProfile(Profilename);
+                    return Profilename + " deleted.";
+                }
+                catch { return "Unable to whack " + Profilename; }
             }
-            catch { return "Unable to whack " + Profilename; }
+            else { return Profilename + " not found!"; }
         }
 
         public string AddCredential(string newprofileName, string newaccessKey, string newsecretKey)
