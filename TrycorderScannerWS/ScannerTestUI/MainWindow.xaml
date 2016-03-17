@@ -22,6 +22,7 @@
                     <MenuItem x:Name="ListEC2MenuItem" Header="ListEC2" HorizontalAlignment="Left" Width="144.8" Click="ListEC2MenuItem_Click" />
                     <MenuItem x:Name="ListS3MenuItem" Header="ListS3" HorizontalAlignment="Left" Width="144.8" Click="ListS3MenuItem_Click"  />
                     <MenuItem x:Name="ListSubnetsMenuItem" Header="ListSubnets" HorizontalAlignment="Left" Width="144.8" Click="ListSubnetsMenuItem_Click"  />
+                    <MenuItem x:Name="ListCertsMenuItem" Header="ListCerts" HorizontalAlignment="Left" Width="144.8" Click="ListCertsMenuItem_Click"   />
                 </MenuItem>
                 <MenuItem Header="WebService">
                     <MenuItem x:Name="initializeMenuItem" Header="Initialize" HorizontalAlignment="Left" Width="144.8" IsCheckable="True" Click="initializeMenuItem_Click"/>

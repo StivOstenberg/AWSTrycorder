@@ -58,6 +58,11 @@ namespace AWSFunctions
             return ("");
         }
 
+        /// <summary>
+        /// Given a path to an AWS credentials file, load the contents into the Windows AWS credential store.
+        /// </summary>
+        /// <param name="credfile"></param>
+        /// <returns></returns>
         public string LoadCredentials(string credfile)
         {
             //Loading a credential file.
@@ -222,14 +227,47 @@ namespace AWSFunctions
             catch { return "Unable to whack " + Profilename; }
         }
 
+        public string AddCredential(string newprofileName, string newaccessKey, string newsecretKey)
+        {
+            string ToReturn = "";
+           
+            //Build a list of current keys to use to avoid dupes due to changed "profile" names.
+            Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
+            foreach (var aprofilename in Amazon.Util.ProfileManager.ListProfileNames())
+            {
+                var acred = Amazon.Util.ProfileManager.GetAWSCredentials(aprofilename).GetCredentials();
+                if(acred.AccessKey.Equals(newaccessKey)) return "Access Key already in store! Profile: " + aprofilename;
+                currentaccesskeys.Add(aprofilename, acred.AccessKey);
+            }
+            try {
+                if (newaccessKey.Length.Equals(20) & newsecretKey.Length.Equals(40))
+                {
+                    ToReturn = newprofileName + " added to credential store!\n";
+                    Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
+                }
+                else
+                {
+                    ToReturn = newprofileName + "'s keys are not the correct length!\n";
+                }
+            }
+            catch(Exception ex)
+            {
+                ToReturn = ex.Message;
+            }
+            try {
+            }
+            catch {
+            }
+
+            return ToReturn;
+        }
+
         /// <summary>
         /// Returns the names of the profiles in the Windows AWS Credential Store.
         /// </summary>
         /// <returns></returns>
         public IOrderedEnumerable<string> GetProfileNames()
         {
-
-
             var Profiles = Amazon.Util.ProfileManager.ListProfileNames().OrderBy(c => c, StringComparer.CurrentCultureIgnoreCase);
             return Profiles;
         }
@@ -1049,6 +1087,102 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+
+                /// <summary>
+        /// Given a List of Profiles, return IAM user data for each.
+        /// </summary>
+        /// <returns></returns>
+        public DataTable ScanCerts(IEnumerable<string> Profiles2Scan)
+        {
+
+            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(Profiles2Scan, po, (profile) => {
+                    MyData.TryAdd((profile), GetIAMUsers(profile));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                WriteToEventLog("Failed scanning Certs\n" + ex.Message);
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                foreach(DataRow arow in rabbit.Rows)
+                {
+                    try
+                    {
+                        ToReturn.ImportRow(arow);
+                    }
+                    catch(Exception ex)
+                    {
+                        string fail = "";
+                    }
+                }
+
+
+               // ToReturn.Merge(rabbit);  Had to remove due to merge constraints. Wanted more granular debugging.
+            }
+            return ToReturn;
+        }
+
+        public DataTable GetCertDetails(string aprofile)
+        {
+            string accountid = GetAccountID(aprofile);
+            DataTable ToReturn = AWSTables.GetCertDetailsTable();
+            Amazon.Runtime.AWSCredentials credential;
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var iam = new AmazonIdentityManagementServiceClient(credential);
+                var cervix = iam.ListServerCertificates();
+
+
+                //How to get certificate details????
+                
+
+                foreach (var acert in cervix.ServerCertificateMetadataList)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    disone["AccountID"] = accountid;
+                    disone["Profile"] = aprofile;
+                    disone["CertName"] = acert.ServerCertificateName;
+
+                    //Cert Details
+                    //disone["Status"] = acert.;
+                    //disone["InUse"] = acert.xxx;
+                    //disone["DomainName"] = acert.xxx;
+                    //disone["AdditionalNames"] = acert.xxx;
+                    disone["Identifier"] = acert.ServerCertificateId;
+                    //disone["SerialNumber"] = acert.xxx;
+                    //disone["AssociatedResources"] = acert.xxx;
+                    //disone["RequestedAt"] = acert.xxx;
+                    //disone["IssuedAt"] = acert.xxx;
+                    //disone["NotBefore"] = acert.xxx;
+                    disone["NotAfter"] = acert.Expiration;
+                    //disone["PublicKeyInfo"] = acert.xxx;
+                    //disone["SignatureAlgorithm"] = acert.xxx;
+                    disone["ARN"] = acert.Arn;
+                    ToReturn.Rows.Add(disone);
+                }
+
+            }//End of the big Try
+            catch (Exception ex)
+            {
+                //Whyfor did it fail?
+                string w = "";
+            }
+
+            return ToReturn;
+        }
+
         /// <summary>
         /// Give a list of Profiles, return details on S3 buckets
         /// </summary>
@@ -1636,6 +1770,34 @@ namespace AWSFunctions
             ToReturn.Columns.Add("State", typeof(string));
             ToReturn.Columns.Add("Tags", typeof(string));
             ToReturn.TableName = "SubnetsTable";
+            return ToReturn;
+        }
+
+        public static DataTable GetCertDetailsTable()
+        {
+            DataTable ToReturn = new DataTable();
+            ToReturn.Columns.Add("AccountID", typeof(string));//
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("CertName", typeof(string));
+
+            //Cert Details
+            ToReturn.Columns.Add("Status", typeof(string));
+            ToReturn.Columns.Add("InUse", typeof(string));
+            ToReturn.Columns.Add("DomainName", typeof(string));
+            ToReturn.Columns.Add("AdditionalNames", typeof(string));
+            ToReturn.Columns.Add("Identifier", typeof(string));
+            ToReturn.Columns.Add("SerialNumber", typeof(string));
+            ToReturn.Columns.Add("AssociatedResources", typeof(string));
+            ToReturn.Columns.Add("RequestedAt", typeof(string));
+            ToReturn.Columns.Add("IssuedAt", typeof(string));
+            ToReturn.Columns.Add("NotBefore", typeof(string));
+            ToReturn.Columns.Add("NotAfter", typeof(string));
+            ToReturn.Columns.Add("PublicKeyInfo", typeof(string));
+            ToReturn.Columns.Add("SignatureAlgorithm", typeof(string));
+            ToReturn.Columns.Add("ARN", typeof(string));
+
+
+            ToReturn.TableName = "CertsTable";
             return ToReturn;
         }
 

@@ -30,7 +30,7 @@ namespace ScannerTestUI
         {
             InitializeComponent();
             ProfilesComboBox.ItemsSource = Scanner.GetProfileNames();
-            ProfilesComboBox.SelectedIndex = 12;
+            ProfilesComboBox.SelectedIndex = 10;
             FillRegions();
         }
 
@@ -109,6 +109,12 @@ namespace ScannerTestUI
         private void initializeMenuItem_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void ListCertsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.GetCertDetails(ProfilesComboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
         }
     }
 }
