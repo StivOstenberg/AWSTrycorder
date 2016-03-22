@@ -48,7 +48,7 @@ namespace ScannerEngine
             this.timer.Elapsed += OnTimerElapsed;
             this.timer.AutoReset = true;
             this.timer.Start();
-
+            
             Scanner.WriteToEventLog("AWS Scanner started " + DateTime.Now.TimeOfDay);
             return "Initialized";
 
@@ -143,7 +143,14 @@ namespace ScannerEngine
             if (E & S & I & N & R)
             {
                 Settings.State = "Idle";
-                DaWorks.Clear();
+                Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
+                try {
+                    DaWorks.Clear();
+                }
+                catch(Exception ex)
+                {
+                    var mess = ex.Message;
+                }
                 try
                 {
                     DaWorks.Tables.Add(VPCTable);
@@ -151,6 +158,7 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(IAMTable);
                     DaWorks.Tables.Add(S3Table);
                     DaWorks.Tables.Add(SubnetsTable);
+                    DaWorks.Tables.Add(RDSTable);
                 }
                 catch
                 {
@@ -292,7 +300,7 @@ namespace ScannerEngine
                 };
                 worker.RunWorkerAsync();
             }
-            else IAMTable.Clear();
+            else S3Table.Clear();
 
             //Subnets Background Worker
             if (Settings.Components["Subnets"])
@@ -366,7 +374,8 @@ namespace ScannerEngine
                 };
                 worker.RunWorkerAsync();
             }
-            else IAMTable.Clear();
+            else VPCTable.Clear();
+            Scanner.WriteToEventLog("AWS Scan started " + DateTime.Now.TimeOfDay);
         }
 
         public DataTable GetIAMTable()

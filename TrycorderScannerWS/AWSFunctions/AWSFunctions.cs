@@ -1059,7 +1059,7 @@ namespace AWSFunctions
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
 
             ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
+            po.MaxDegreeOfParallelism = 128;
             try
             {
                 Parallel.ForEach(Profiles2Scan, po, (profile) => {
@@ -1848,6 +1848,7 @@ namespace AWSFunctions
 
 
             }
+
             return;
         }
 
