@@ -43,6 +43,7 @@ namespace ScannerEngine
         {
             Settings.Initialize();
             Settings.State = "Idle";
+            
 
             this.timer = new System.Timers.Timer(1000 * 60 * Settings.ReScanTimerinMinutes);
             this.timer.Elapsed += OnTimerElapsed;

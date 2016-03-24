@@ -30,7 +30,7 @@ namespace ScannerTestUI
         {
             InitializeComponent();
             ProfilesComboBox.ItemsSource = Scanner.GetProfileNames();
-            ProfilesComboBox.SelectedIndex = 10;
+            ProfilesComboBox.SelectedIndex = 11;
             FillRegions();
         }
 
@@ -114,6 +114,18 @@ namespace ScannerTestUI
         private void ListCertsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var datable = Scanner.GetCertDetails(ProfilesComboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
+
+        private void ListSQSMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.GetSQSQ(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
+
+        private void ListEBSMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.GetEBSDetails(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
             DasGrid.ItemsSource = datable.DefaultView;
         }
     }

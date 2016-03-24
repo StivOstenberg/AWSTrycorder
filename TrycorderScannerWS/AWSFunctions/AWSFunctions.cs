@@ -5,6 +5,8 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.SQS;
+using Amazon.SQS.Model;
 
 
 using System;
@@ -504,6 +506,135 @@ namespace AWSFunctions
 
             return ToReturn;
         }
+
+
+        public DataTable GetSQSQ(string aprofile,string Region2Scan)
+        {
+            DataTable ToReturn = new DataTable();
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var sqsq = new Amazon.SQS.AmazonSQSClient(credential, Endpoint2scan);
+                var daqs = sqsq.ListQueues("").QueueUrls;
+                
+            }
+            catch
+            {
+
+            }
+
+
+
+
+            return ToReturn;
+
+        }
+
+
+
+
+        public DataTable GetEBSDetails(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSTables.GetEBSDetailsTable();
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
+                var volyumes = ec2.DescribeVolumes();
+
+                var vollist = volyumes.Volumes;
+
+                foreach(var onevol in vollist)
+                {
+                    var arow = ToReturn.NewRow();
+                    arow["AccountID"] = accountid;
+                    arow["Profile"]= aprofile ;
+                    arow["Region"]= Region2Scan  ;
+
+                    
+
+
+
+
+                    arow["AZ"]= onevol.AvailabilityZone  ;
+                    arow["CreateTime"]= onevol.CreateTime.ToString()  ;
+                    arow["Encrypted"]= onevol.Encrypted.ToString()  ;
+                    arow["IOPS"]= onevol.Iops.ToString()  ;
+                    arow["KMSKeyID"]= onevol.KmsKeyId  ;
+                    arow["Size"]= onevol.Size.ToString() + "G"  ;
+                    arow["SnapshotID"]= onevol.SnapshotId  ;
+                    arow["State"]= onevol.State.Value  ;
+                    
+                    arow["VolumeID"]= onevol.VolumeId  ;
+                    arow["VolumeType"]= onevol.VolumeType.Value ;
+
+                    //**********  Some extra handling required**************///
+                    List<string> taglist = new List<string>();
+                    foreach(var atag in onevol.Tags)
+                    {
+                        taglist.Add(atag.Key + ": " + atag.Value);
+                    }
+                    arow["Tags"] = List2String(taglist);
+
+
+                    var atachs = onevol.Attachments;
+                 
+                    arow["Attachments"] = onevol.Attachments.Count.ToString();
+                    arow["AttachTime"] = atachs[0].AttachTime  ;
+                    arow["DeleteonTerm"] = atachs[0].DeleteOnTermination  ;
+                    arow["Device"] = atachs[0].Device  ;
+                    arow["InstanceID"] = atachs[0].InstanceId  ;
+                    arow["AttachState"] = atachs[0].State  ;
+
+
+
+                    ToReturn.Rows.Add(arow);
+
+                }
+
+            }
+            catch
+            {
+
+            }
+
+
+
+
+            return ToReturn;
+
+        }
+
 
         public DataTable GetIAMUsers(string aprofile)
         {
@@ -1746,6 +1877,36 @@ namespace AWSFunctions
 
             return ToReturn;
         }
+
+        public static DataTable GetEBSDetailsTable()
+        {
+            DataTable ToReturn = new DataTable();
+            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("Region", typeof(string));
+
+            ToReturn.Columns.Add("Attachments", typeof(string));
+            ToReturn.Columns.Add("AttachTime", typeof(string));
+            ToReturn.Columns.Add("DeleteonTerm", typeof(string));
+            ToReturn.Columns.Add("Device", typeof(string));
+            ToReturn.Columns.Add("InstanceID", typeof(string));
+            ToReturn.Columns.Add("AttachState", typeof(string));
+
+            ToReturn.Columns.Add("AZ", typeof(string));
+            ToReturn.Columns.Add("CreateTime", typeof(string));
+            ToReturn.Columns.Add("Encrypted", typeof(string));
+            ToReturn.Columns.Add("IOPS", typeof(string));
+            ToReturn.Columns.Add("KMSKeyID", typeof(string));
+            ToReturn.Columns.Add("Size", typeof(string));
+            ToReturn.Columns.Add("SnapshotID", typeof(string));
+            ToReturn.Columns.Add("State", typeof(string));
+            ToReturn.Columns.Add("Tags", typeof(string));
+            ToReturn.Columns.Add("VolumeID", typeof(string));
+            ToReturn.Columns.Add("VolumeType", typeof(string));
+
+            return ToReturn;
+        }
+
         public static DataTable GetSubnetDetailsTable()
         {
             DataTable ToReturn = new DataTable();
