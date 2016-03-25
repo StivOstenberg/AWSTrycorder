@@ -686,7 +686,7 @@ namespace AWSFunctions
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan.AsEnumerable();
             ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 128;
+            po.MaxDegreeOfParallelism = 256;
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
@@ -736,10 +736,11 @@ namespace AWSFunctions
                 requesty.MaxResults = 1000;
                 //Ouch!  It lists all snaps we have access to. We only want ones we own and pay for..
                 //And it doesnt seem to return the ones we own. WTF????
+                requesty.OwnerIds.Add("self");
 
-
-                var snapres = ec2.DescribeSnapshots();
+                var snapres = ec2.DescribeSnapshots(requesty);
                 var snappies = snapres.Snapshots;
+                int nummie = snappies.Count;
                 Dictionary<string, Snapshot> snaplist = new Dictionary<string, Snapshot>();
 
                 while (snapres.NextToken != null)
