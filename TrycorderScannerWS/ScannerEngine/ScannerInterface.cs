@@ -44,6 +44,12 @@ namespace ScannerEngine
         [OperationContract]
         DataTable GetComponentDataTable(string component);
 
+        [OperationContract]
+        Dictionary<string, bool> GetColumnVisSetting(string component);
+
+        [OperationContract]
+        void SetColumnVisSetting(string component,string column, bool visibility);
+
 
         /// <summary>
         /// Gets a string with the status of the scanner.

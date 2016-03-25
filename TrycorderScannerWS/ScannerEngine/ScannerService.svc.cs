@@ -23,14 +23,14 @@ namespace ScannerEngine
     {
         DataSet DaWorks = new DataSet();
 
-        DataTable EC2Table = AWSFunctions.AWSTables.GetEC2DetailsTable();
-        DataTable S3Table = AWSFunctions.AWSTables.GetS3DetailsTable();
-        DataTable IAMTable = AWSFunctions.AWSTables.GetUsersDetailsTable();
-        DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
-        DataTable SubnetsTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
-        DataTable RDSTable = AWSFunctions.AWSTables.GetRDSDetailsTable();
-        DataTable EBSTable = AWSFunctions.AWSTables.GetEBSDetailsTable();
-        DataTable SnapshotsTable = AWSFunctions.AWSTables.GetSnapshotDetailsTable();
+        DataTable EC2Table = AWSFunctions.AWSTables.GetComponentTable("EC2");
+        DataTable S3Table = AWSFunctions.AWSTables.GetComponentTable("S3");
+        DataTable IAMTable = AWSFunctions.AWSTables.GetComponentTable("IAM");
+        DataTable VPCTable = AWSFunctions.AWSTables.GetComponentTable("VPC");
+        DataTable SubnetsTable = AWSFunctions.AWSTables.GetComponentTable("Subnets");
+        DataTable RDSTable = AWSFunctions.AWSTables.GetComponentTable("RDS");
+        DataTable EBSTable = AWSFunctions.AWSTables.GetComponentTable("EBS");
+        DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
 
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
@@ -510,6 +510,16 @@ namespace ScannerEngine
             string ToReturn = "";
             ToReturn += Settings.RemoveBadProfilesfromStore();
             return ToReturn;
+        }
+
+        public Dictionary<string, bool> GetColumnVisSetting(string component)
+        {
+            return Settings.GetColumnSettings(component);
+        }
+
+        public void SetColumnVisSetting(string component, string column, bool visibility)
+        {
+            Settings.setcolumnvisibility(component, column, visibility);
         }
     }
 

@@ -138,11 +138,9 @@ namespace AWSTrycorderClientUI
                 System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
                 mi.IsCheckable = true;
                 mi.Header = KVP.Key;
-
                 mi.IsChecked = KVP.Value;
                 mi.StaysOpenOnClick = true;
                 mi.Click += ProfileChecked;
-
                 Proot.Items.Add(mi);
             }
             bool Baddies = false;
@@ -234,15 +232,18 @@ namespace AWSTrycorderClientUI
             mit3.StaysOpenOnClick = true;
             mit3.Click += UCKMostCol_Click;
             Proot.Items.Add(mit3);
+            var vizlist = Trycorder.GetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString());
             foreach (var acol in DasGrid.Columns)
             {
                 System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
                 mi.IsCheckable = true;
-                mi.IsChecked = true;
+                mi.IsChecked = vizlist[acol.Header.ToString()];
                 mi.Header = acol.Header;
                 mi.Click += ColumnChecked;
                 mi.StaysOpenOnClick = true;
                 Proot.Items.Add(mi);
+                ShowHideColumn(acol.Header.ToString(), vizlist[acol.Header.ToString()]);
+
             }
         }
 
@@ -363,7 +364,7 @@ namespace AWSTrycorderClientUI
             bool state = gopher.IsChecked;
             string thecolumn = gopher.Header.ToString();
             ShowHideColumn(thecolumn, state);
-
+            Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), thecolumn, state);
         }
 
         private void ShowHideColumn(string thecolumn,bool state)
@@ -475,6 +476,7 @@ namespace AWSTrycorderClientUI
                 SelectColumncomboBox.SelectedIndex = 0;
             }
             BuildColumnMenuList();
+
 
         }
         private void ScanMenuItem_Click(object sender, RoutedEventArgs e)

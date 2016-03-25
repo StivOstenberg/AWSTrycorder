@@ -103,7 +103,7 @@ namespace AWSFunctions
             //Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
 
             //Build a list of current keys to use to avoid dupes due to changed "profile" names.
-            
+
 
             Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
 
@@ -197,13 +197,13 @@ namespace AWSFunctions
 
             if (File.Exists(filename))
             {
-                
+
                 try
                 {
-                    File.Move(filename,newfilename);
+                    File.Move(filename, newfilename);
                     ToReturn += "Moved " + filename + " to " + newfilename + "\n";
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return "Unable to move original file " + filename + "\n" + ex.Message;
                 }
@@ -237,16 +237,17 @@ namespace AWSFunctions
         public string AddCredential(string newprofileName, string newaccessKey, string newsecretKey)
         {
             string ToReturn = "";
-           
+
             //Build a list of current keys to use to avoid dupes due to changed "profile" names.
             Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
             foreach (var aprofilename in Amazon.Util.ProfileManager.ListProfileNames())
             {
                 var acred = Amazon.Util.ProfileManager.GetAWSCredentials(aprofilename).GetCredentials();
-                if(acred.AccessKey.Equals(newaccessKey)) return "Access Key already in store! Profile: " + aprofilename;
+                if (acred.AccessKey.Equals(newaccessKey)) return "Access Key already in store! Profile: " + aprofilename;
                 currentaccesskeys.Add(aprofilename, acred.AccessKey);
             }
-            try {
+            try
+            {
                 if (newaccessKey.Length.Equals(20) & newsecretKey.Length.Equals(40))
                 {
                     ToReturn = newprofileName + " added to credential store!\n";
@@ -257,13 +258,15 @@ namespace AWSFunctions
                     ToReturn = newprofileName + "'s keys are not the correct length!\n";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ToReturn = ex.Message;
             }
-            try {
+            try
+            {
             }
-            catch {
+            catch
+            {
             }
 
             return ToReturn;
@@ -298,11 +301,11 @@ namespace AWSFunctions
 
         }
 
-        public DataTable GetSubnets (string aprofile, string Region2Scan)
+        public DataTable GetSubnets(string aprofile, string Region2Scan)
         {
 
             string accountid = GetAccountID(aprofile);
-            
+
             RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
             //Convert the Region2Scan to an AWS Endpoint.
             foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
@@ -315,15 +318,15 @@ namespace AWSFunctions
             }
 
             Amazon.Runtime.AWSCredentials credential;
-            DataTable ToReturn = AWSTables.GetSubnetDetailsTable();
+            DataTable ToReturn = AWSTables.GetComponentTable("Subnets");
 
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
                 var subbies = ec2.DescribeSubnets().Subnets;
-                
-                foreach(var asubnet in subbies)
+
+                foreach (var asubnet in subbies)
                 {
                     DataRow disone = ToReturn.NewRow();
                     disone["AccountID"] = accountid;
@@ -348,10 +351,10 @@ namespace AWSFunctions
                     disone["SubnetID"] = asubnet.SubnetId;
                     var tagger = asubnet.Tags;
                     List<string> taglist = new List<string>();
-                    foreach(var atag in tagger)
+                    foreach (var atag in tagger)
                     {
                         taglist.Add(atag.Key + ": " + atag.Value);
-                        if(atag.Key.Equals("Name")) disone["SubnetName"] = atag.Value;
+                        if (atag.Key.Equals("Name")) disone["SubnetName"] = atag.Value;
                     }
 
                     disone["Tags"] = List2String(taglist);
@@ -362,8 +365,8 @@ namespace AWSFunctions
 
 
             }
-            catch(Exception ex)
-                {
+            catch (Exception ex)
+            {
                 string rabbit = "";
             }
             return ToReturn;
@@ -373,11 +376,11 @@ namespace AWSFunctions
         {
             string accountid = GetAccountID(aprofile);
             Amazon.Runtime.AWSCredentials credential;
-            DataTable ToReturn = AWSTables.GetS3DetailsTable();
+            DataTable ToReturn = AWSTables.GetComponentTable("S3");
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                
+
                 AmazonS3Client S3Client = new AmazonS3Client(credential, Amazon.RegionEndpoint.USEast1);
                 ListBucketsResponse response = S3Client.ListBuckets();
                 foreach (S3Bucket abucket in response.Buckets)
@@ -389,7 +392,7 @@ namespace AWSFunctions
                         GetBucketLocationRequest gbr = new GetBucketLocationRequest();
                         gbr.BucketName = name;
                         GetBucketLocationResponse location = S3Client.GetBucketLocation(gbr);
-                        
+
                         var region = location.Location.Value;
                         if (region.Equals("")) region = "us-east-1";
                         var pointy = RegionEndpoint.GetBySystemName(region);
@@ -402,8 +405,10 @@ namespace AWSFunctions
                         var authregion = "";
                         var EP = BS3Client.Config.RegionEndpoint.DisplayName;
                         if (String.IsNullOrEmpty(BS3Client.Config.RegionEndpoint.DisplayName)) authregion = "";
-                        else {
-                             authregion = BS3Client.Config.AuthenticationRegion; }
+                        else
+                        {
+                            authregion = BS3Client.Config.AuthenticationRegion;
+                        }
 
                         string authservice = "";
 
@@ -497,7 +502,7 @@ namespace AWSFunctions
 
 
 
-                }
+            }
             catch
             {
                 //Croak
@@ -508,7 +513,7 @@ namespace AWSFunctions
         }
 
 
-        public DataTable GetSQSQ(string aprofile,string Region2Scan)
+        public DataTable GetSQSQ(string aprofile, string Region2Scan)
         {
             DataTable ToReturn = new DataTable();
 
@@ -531,7 +536,7 @@ namespace AWSFunctions
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 var sqsq = new Amazon.SQS.AmazonSQSClient(credential, Endpoint2scan);
                 var daqs = sqsq.ListQueues("").QueueUrls;
-                
+
             }
             catch
             {
@@ -548,7 +553,7 @@ namespace AWSFunctions
 
         public DataTable ScanEBS(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetEBSDetailsTable();
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("EBS");
             var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan.AsEnumerable();
@@ -605,8 +610,8 @@ namespace AWSFunctions
                 var volres = ec2.DescribeVolumes();
                 var volyumes = volres.Volumes;
                 List<Volume> vollist = new List<Volume>();
-                
-                while(volres.NextToken!=null)
+
+                while (volres.NextToken != null)
                 {
                     foreach (var av in volyumes)
                     {
@@ -626,24 +631,24 @@ namespace AWSFunctions
                 {
                     var arow = ToReturn.NewRow();
                     arow["AccountID"] = accountid;
-                    arow["Profile"]= aprofile ;
-                    arow["Region"]= Region2Scan  ;
+                    arow["Profile"] = aprofile;
+                    arow["Region"] = Region2Scan;
 
-                    arow["AZ"]= onevol.AvailabilityZone  ;
-                    arow["CreateTime"]= onevol.CreateTime.ToString()  ;
-                    arow["Encrypted"]= onevol.Encrypted.ToString()  ;
-                    arow["IOPS"]= onevol.Iops  ;
-                    arow["KMSKeyID"]= onevol.KmsKeyId  ;
-                    arow["Size-G"]= onevol.Size  ;
-                    arow["SnapshotID"]= onevol.SnapshotId  ;
-                    arow["State"]= onevol.State.Value  ;
-                    
-                    arow["VolumeID"]= onevol.VolumeId  ;
-                    arow["VolumeType"]= onevol.VolumeType.Value ;
+                    arow["AZ"] = onevol.AvailabilityZone;
+                    arow["CreateTime"] = onevol.CreateTime.ToString();
+                    arow["Encrypted"] = onevol.Encrypted.ToString();
+                    arow["IOPS"] = onevol.Iops;
+                    arow["KMSKeyID"] = onevol.KmsKeyId;
+                    arow["Size-G"] = onevol.Size;
+                    arow["SnapshotID"] = onevol.SnapshotId;
+                    arow["State"] = onevol.State.Value;
+
+                    arow["VolumeID"] = onevol.VolumeId;
+                    arow["VolumeType"] = onevol.VolumeType.Value;
 
                     //**********  Some extra handling required**************///
                     List<string> taglist = new List<string>();
-                    foreach(var atag in onevol.Tags)
+                    foreach (var atag in onevol.Tags)
                     {
                         taglist.Add(atag.Key + ": " + atag.Value);
                     }
@@ -665,9 +670,9 @@ namespace AWSFunctions
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                WriteToEventLog("EBS on "+ aprofile + " failed:\n" + ex.Message);
+                WriteToEventLog("EBS on " + aprofile + " failed:\n" + ex.Message);
             }
 
 
@@ -681,7 +686,7 @@ namespace AWSFunctions
 
         public DataTable ScanSnapshots(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetSnapshotDetailsTable();
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
             var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan.AsEnumerable();
@@ -773,7 +778,8 @@ namespace AWSFunctions
                 foreach (var av in snappies)
                 {
                     if (!snaplist.Keys.Contains(av.SnapshotId)) snaplist.Add(av.SnapshotId, av);
-                    else {
+                    else
+                    {
                         var goob = snaplist[av.SnapshotId];
                         if (goob.Equals(av))
                         {
@@ -781,29 +787,29 @@ namespace AWSFunctions
                         }
                     }//Eliminate dupes.
                 }
-                
+
                 foreach (var onesnap in snaplist.Values)
                 {
                     var arow = ToReturn.NewRow();
-                    if (!accountid.Equals(onesnap.OwnerId))continue;
+                    if (!accountid.Equals(onesnap.OwnerId)) continue;
                     arow["AccountID"] = accountid;
 
                     var rr = onesnap.GetType();
-                    arow["Profile"] = aprofile  ;
-                    arow["Region"] = Region2Scan  ;
-                    arow["SnapshotID"] = onesnap.SnapshotId  ;
-                    arow["Description"] = onesnap.Description  ;
-                    arow["VolumeID"] = onesnap.VolumeId  ;
-                    arow["VolumeSize-GB"] = onesnap.VolumeSize  ;
-                    
-                    arow["Encrypted"] = onesnap.Encrypted.ToString()  ;
-                    arow["KMSKeyID"] = onesnap.KmsKeyId  ;
-                    arow["OwnerAlias"] = onesnap.OwnerAlias  ;
-                    arow["OwnerID"] = onesnap.OwnerId  ;
-                    arow["Progress"] = onesnap.Progress  ;
-                    arow["StartTime"] = onesnap.StartTime.ToString()  ;
-                    arow["State"] = onesnap.State.Value  ;
-                    arow["StateMessage"] = onesnap.StateMessage  ;
+                    arow["Profile"] = aprofile;
+                    arow["Region"] = Region2Scan;
+                    arow["SnapshotID"] = onesnap.SnapshotId;
+                    arow["Description"] = onesnap.Description;
+                    arow["VolumeID"] = onesnap.VolumeId;
+                    arow["VolumeSize-GB"] = onesnap.VolumeSize;
+
+                    arow["Encrypted"] = onesnap.Encrypted.ToString();
+                    arow["KMSKeyID"] = onesnap.KmsKeyId;
+                    arow["OwnerAlias"] = onesnap.OwnerAlias;
+                    arow["OwnerID"] = onesnap.OwnerId;
+                    arow["Progress"] = onesnap.Progress;
+                    arow["StartTime"] = onesnap.StartTime.ToString();
+                    arow["State"] = onesnap.State.Value;
+                    arow["StateMessage"] = onesnap.StateMessage;
 
                     var DKI = onesnap.DataEncryptionKeyId;
                     if (String.IsNullOrEmpty(DKI)) { }
@@ -812,7 +818,7 @@ namespace AWSFunctions
                         arow["DataEncryptionKeyID"] = onesnap.DataEncryptionKeyId.ToString();
                     }
 
-                    
+
                     //**********  Some extra handling required**************///
                     List<string> taglist = new List<string>();
                     foreach (var atag in onesnap.Tags)
@@ -841,11 +847,12 @@ namespace AWSFunctions
 
         public DataTable GetIAMUsers(string aprofile)
         {
-            DataTable IAMTable = AWSTables.GetUsersDetailsTable(); //Blank table to fill out.
+            DataTable IAMTable = AWSTables.GetComponentTable("IAM"); //Blank table to fill out.
 
             Dictionary<string, string> UserNameIdMap = new Dictionary<string, string>();//Usernames to UserIDs to fill in row later.
             Amazon.Runtime.AWSCredentials credential;
-            try {
+            try
+            {
                 string accountid = GetAccountID(aprofile);
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 var iam = new AmazonIdentityManagementServiceClient(credential);
@@ -854,7 +861,7 @@ namespace AWSFunctions
                 var myUserList = iam.ListUsers().Users;
 
 
-                foreach(var rabbit in myUserList)
+                foreach (var rabbit in myUserList)
                 {
                     unamelookup.Add(rabbit.UserId, rabbit.UserName);
                 }
@@ -864,30 +871,30 @@ namespace AWSFunctions
                     UserNameIdMap.Add(auser.UserName, auser.UserId);
                 }
 
-            Amazon.IdentityManagement.Model.GetCredentialReportResponse credreport = new GetCredentialReportResponse();
-            DateTime getreportstart = DateTime.Now;
-            DateTime getreportfinish = DateTime.Now;
+                Amazon.IdentityManagement.Model.GetCredentialReportResponse credreport = new GetCredentialReportResponse();
+                DateTime getreportstart = DateTime.Now;
+                DateTime getreportfinish = DateTime.Now;
 
-            try
-            {
-                credreport = iam.GetCredentialReport();
-                getreportfinish = DateTime.Now;
-                var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
+                try
+                {
+                    credreport = iam.GetCredentialReport();
+                    getreportfinish = DateTime.Now;
+                    var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
 
 
                     //Extract data from CSV Stream into DataTable
-                var streambert = credreport.Content;
+                    var streambert = credreport.Content;
 
-                streambert.Position = 0;
-                StreamReader sr = new StreamReader(streambert);
-                string myStringRow = sr.ReadLine();
-                var headers = myStringRow.Split(",".ToCharArray()[0]);
-                if (myStringRow != null) myStringRow = sr.ReadLine();//Dump the header line
-                Dictionary<string, string> mydata = new Dictionary<string, string>();
-                while (myStringRow != null)
-                {
+                    streambert.Position = 0;
+                    StreamReader sr = new StreamReader(streambert);
+                    string myStringRow = sr.ReadLine();
+                    var headers = myStringRow.Split(",".ToCharArray()[0]);
+                    if (myStringRow != null) myStringRow = sr.ReadLine();//Dump the header line
+                    Dictionary<string, string> mydata = new Dictionary<string, string>();
+                    while (myStringRow != null)
+                    {
                         DataRow auserdata = IAMTable.NewRow();
-                    var arow = myStringRow.Split(",".ToCharArray()[0]);
+                        var arow = myStringRow.Split(",".ToCharArray()[0]);
 
                         //Letsa dumpa da data...
                         auserdata["AccountID"] = accountid;
@@ -895,19 +902,20 @@ namespace AWSFunctions
 
                         string thisid = "";
                         string username = "";
-                        try {
+                        try
+                        {
                             thisid = UserNameIdMap[arow[0]];
                             auserdata["UserID"] = thisid;
                             auserdata["UserName"] = unamelookup[thisid];
-                            if(unamelookup[thisid] == "<root_account>")
+                            if (unamelookup[thisid] == "<root_account>")
                             {
                                 auserdata["UserID"] = "*-" + accountid + "-* root";
                             }
-                            username= unamelookup[thisid];
+                            username = unamelookup[thisid];
                         }
                         catch
                         {
-                            auserdata["UserID"] = "*-"+accountid+"-* root";
+                            auserdata["UserID"] = "*-" + accountid + "-* root";
                             auserdata["UserName"] = "<root_account>";
                         }
 
@@ -950,24 +958,24 @@ namespace AWSFunctions
 
 
 
-                    myStringRow = sr.ReadLine();
+                        myStringRow = sr.ReadLine();
+                    }
+                    sr.Close();
+                    sr.Dispose();
+
+
+
                 }
-                sr.Close();
-                sr.Dispose();
-
-
-
-            }
-            catch (Exception ex)
-            {
+                catch (Exception ex)
+                {
                     WriteToEventLog(aprofile + " failed\n" + ex.Message.ToString());
-                //Deal with this later if necessary.
+                    //Deal with this later if necessary.
+                }
+
+                //Done stream, now to fill in the blanks...
+
+
             }
-
-               //Done stream, now to fill in the blanks...
-
-
-        }
             catch//The final catch
             {
                 string btest = "";
@@ -983,7 +991,7 @@ namespace AWSFunctions
         /// <param name="aprofile">An AWS Profile name stored in Windows Credential Store</param>
         /// <param name="auser">The Name of a User</param>
         /// <returns>Dictionary containing keys for each type of data[AccessKeys], [Groups], [Policies]</returns>
-        public Dictionary<string,string> GetUserDetails(string aprofile, string username)
+        public Dictionary<string, string> GetUserDetails(string aprofile, string username)
         {
             var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
             var iam = new AmazonIdentityManagementServiceClient(credential);
@@ -991,7 +999,8 @@ namespace AWSFunctions
             string policylist = "";
             string aklist = "";
             string groups = "";
-            try {
+            try
+            {
                 ListAccessKeysRequest LAKREQ = new ListAccessKeysRequest();
                 LAKREQ.UserName = username;
                 var LAKRES = iam.ListAccessKeys(LAKREQ);
@@ -1003,7 +1012,8 @@ namespace AWSFunctions
             }
             catch { aklist = ""; }
 
-            try {
+            try
+            {
                 ListAttachedUserPoliciesRequest LAUPREQ = new ListAttachedUserPoliciesRequest();
                 LAUPREQ.UserName = username;
                 var LAUPRES = iam.ListAttachedUserPolicies(LAUPREQ);
@@ -1015,7 +1025,8 @@ namespace AWSFunctions
             }
             catch { policylist = ""; }
 
-            try {
+            try
+            {
                 var groopsreq = new ListGroupsForUserRequest();
                 groopsreq.UserName = username;
                 var LG = iam.ListGroupsForUser(groopsreq);
@@ -1038,10 +1049,10 @@ namespace AWSFunctions
         /// </summary>
         /// <param name="stringlist"></param>
         /// <returns></returns>
-        public string List2String(List<string>stringlist)
+        public string List2String(List<string> stringlist)
         {
             string toreturn = "";
-            foreach(string astring in stringlist)
+            foreach (string astring in stringlist)
             {
                 if (toreturn.Length > 2) toreturn += "\n";
                 toreturn += astring;
@@ -1060,24 +1071,24 @@ namespace AWSFunctions
             string accountid = "";
             var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
             var iam = new AmazonIdentityManagementServiceClient(credential);
-            
+
             try
             {
-                 myUserList = iam.ListUsers().Users;
+                myUserList = iam.ListUsers().Users;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return "Error: " + ex.Message;
             }
             try
             {
 
-                    accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID  
+                accountid = myUserList[0].Arn.Split(':')[4];//Get the ARN and extract the AccountID ID  
             }
-                catch
-                {
-                    accountid = "?";
-                }
+            catch
+            {
+                accountid = "?";
+            }
             return accountid;
         }
         /// <summary>
@@ -1088,22 +1099,22 @@ namespace AWSFunctions
         /// <returns></returns>
         public DataTable GetEC2Instances(string aprofile, string Region2Scan)
         {
-            DataTable ToReturn = AWSTables.GetEC2DetailsTable();
+            DataTable ToReturn = AWSTables.GetComponentTable("EC2");
             RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
 
 
 
             Amazon.Runtime.AWSCredentials credential;
 
-            
-            Dictionary<string, Dictionary<String,String>> OldReturn = new Dictionary<string, Dictionary<String,String>>();
+
+            Dictionary<string, Dictionary<String, String>> OldReturn = new Dictionary<string, Dictionary<String, String>>();
             credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-            
-            
+
+
             //Convert the Region2Scan to an AWS Endpoint.
-            foreach(var aregion in RegionEndpoint.EnumerableAllRegions)
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
             {
-                if(aregion.DisplayName.Equals(Region2Scan))
+                if (aregion.DisplayName.Equals(Region2Scan))
                 {
                     Endpoint2scan = aregion;
                     continue;
@@ -1111,7 +1122,7 @@ namespace AWSFunctions
             }
 
             //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
-            var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
+            var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
 
             string accountid = GetAccountID(aprofile);
             var request = new DescribeInstanceStatusRequest();
@@ -1122,7 +1133,7 @@ namespace AWSFunctions
             {
                 instatresponse = ec2.DescribeInstanceStatus(request);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 string test = "";//Quepaso? 
             }
@@ -1136,7 +1147,7 @@ namespace AWSFunctions
 
 
             //DescribeInstancesResult DescResult = ec2.DescribeInstances(indatarequest);
-            
+
             DescribeInstancesResponse DescResult = ec2.DescribeInstances();
 
             int count = instatresponse.InstanceStatuses.Count();
@@ -1149,11 +1160,11 @@ namespace AWSFunctions
                 foreach (var instancedata in urtburgle.Instances)
                 {
                     try { Bunchadata.Add(instancedata.InstanceId, instancedata); }
-                    catch (Exception ex) { } ;
+                    catch (Exception ex) { };
                 }
             }
 
-            
+
 
             //Go through list of instances...
             foreach (var instat in instatresponse.InstanceStatuses)
@@ -1172,7 +1183,7 @@ namespace AWSFunctions
                 List<string> eventlist = new List<string>();
                 var reservations = DescResult.Reservations;
 
-                var myinstance = new  Reservation();
+                var myinstance = new Reservation();
 
                 List<String> innies = new List<String>();
                 foreach (Reservation arez in DescResult.Reservations)
@@ -1191,20 +1202,20 @@ namespace AWSFunctions
 
                 List<string> tags = new List<string>();
                 var loadtags = thisinstance.Tags.AsEnumerable();
-                foreach(var atag in loadtags)
+                foreach (var atag in loadtags)
                 {
                     tags.Add(atag.Key + ": " + atag.Value);
-                    if (atag.Key.Equals( "Name")) instancename = atag.Value;
+                    if (atag.Key.Equals("Name")) instancename = atag.Value;
                 }
 
 
                 Dictionary<string, string> taglist = new Dictionary<string, string>();
                 foreach (var rekey in loadtags)
                 {
-                        taglist.Add(rekey.Key, rekey.Value);
+                    taglist.Add(rekey.Key, rekey.Value);
                 }
 
-            
+
 
                 if (eventnumber > 0)
                 {
@@ -1271,7 +1282,7 @@ namespace AWSFunctions
                 string AMIDesc = "";
                 try { AMI = thisinstance.ImageId; }
                 catch { }
-                if (string.IsNullOrEmpty(AMI))  AMI = "";
+                if (string.IsNullOrEmpty(AMI)) AMI = "";
                 else
                 {
                     DescribeImagesRequest DIR = new DescribeImagesRequest();
@@ -1289,7 +1300,7 @@ namespace AWSFunctions
                 var SGs = thisinstance.SecurityGroups;
                 List<string> SGids = new List<string>();
                 List<String> SGNames = new List<string>();
-                foreach(var wabbit in SGs)
+                foreach (var wabbit in SGs)
                 {
                     SGids.Add(wabbit.GroupId);
                     SGNames.Add(wabbit.GroupName);
@@ -1312,28 +1323,28 @@ namespace AWSFunctions
                 //Build our dictionary of values and keys for this instance  This is dependent on the table created by GetEC2DetailsTable()
                 Dictionary<string, string> datafields = new Dictionary<string, string>();
                 thisinstancedatarow["AccountID"] = accountid;
-                thisinstancedatarow["Profile"]= profile ;
-                thisinstancedatarow["Region"] = myregion ;
-                 thisinstancedatarow["InstanceName"] = instancename;
-                 thisinstancedatarow["InstanceID"] = instanceid;
-                 thisinstancedatarow["AMI"] = AMI;
-                 thisinstancedatarow["AMIDescription"] = AMIDesc;
-                 thisinstancedatarow["AvailabilityZone"] = AZ;
-                 thisinstancedatarow["Status"] = status;
-                 thisinstancedatarow["Events"] = eventnumber.ToString();
-                 thisinstancedatarow["EventList"] = List2String(eventlist);
-                 thisinstancedatarow["Tags"] = List2String (tags);
-                 thisinstancedatarow["PrivateIP"] = Priv_IP;
-                 thisinstancedatarow["PublicIP"] = publicIP;
-                 thisinstancedatarow["PublicDNS"] = publicDNS;
-                 thisinstancedatarow["PublicDNS"] = publicDNS;
-                 thisinstancedatarow["VPC"] = myvpcid;
-                 thisinstancedatarow["SubnetID"] = mysubnetid;
-                 thisinstancedatarow["InstanceState"] = istate.Value;
-                 thisinstancedatarow["VirtualizationType"] = ivirtType;
-                 thisinstancedatarow["InstanceType"] = instancetype;
-                 thisinstancedatarow["SecurityGroups"] = List2String( SGids);
-                 thisinstancedatarow["SGNames"] = List2String( SGNames);
+                thisinstancedatarow["Profile"] = profile;
+                thisinstancedatarow["Region"] = myregion;
+                thisinstancedatarow["InstanceName"] = instancename;
+                thisinstancedatarow["InstanceID"] = instanceid;
+                thisinstancedatarow["AMI"] = AMI;
+                thisinstancedatarow["AMIDescription"] = AMIDesc;
+                thisinstancedatarow["AvailabilityZone"] = AZ;
+                thisinstancedatarow["Status"] = status;
+                thisinstancedatarow["Events"] = eventnumber.ToString();
+                thisinstancedatarow["EventList"] = List2String(eventlist);
+                thisinstancedatarow["Tags"] = List2String(tags);
+                thisinstancedatarow["PrivateIP"] = Priv_IP;
+                thisinstancedatarow["PublicIP"] = publicIP;
+                thisinstancedatarow["PublicDNS"] = publicDNS;
+                thisinstancedatarow["PublicDNS"] = publicDNS;
+                thisinstancedatarow["VPC"] = myvpcid;
+                thisinstancedatarow["SubnetID"] = mysubnetid;
+                thisinstancedatarow["InstanceState"] = istate.Value;
+                thisinstancedatarow["VirtualizationType"] = ivirtType;
+                thisinstancedatarow["InstanceType"] = instancetype;
+                thisinstancedatarow["SecurityGroups"] = List2String(SGids);
+                thisinstancedatarow["SGNames"] = List2String(SGNames);
                 //Add this instance to the data returned.
                 ToReturn.Rows.Add(thisinstancedatarow);
 
@@ -1354,7 +1365,7 @@ namespace AWSFunctions
         /// <returns>Datatable of VPC details</returns>
         public DataTable ScanVPCs(IEnumerable<string> Profiles2Scan)
         {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetVPCDetailsTable();
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("VPC");
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             ParallelOptions po = new ParallelOptions();
             po.MaxDegreeOfParallelism = 64;
@@ -1409,33 +1420,33 @@ namespace AWSFunctions
             }
             foreach (var rabbit in MyData.Values)
             {
-                foreach(DataRow arow in rabbit.Rows)
+                foreach (DataRow arow in rabbit.Rows)
                 {
                     try
                     {
                         ToReturn.ImportRow(arow);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         string fail = "";
                     }
                 }
 
 
-               // ToReturn.Merge(rabbit);  Had to remove due to merge constraints. Wanted more granular debugging.
+                // ToReturn.Merge(rabbit);  Had to remove due to merge constraints. Wanted more granular debugging.
             }
             return ToReturn;
         }
 
 
-                /// <summary>
+        /// <summary>
         /// Given a List of Profiles, return IAM user data for each.
         /// </summary>
         /// <returns></returns>
         public DataTable ScanCerts(IEnumerable<string> Profiles2Scan)
         {
 
-            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("Certs");
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
 
             ParallelOptions po = new ParallelOptions();
@@ -1454,20 +1465,20 @@ namespace AWSFunctions
             }
             foreach (var rabbit in MyData.Values)
             {
-                foreach(DataRow arow in rabbit.Rows)
+                foreach (DataRow arow in rabbit.Rows)
                 {
                     try
                     {
                         ToReturn.ImportRow(arow);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         string fail = "";
                     }
                 }
 
 
-               // ToReturn.Merge(rabbit);  Had to remove due to merge constraints. Wanted more granular debugging.
+                // ToReturn.Merge(rabbit);  Had to remove due to merge constraints. Wanted more granular debugging.
             }
             return ToReturn;
         }
@@ -1486,7 +1497,7 @@ namespace AWSFunctions
 
 
                 //How to get certificate details????
-                
+
 
                 foreach (var acert in cervix.ServerCertificateMetadataList)
                 {
@@ -1530,7 +1541,7 @@ namespace AWSFunctions
         /// <returns></returns>
         public DataTable ScanS3(IEnumerable<string> Profiles2Scan)
         {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("S3");
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             ParallelOptions po = new ParallelOptions();
             po.MaxDegreeOfParallelism = 128;
@@ -1542,7 +1553,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                WriteToEventLog( "Failed scanning S3\n" + ex.Message);
+                WriteToEventLog("Failed scanning S3\n" + ex.Message);
                 ToReturn.TableName = ex.Message.ToString();
                 return ToReturn;
             }
@@ -1591,7 +1602,7 @@ namespace AWSFunctions
 
         public DataTable ScanRDS(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetRDSDetailsTable();
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("RDS");
             var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan.AsEnumerable();
@@ -1663,7 +1674,7 @@ namespace AWSFunctions
                     disone["InstanceID"] = anRDS.DBInstanceIdentifier;
                     disone["Name"] = anRDS.DBName;
                     disone["Status"] = anRDS.DBInstanceStatus;
-                    disone["EndPoint"] = anRDS.Endpoint.Address+ ":" + anRDS.Endpoint.Port;
+                    disone["EndPoint"] = anRDS.Endpoint.Address + ":" + anRDS.Endpoint.Port;
 
                     disone["InstanceClass"] = anRDS.DBInstanceClass;
                     disone["IOPS"] = anRDS.Iops.ToString();
@@ -1711,7 +1722,7 @@ namespace AWSFunctions
             catch (Exception ex)
             {
                 ToReturn.TableName = ex.Message.ToString();
-                WriteToEventLog( "Failed scanning EC2\n" + ex.Message);
+                WriteToEventLog("Failed scanning EC2\n" + ex.Message);
                 return ToReturn;
             }
             foreach (var rabbit in MyData.Values)
@@ -1724,9 +1735,9 @@ namespace AWSFunctions
                         {
                             ToReturn.ImportRow(arow);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
-                            WriteToEventLog(arow[0] + "\n" + ex.Message );
+                            WriteToEventLog(arow[0] + "\n" + ex.Message);
                         }
                     }
                 }
@@ -1742,7 +1753,7 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-        public DataTable GetVPCList (String aprofile)
+        public DataTable GetVPCList(String aprofile)
         {
             string accountid = GetAccountID(aprofile);
             DataTable ToReturn = AWSTables.GetVPCDetailsTable();
@@ -1751,23 +1762,23 @@ namespace AWSFunctions
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
                 var vippies = ec2.DescribeVpcs().Vpcs;
 
-                foreach(var avpc in vippies)
+                foreach (var avpc in vippies)
                 {
                     DataRow thisvpc = ToReturn.NewRow();
                     thisvpc["AccountID"] = accountid;
                     thisvpc["Profile"] = aprofile;
                     thisvpc["VpcID"] = avpc.VpcId;
-                    thisvpc["CidrBlock"] = avpc. CidrBlock;
+                    thisvpc["CidrBlock"] = avpc.CidrBlock;
                     thisvpc["IsDefault"] = avpc.IsDefault.ToString();
                     thisvpc["DHCPOptionsID"] = avpc.DhcpOptionsId;
                     thisvpc["InstanceTenancy"] = avpc.InstanceTenancy;
                     thisvpc["State"] = avpc.State;
                     var tagger = avpc.Tags;
                     List<string> tlist = new List<string>();
-                    foreach(var atag in tagger)
+                    foreach (var atag in tagger)
                     {
                         tlist.Add(atag.Key + ": " + atag.Value);
                     }
@@ -1778,7 +1789,7 @@ namespace AWSFunctions
 
 
             }//End of the big Try
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //Whyfor did it fail?
                 string w = "";
@@ -1788,7 +1799,7 @@ namespace AWSFunctions
         }
 
 
-        public DataTable FilterDataTable(DataTable Table2Filter,  string filterstring, bool casesensitive)
+        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
         {
             if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
             DataTable ToReturn = Table2Filter.Copy();
@@ -1798,10 +1809,10 @@ namespace AWSFunctions
             int originalnumberofrows = Table2Filter.Rows.Count;
 
             //Loop through Data table provided by datarows
-            foreach(DataRow arow in Table2Filter.AsEnumerable())
+            foreach (DataRow arow in Table2Filter.AsEnumerable())
             {
                 //Loop through each column in datarow.
-                foreach(DataColumn acolumn in Table2Filter.Columns)
+                foreach (DataColumn acolumn in Table2Filter.Columns)
                 {
                     string temp = arow[acolumn].ToString();
 
@@ -1831,7 +1842,7 @@ namespace AWSFunctions
 
             return ToReturn;
         }
-        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter , string filterstring , bool casesensitive)
+        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter, string filterstring, bool casesensitive)
         {
             DataTable ToReturn = new DataTable();
             string currentname = Table2Filter.TableName;
@@ -1851,11 +1862,11 @@ namespace AWSFunctions
             string nocasequery = "p=> ";
             int colno = Table2Filter.Columns.Count;
 
-            for (int i =0; i < Table2Filter.Columns.Count  ;i++)
+            for (int i = 0; i < Table2Filter.Columns.Count; i++)
             {
                 if (i == colno)
                 {
-                    CASEquery +=   @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().Contains(FilterTagText.Text) ; ";
+                    CASEquery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().Contains(FilterTagText.Text) ; ";
                     nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().ToLower().Contains(FilterTagText.Text) ; ";
                 }
                 else
@@ -1867,7 +1878,7 @@ namespace AWSFunctions
 
 
             //Scan any columns.  
-            if(anycolumn)
+            if (anycolumn)
             {
                 return (FilterDataTable(Table2Filter, filterstring, casesensitive));
             }
@@ -1877,12 +1888,13 @@ namespace AWSFunctions
             {
                 if (casesensitive)
                 {
-                     var newt  = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                    var newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
                     if (newt.Rows.Count > 0) ToReturn = newt;
                     else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
-                    { ToReturn.Merge(Table2Filter);
+                    {
+                        ToReturn.Merge(Table2Filter);
                         ToReturn.Clear();
-                            }
+                    }
                 }
                 else
                 {
@@ -1904,7 +1916,7 @@ namespace AWSFunctions
         /// Note, must be run once as Administrator to set up the Event Source?
         /// </summary>
         /// <param name="sEvent"></param>
-      public void WriteToEventLog(string sEvent)
+        public void WriteToEventLog(string sEvent)
         {
             var sSource = "ScanAWS Lib";
             var sLog = "Application";
@@ -1917,6 +1929,31 @@ namespace AWSFunctions
 
     public class AWSTables
     {
+        public static DataTable GetComponentTable(string component)
+        {
+            switch (component.ToLower())
+            {
+                case "ec2":
+                    return GetEC2DetailsTable();
+                case "snapshots":
+                    return GetSnapshotDetailsTable();
+                case "rds":
+                    return GetRDSDetailsTable();
+                case "ebs":
+                    return GetEBSDetailsTable();
+                case "iam":
+                    return GetUsersDetailsTable();
+                case "s3":
+                    return GetS3DetailsTable();
+                case "subnets":
+                    return GetSubnetDetailsTable();
+                case "vpc":
+                    return GetVPCDetailsTable();
+                default:
+                    return GetEC2DetailsTable();
+            }
+        }
+
         public static DataTable GetRDSDetailsTable()
         {
             DataTable table = new DataTable();
@@ -1931,10 +1968,10 @@ namespace AWSFunctions
 
 
             table.Columns.Add("EndPoint", typeof(string));
-            
-            table.Columns.Add("InstanceClass" , typeof(string));
-            table.Columns.Add("IOPS" , typeof(string));
-            table.Columns.Add("AllocatedStorage" , typeof(string));
+
+            table.Columns.Add("InstanceClass", typeof(string));
+            table.Columns.Add("IOPS", typeof(string));
+            table.Columns.Add("AllocatedStorage", typeof(string));
             table.Columns.Add("StorageType", typeof(string));
 
             table.Columns.Add("Engine", typeof(string));
@@ -1950,7 +1987,7 @@ namespace AWSFunctions
 
             //Can we set the view on this table to expand IEnumerables?
             DataView mydataview = table.DefaultView;
-            
+
 
 
 
@@ -1984,7 +2021,7 @@ namespace AWSFunctions
             table.Columns.Add("InstanceType", typeof(string));
             table.Columns.Add("SecurityGroups", typeof(string));
             table.Columns.Add("SGNames", typeof(string));
-            
+
             //This code ensures we croak if the InstanceID is not unique.  How to catch that?
             UniqueConstraint makeInstanceIDUnique =
                 new UniqueConstraint(new DataColumn[] { table.Columns["InstanceID"] });
@@ -1992,7 +2029,7 @@ namespace AWSFunctions
 
             //Can we set the view on this table to expand IEnumerables?
             DataView mydataview = table.DefaultView;
-            
+
 
 
             return table;
@@ -2035,7 +2072,7 @@ namespace AWSFunctions
             table.Columns.Add("User-Policies", typeof(string));
             table.Columns.Add("Access-Keys", typeof(string));
             table.Columns.Add("Groups", typeof(string));
-            UniqueConstraint makeUserIDUnique = new UniqueConstraint(new DataColumn[] { table.Columns["UserID"] , table.Columns["ARN"]});
+            UniqueConstraint makeUserIDUnique = new UniqueConstraint(new DataColumn[] { table.Columns["UserID"], table.Columns["ARN"] });
             table.Constraints.Add(makeUserIDUnique);
             table.TableName = "IAMTable";
             return table;
@@ -2120,7 +2157,7 @@ namespace AWSFunctions
         public static DataTable GetSnapshotDetailsTable()
         {
             DataTable ToReturn = new DataTable();
-            
+
             ToReturn.Columns.Add("AccountID", typeof(string));
             ToReturn.Columns.Add("Profile", typeof(string));
             ToReturn.Columns.Add("Region", typeof(string));
@@ -2145,8 +2182,6 @@ namespace AWSFunctions
 
             return ToReturn;
         }
-
-
 
         public static DataTable GetSubnetDetailsTable()
         {
@@ -2179,6 +2214,7 @@ namespace AWSFunctions
             ToReturn.TableName = "SubnetsTable";
             return ToReturn;
         }
+
 
         public static DataTable GetCertDetailsTable()
         {
@@ -2217,20 +2253,22 @@ namespace AWSFunctions
         ScanAWS stivawslib = new ScanAWS();
 
         public int ReScanTimerinMinutes { get; set; } = 20;
-        private Dictionary<string, Dictionary<string,bool>> Columnsettings = new Dictionary<string, Dictionary<string, bool>>();
+        private Dictionary<string, Dictionary<string, bool>> Columnsettings = new Dictionary<string, Dictionary<string, bool>>();
+        private Dictionary<string, List<string>> DefaultColumns = new Dictionary<string, List<string>>();
 
         public void Initialize()
         {
+
             foreach (string aregion in stivawslib.GetRegionNames())
             {
                 try { ScannableRegions.Add(aregion, true); }
                 catch { }
             }
-            foreach(string aprofile in stivawslib.GetProfileNames())
+            foreach (string aprofile in stivawslib.GetProfileNames())
             {
                 try
                 {
-                   string accountid=  stivawslib.GetAccountID(aprofile);
+                    string accountid = stivawslib.GetAccountID(aprofile);
 
                     if (accountid.StartsWith("Error"))
                     {
@@ -2243,21 +2281,45 @@ namespace AWSFunctions
                     }
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     BadProfiles.Add(aprofile, ex.Message);
                 }
             }
+            setdefaultcols();
 
-            //Set all columns to visible to start
+
+            //Build the initial column settings.
             foreach (var acomp in Components.Keys)
             {
+                Dictionary<string, bool> compdict = new Dictionary<string, bool>();
+                foreach (DataColumn acol in AWSTables.GetComponentTable(acomp).Columns)
+                {
+                    bool isvis = false;
+                    if (DefaultColumns[acomp].Contains(acol.ColumnName)) isvis = true;
 
-                
+                    if (isvis) compdict.Add(acol.ColumnName, true);
+                    else { compdict.Add(acol.ColumnName, false); }
+                }
+                Columnsettings.Add(acomp, compdict);
             }
 
 
             return;
+        }
+
+
+        private void setdefaultcols()
+        {
+            //Set the columns we want visible by default per component.
+            DefaultColumns["EBS"] = new List<string>() { "Profile", "Region", "InstanceID", "Attachments", "AttachState", "AttachTime", "DeleteonTerm", "AZ", "CreateTime", "IOPS", "Size-G", "State", "Tags", "VolumeID", "VolumeType" };
+            DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName", "InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
+            DefaultColumns["IAM"] = new List<string>() { "Profile", "UserID", "Username", "ARN", "CreateDate", "PwdEnabled", "PwdLastUsed", "MFA Active", "AccessKey1-Active", "AccessKey1-LastUsedDate", "AccessKey1-LastUsedRegion", "AccessKey1-LastUsedService", "User-Policies", "Access-Keys", "Groups" };
+            DefaultColumns["S3"] = new List<string>() { "Profile", "Bucket", "Region", "RegionEndpoint", "AuthRegion", "AuthService", "CreationDate", "LastAccess", "Owner", "Grants", "WebsiteHosting", "Versioning", "Tags" };
+            DefaultColumns["RDS"] = new List<string>() { "Profile", "AvailabilityZone", "InstanceID", "Name", "Status", "EndPoint", "InstanceClass", "IOPS", "AllocatedStorage", "StorageType", "Engine", "EngineVersion", "Created" };
+            DefaultColumns["VPC"] = new List<string>() { "AccountID", "Profile", "VpcID", "CidrBlock", "IsDefault", "DHCPOptionsID", "InstanceTenancy", "State", "Tags" };
+            DefaultColumns["Snapshots"] = new List<string>() { "Profile", "Region", "SnapshotID", "Description", "VolumeID", "VolumeSize-GB", "DataEncryptionKeyID", "Encrypted", "KMSKeyID", "OwnerAlias", "OwnerID", "Progress", "StartTime", "State", "StateMessage", "Tags" };
+            DefaultColumns["Subnets"] = new List<string>() { "AccountID", "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };
         }
 
         /// <summary>
@@ -2265,13 +2327,13 @@ namespace AWSFunctions
         /// </summary>
         public Dictionary<string, bool> Components { get; set; } = new Dictionary<string, bool>()
         {
-            {"EBS",true},
+            {"EBS",true },
             {"EC2",true },
             {"IAM",true },
-            {"S3",true},
-            {"RDS",true},
-            {"VPC",true},
-            {"Snapshots",true},
+            {"S3",true },
+            {"RDS",true },
+            {"VPC",true },
+            {"Snapshots",true },
             {"Subnets",true}
         };
 
@@ -2292,7 +2354,7 @@ namespace AWSFunctions
         public List<String> GetComponents2Scan()
         {
             List<string> ToReturn = new List<string>();
-            foreach(KeyValuePair<string,bool> KVP in Components)
+            foreach (KeyValuePair<string, bool> KVP in Components)
             {
                 if (KVP.Value) ToReturn.Add(KVP.Key);
             }
@@ -2394,7 +2456,7 @@ namespace AWSFunctions
         public List<String> GetActiveProfiles()
         {
             List<string> ToReturn = new List<string>();
-            foreach(var KVP in ScannableProfiles)
+            foreach (var KVP in ScannableProfiles)
             {
                 if (KVP.Value) ToReturn.Add(KVP.Key);
             }
@@ -2405,17 +2467,17 @@ namespace AWSFunctions
         {
             string ToReturn = "";
 
-            var badones =  BadProfiles.Keys.ToList<string>();
-            foreach(var naughty in badones)
+            var badones = BadProfiles.Keys.ToList<string>();
+            foreach (var naughty in badones)
             {
                 try
                 {
                     if (ToReturn.Length > 2) ToReturn += "\n";
-                    ToReturn += RemoveProfilefromStore(naughty) ;
+                    ToReturn += RemoveProfilefromStore(naughty);
                     BadProfiles.Remove(naughty);
-                        
+
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ToReturn += "Failed to remove " + naughty + ": " + ex.Message;
                 }
@@ -2431,7 +2493,7 @@ namespace AWSFunctions
                 Amazon.Util.ProfileManager.UnregisterProfile(aprofile);
                 ToReturn += "Removed " + aprofile;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ToReturn += "Failed to remove " + aprofile + ": " + ex.Message;
             }
@@ -2444,7 +2506,7 @@ namespace AWSFunctions
         {
             List<String> ToReturn = new List<string>();
 
-            foreach(var KVP in ScannableProfiles)
+            foreach (var KVP in ScannableProfiles)
             {
                 if (KVP.Value) ToReturn.Add(KVP.Key + ": " + KVP.Value);
             }
@@ -2467,7 +2529,7 @@ namespace AWSFunctions
             get
             {
                 List<string> ToReturn = new List<string>();
-                foreach(var profiles in ScannableProfiles)
+                foreach (var profiles in ScannableProfiles)
                 {
                     if (profiles.Value) ToReturn.Add(profiles.Key);
                 }
@@ -2475,7 +2537,7 @@ namespace AWSFunctions
             }
         }
 
-        public List<KeyValuePair<string,string>> GetEnabledProfileandRegions
+        public List<KeyValuePair<string, string>> GetEnabledProfileandRegions
         {
             get
             {
@@ -2484,7 +2546,7 @@ namespace AWSFunctions
                 {
                     if (aprofile.Value)
                     {
-                        foreach(var region in ScannableRegions)
+                        foreach (var region in ScannableRegions)
                         {
                             if (region.Value)
                             {
@@ -2496,7 +2558,7 @@ namespace AWSFunctions
                     }
                 }
 
-                return ToReturn; 
+                return ToReturn;
             }
         }
 
@@ -2506,9 +2568,9 @@ namespace AWSFunctions
         /// </summary>
         /// <param name="component">The name of the Amazon component we want columns for.</param>
         /// <returns></returns>
-        public List<string> GetDefaultColumns(string component)
+        public Dictionary<string, bool> GetColumnSettings(string component)
         {
-            List<string> ToReturn = new List<string>();
+            Dictionary<string, bool> ToReturn = Columnsettings[component];
             return ToReturn;
         }
 
@@ -2520,11 +2582,11 @@ namespace AWSFunctions
     }//End of settings
 }//End AWSFunctions
 
-        //Da end
-  
+//Da end
 
-       
 
- 
+
+
+
 
 
