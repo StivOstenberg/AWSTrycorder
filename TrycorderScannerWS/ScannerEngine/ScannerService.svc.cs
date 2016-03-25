@@ -68,26 +68,37 @@ namespace ScannerEngine
         //External MySQL (Endpoint, Port, User, Password, Certificate?)
 
         //This section will hold private functions to update our data objects and maybe to log out to external data collectors
-        [OperationBehavior]
-        public DataTable GetEC2Table()
+
+
+        public DataTable GetComponentDataTable(string component)
         {
-            return EC2Table ;
+            switch (component.ToLower())
+            {
+                case "ec2":
+                    return EC2Table;
+                case "snapshots":
+                    return SnapshotsTable;
+                case "rds":
+                    return RDSTable;
+                case "ebs":
+                    return EBSTable;
+                case "iam":
+                    return IAMTable;
+                case "s3":
+                    return S3Table;
+                case "subnets":
+                    return SubnetsTable;
+                case "vpc":
+                    return VPCTable;
+                default:
+                    return EC2Table;
+
+            }
         }
 
-        public DataTable GetSnapshotsTable()
-        {
-            return SnapshotsTable;
-        }
 
-        public DataTable GetRDSTable()
-        {
-            return RDSTable;
-        }
 
-        public DataTable GetEBSTable()
-        {
-            return EBSTable;
-        }
+
 
         public string GetStatus()
         {
@@ -447,25 +458,7 @@ namespace ScannerEngine
             Scanner.WriteToEventLog("AWS Scan started " + DateTime.Now.TimeOfDay);
         }
 
-        public DataTable GetIAMTable()
-        {
-            return IAMTable;
-        }
 
-        public DataTable GetS3Table()
-        {
-            return S3Table;
-        }
-
-        public DataTable GetSubnetsTable()
-        {
-            return SubnetsTable;
-        }
-
-        public DataTable GetVPCTable()
-        {
-            return VPCTable;
-        }
 
         /// <summary>
         /// Filters a datatable returning all results where ANY column matches the search string.

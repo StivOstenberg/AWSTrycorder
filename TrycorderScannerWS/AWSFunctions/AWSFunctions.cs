@@ -2120,6 +2120,7 @@ namespace AWSFunctions
         public static DataTable GetSnapshotDetailsTable()
         {
             DataTable ToReturn = new DataTable();
+            
             ToReturn.Columns.Add("AccountID", typeof(string));
             ToReturn.Columns.Add("Profile", typeof(string));
             ToReturn.Columns.Add("Region", typeof(string));
@@ -2144,6 +2145,8 @@ namespace AWSFunctions
 
             return ToReturn;
         }
+
+
 
         public static DataTable GetSubnetDetailsTable()
         {
@@ -2214,6 +2217,7 @@ namespace AWSFunctions
         ScanAWS stivawslib = new ScanAWS();
 
         public int ReScanTimerinMinutes { get; set; } = 20;
+        private Dictionary<string, Dictionary<string,bool>> Columnsettings = new Dictionary<string, Dictionary<string, bool>>();
 
         public void Initialize()
         {
@@ -2243,10 +2247,15 @@ namespace AWSFunctions
                 {
                     BadProfiles.Add(aprofile, ex.Message);
                 }
-
-
-
             }
+
+            //Set all columns to visible to start
+            foreach (var acomp in Components.Keys)
+            {
+
+                
+            }
+
 
             return;
         }
@@ -2500,10 +2509,12 @@ namespace AWSFunctions
         public List<string> GetDefaultColumns(string component)
         {
             List<string> ToReturn = new List<string>();
-
-
             return ToReturn;
-            
+        }
+
+        public void setcolumnvisibility(string component, string column, bool isvisible)
+        {
+            Columnsettings[component][column] = isvisible;
         }
 
     }//End of settings

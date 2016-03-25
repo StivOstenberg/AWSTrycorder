@@ -232,7 +232,7 @@ namespace AWSTrycorderClientUI
             System.Windows.Controls.MenuItem mit3 = new System.Windows.Controls.MenuItem();
             mit3.Header = "MostUsed";
             mit3.StaysOpenOnClick = true;
-            //mit3.Click += UCKAllCol_Click;
+            mit3.Click += UCKMostCol_Click;
             Proot.Items.Add(mit3);
             foreach (var acol in DasGrid.Columns)
             {
@@ -433,40 +433,29 @@ namespace AWSTrycorderClientUI
             }
         }
 
-        private DataTable GetSelectedDatatable(string Datatable2Get)
+        private void UCKMostCol_Click(object sender, RoutedEventArgs e)
         {
-            DataTable DaTable = new DataTable();
-            //Bring up new table
-            switch (Datatable2Get)
+            //Checks all Profilemenu items
+            setdefcols();
+            
+        }
+
+        private void setdefcols()
+        {
+            foreach (System.Windows.Controls.MenuItem anitem in ColumnsMenuItem.Items)
             {
-                case "EBS":
-                    DaTable = Trycorder.GetEBSTable();
-                    break;
-                case "EC2":
-                    DaTable = Trycorder.GetEC2Table();
-                    break;
-                case "IAM":
-                    DaTable = Trycorder.GetIAMTable();
-                    break;
-                case "S3":
-                    DaTable = Trycorder.GetS3Table();
-                    break;
-                case "VPC":
-                    DaTable = Trycorder.GetVPCTable();
-                    break;
-                case "Subnets":
-                    DaTable = Trycorder.GetSubnetsTable();
-                    break;
-                case "RDS":
-                    DaTable = Trycorder.GetRDSTable();
-                    break;
-                case "Snapshots":
-                    DaTable = Trycorder.GetSnapshotsTable();
-                    break;
+                if (anitem.IsCheckable) { anitem.IsChecked = false; }
+            }
+            switch (SelectedComponentComboBox.SelectedItem.ToString())
+            {
                 default:
-                    DaTable = Trycorder.GetEC2Table();
                     break;
             }
+        }
+
+        private DataTable GetSelectedDatatable(string Datatable2Get)
+        {
+            DataTable DaTable =  Trycorder.GetComponentDataTable(Datatable2Get);
             return DaTable;
 
         }
@@ -487,12 +476,16 @@ namespace AWSTrycorderClientUI
             }
             BuildColumnMenuList();
 
-
         }
         private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
         {
             string startout = Trycorder.GetStatus();
-            if (String.Equals(startout, "Idle")) Task.Factory.StartNew(Trycorder.ScanAll);
+            if (String.Equals(startout, "Idle"))
+            {
+                Task.Factory.StartNew(Trycorder.ScanAll);
+                ScanButton.Content = "Scanning";
+                ScanButton.Background = Brushes.Yellow;
+            }
             else
             {
                 return;

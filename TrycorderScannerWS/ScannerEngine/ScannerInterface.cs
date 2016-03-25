@@ -40,29 +40,9 @@ namespace ScannerEngine
 
         [OperationContract]
         string LastScan();
-        [OperationContract]
-        DataTable GetEBSTable();
 
         [OperationContract]
-        DataTable GetEC2Table();
-
-        [OperationContract]
-        DataTable GetIAMTable();
-
-        [OperationContract]
-        DataTable GetRDSTable();
-
-        [OperationContract]
-        DataTable GetS3Table();
-
-        [OperationContract]
-        DataTable GetSnapshotsTable();
-
-        [OperationContract]
-        DataTable GetSubnetsTable();
-
-        [OperationContract]
-        DataTable GetVPCTable();
+        DataTable GetComponentDataTable(string component);
 
 
         /// <summary>
