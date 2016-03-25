@@ -29,6 +29,7 @@ namespace ScannerEngine
         DataTable VPCTable = AWSFunctions.AWSTables.GetVPCDetailsTable();
         DataTable SubnetsTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         DataTable RDSTable = AWSFunctions.AWSTables.GetRDSDetailsTable();
+        DataTable EBSTable = AWSFunctions.AWSTables.GetEBSDetailsTable();
 
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
@@ -44,7 +45,6 @@ namespace ScannerEngine
             Settings.Initialize();
             Settings.State = "Idle";
             
-
             this.timer = new System.Timers.Timer(1000 * 60 * Settings.ReScanTimerinMinutes);
             this.timer.Elapsed += OnTimerElapsed;
             this.timer.AutoReset = true;
@@ -52,8 +52,6 @@ namespace ScannerEngine
             
             Scanner.WriteToEventLog("AWS Scanner started " + DateTime.Now.TimeOfDay);
             return "Initialized";
-
-
         }
 
 
@@ -80,6 +78,11 @@ namespace ScannerEngine
             return RDSTable;
         }
 
+        public DataTable GetEBSTable()
+        {
+            return EBSTable;
+        }
+
         public string GetStatus()
         {
             return Settings.State;
@@ -88,6 +91,7 @@ namespace ScannerEngine
         public string GetDetailedStatus()
         {
             string ToReturn = "";
+            ToReturn += "EBS :" + Settings.EBSStatus["Status"] + "  " + Settings.EBSStatus["EndTime"] + "  " + Settings.EBSStatus["Volumes"] + " volumes\n";
             ToReturn += "EC2 :" + Settings.EC2Status["Status"]   +"  " + Settings.EC2Status["EndTime"]+ "  " + Settings.EC2Status["Instances"]+ " instances\n";
             ToReturn += "S3 :" + Settings.S3Status["Status"] + "  " + Settings.S3Status["EndTime"] + "  " + Settings.S3Status["Instances"] + " buckets\n";
             ToReturn += "IAM :" + Settings.IAMStatus["Status"] + "  " + Settings.IAMStatus["EndTime"] + "  " + Settings.IAMStatus["Instances"] + " users\n";
@@ -141,7 +145,8 @@ namespace ScannerEngine
             var V = String.Equals("Idle", Settings.VPCStatus["Status"]);
             var N = String.Equals("Idle", Settings.SubnetsStatus["Status"]);
             var R = String.Equals("Idle", Settings.RDSStatus["Status"]);
-            if (E & S & I & N & R)
+            var A = String.Equals("Idle", Settings.EBSStatus["Status"]);
+            if (E & S & I & N & R & A)
             {
                 Settings.State = "Idle";
                 Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
@@ -160,6 +165,7 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(S3Table);
                     DaWorks.Tables.Add(SubnetsTable);
                     DaWorks.Tables.Add(RDSTable);
+                    DaWorks.Tables.Add(EBSTable);
                 }
                 catch
                 {
@@ -227,6 +233,31 @@ namespace ScannerEngine
 
             if (Settings.State.Equals("Scanning...")) return;//Dont run if already running.  What if we croak?
             Settings.ScanStart = DateTime.Now;
+
+
+            //EBS Background Worker Setup.
+            if (Settings.Components["EBS"])
+            {
+                Settings.EBSStatus["Status"] = "Scanning...";
+                Settings.EBSStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanEBS(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    EBSTable.Clear();
+                    EBSTable.Merge(e.Result as DataTable);
+                    Settings.EBSStatus["Status"] = "Idle";
+                    Settings.EBSStatus["EndTime"] = Settings.GetTime();
+                    Settings.EBSStatus["Volumes"] = EBSTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else EBSTable.Clear();
 
             //EC2 Background Worker Setup.
             if (Settings.Components["EC2"])

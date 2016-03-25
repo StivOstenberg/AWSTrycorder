@@ -439,6 +439,9 @@ namespace AWSTrycorderClientUI
             //Bring up new table
             switch (Datatable2Get)
             {
+                case "EBS":
+                    DaTable = Trycorder.GetEBSTable();
+                    break;
                 case "EC2":
                     DaTable = Trycorder.GetEC2Table();
                     break;
@@ -590,7 +593,7 @@ namespace AWSTrycorderClientUI
         {
             if (ScanButton.Background == Brushes.Green)
             {
-                ScanButton.Background = Brushes.Red;
+                ScanButton.Background = Brushes.Yellow;
                 Trycorder.ScanAll();
             }
             else

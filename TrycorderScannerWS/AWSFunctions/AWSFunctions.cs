@@ -546,7 +546,34 @@ namespace AWSFunctions
         }
 
 
-
+        public DataTable ScanEBS(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetEBSDetailsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 128;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetEBSDetails(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
 
         public DataTable GetEBSDetails(string aprofile, string Region2Scan)
         {
@@ -570,28 +597,44 @@ namespace AWSFunctions
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
-                var volyumes = ec2.DescribeVolumes();
 
-                var vollist = volyumes.Volumes;
+                // Describe volumes has a max limit,  so we have to make sure we collect all the data we need.
+                DescribeVolumesRequest requesty = new DescribeVolumesRequest();
+                requesty.MaxResults = 1000;
 
-                foreach(var onevol in vollist)
+                var volres = ec2.DescribeVolumes();
+                var volyumes = volres.Volumes;
+                List<Volume> vollist = new List<Volume>();
+                
+                while(volres.NextToken!=null)
+                {
+                    foreach (var av in volyumes)
+                    {
+                        try { vollist.Add(av); }
+                        catch (Exception ex)
+                        {
+                            WriteToEventLog("EBS on " + aprofile + "/" + Region2Scan + " failed:\n" + ex.Message);
+                        }
+                    }
+                    requesty.NextToken = volres.NextToken;
+                    volres = ec2.DescribeVolumes(requesty);
+                }
+
+                foreach (var av in volyumes) vollist.Add(av);
+
+                foreach (var onevol in vollist)
                 {
                     var arow = ToReturn.NewRow();
                     arow["AccountID"] = accountid;
                     arow["Profile"]= aprofile ;
                     arow["Region"]= Region2Scan  ;
 
-                    
-
-
-
-
                     arow["AZ"]= onevol.AvailabilityZone  ;
                     arow["CreateTime"]= onevol.CreateTime.ToString()  ;
                     arow["Encrypted"]= onevol.Encrypted.ToString()  ;
-                    arow["IOPS"]= onevol.Iops.ToString()  ;
+                    arow["IOPS"]= onevol.Iops  ;
                     arow["KMSKeyID"]= onevol.KmsKeyId  ;
-                    arow["Size"]= onevol.Size.ToString() + "G"  ;
+                    arow["Size-G"]= onevol.Size  ;
                     arow["SnapshotID"]= onevol.SnapshotId  ;
                     arow["State"]= onevol.State.Value  ;
                     
@@ -606,26 +649,25 @@ namespace AWSFunctions
                     }
                     arow["Tags"] = List2String(taglist);
 
-
                     var atachs = onevol.Attachments;
-                 
                     arow["Attachments"] = onevol.Attachments.Count.ToString();
-                    arow["AttachTime"] = atachs[0].AttachTime  ;
-                    arow["DeleteonTerm"] = atachs[0].DeleteOnTermination  ;
-                    arow["Device"] = atachs[0].Device  ;
-                    arow["InstanceID"] = atachs[0].InstanceId  ;
-                    arow["AttachState"] = atachs[0].State  ;
-
-
+                    if (onevol.Attachments.Count > 0)
+                    {
+                        arow["AttachTime"] = atachs[0].AttachTime;
+                        arow["DeleteonTerm"] = atachs[0].DeleteOnTermination;
+                        arow["Device"] = atachs[0].Device;
+                        arow["InstanceID"] = atachs[0].InstanceId;
+                        arow["AttachState"] = atachs[0].State;
+                    }
 
                     ToReturn.Rows.Add(arow);
 
                 }
 
             }
-            catch
+            catch(Exception ex)
             {
-
+                WriteToEventLog("EBS on "+ aprofile + " failed:\n" + ex.Message);
             }
 
 
@@ -649,6 +691,8 @@ namespace AWSFunctions
                 Dictionary<string, string> unamelookup = new Dictionary<string, string>();
 
                 var myUserList = iam.ListUsers().Users;
+
+
                 foreach(var rabbit in myUserList)
                 {
                     unamelookup.Add(rabbit.UserId, rabbit.UserName);
@@ -670,10 +714,9 @@ namespace AWSFunctions
                 var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
 
 
-
-
                     //Extract data from CSV Stream into DataTable
                 var streambert = credreport.Content;
+
                 streambert.Position = 0;
                 StreamReader sr = new StreamReader(streambert);
                 string myStringRow = sr.ReadLine();
@@ -756,7 +799,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                string atest = "";
+                    WriteToEventLog(aprofile + " failed\n" + ex.Message.ToString());
                 //Deal with this later if necessary.
             }
 
@@ -1487,6 +1530,9 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+
+
+
         public DataTable ScanEC2(List<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
             DataTable ToReturn = AWSFunctions.AWSTables.GetEC2DetailsTable();
@@ -1647,13 +1693,13 @@ namespace AWSFunctions
             {
                 if (i == colno)
                 {
-                    CASEquery +=   @"p.Field<string>(""+Table2Filter.Columns[i]+  "").Contains(FilterTagText.Text) ; ";
-                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToLower().Contains(FilterTagText.Text) ; ";
+                    CASEquery +=   @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().Contains(FilterTagText.Text) ; ";
+                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().ToLower().Contains(FilterTagText.Text) ; ";
                 }
                 else
                 {
-                    CASEquery +=   @"p.Field<string>(""+Table2Filter.Columns[i]+  "").Contains(FilterTagText.Text) || ";
-                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToLower().Contains(FilterTagText.Text) || ";
+                    CASEquery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().Contains(FilterTagText.Text) || ";
+                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().ToLower().Contains(FilterTagText.Text) || ";
                 }
             }
 
@@ -1669,7 +1715,7 @@ namespace AWSFunctions
             {
                 if (casesensitive)
                 {
-                     var newt  = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                     var newt  = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
                     if (newt.Rows.Count > 0) ToReturn = newt;
                     else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
                     { ToReturn.Merge(Table2Filter);
@@ -1678,7 +1724,7 @@ namespace AWSFunctions
                 }
                 else
                 {
-                    var newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).Contains(filterstring)).CopyToDataTable();
+                    var newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().Contains(filterstring)).CopyToDataTable();
                     if (newt.Rows.Count > 0) ToReturn = newt;
                     else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
                     {
@@ -1884,20 +1930,20 @@ namespace AWSFunctions
             ToReturn.Columns.Add("AccountID", typeof(string));
             ToReturn.Columns.Add("Profile", typeof(string));
             ToReturn.Columns.Add("Region", typeof(string));
+            ToReturn.Columns.Add("InstanceID", typeof(string));
 
             ToReturn.Columns.Add("Attachments", typeof(string));
+            ToReturn.Columns.Add("AttachState", typeof(string));
             ToReturn.Columns.Add("AttachTime", typeof(string));
             ToReturn.Columns.Add("DeleteonTerm", typeof(string));
             ToReturn.Columns.Add("Device", typeof(string));
-            ToReturn.Columns.Add("InstanceID", typeof(string));
-            ToReturn.Columns.Add("AttachState", typeof(string));
 
             ToReturn.Columns.Add("AZ", typeof(string));
             ToReturn.Columns.Add("CreateTime", typeof(string));
             ToReturn.Columns.Add("Encrypted", typeof(string));
-            ToReturn.Columns.Add("IOPS", typeof(string));
+            ToReturn.Columns.Add("IOPS", typeof(int));
             ToReturn.Columns.Add("KMSKeyID", typeof(string));
-            ToReturn.Columns.Add("Size", typeof(string));
+            ToReturn.Columns.Add("Size-G", typeof(int));
             ToReturn.Columns.Add("SnapshotID", typeof(string));
             ToReturn.Columns.Add("State", typeof(string));
             ToReturn.Columns.Add("Tags", typeof(string));
@@ -2018,6 +2064,7 @@ namespace AWSFunctions
         /// </summary>
         public Dictionary<string, bool> Components { get; set; } = new Dictionary<string, bool>()
         {
+            {"EBS",true},
             {"EC2",true },
             {"IAM",true },
             {"S3",true},
@@ -2059,6 +2106,15 @@ namespace AWSFunctions
             { "EndTime","" },
             { "Result","" },
             { "Instances","" }
+        };
+
+        public Dictionary<string, string> EBSStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Volumes","" }
         };
 
         public Dictionary<string, string> S3Status = new Dictionary<string, string>

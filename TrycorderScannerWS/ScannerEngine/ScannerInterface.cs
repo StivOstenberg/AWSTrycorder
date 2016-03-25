@@ -40,6 +40,8 @@ namespace ScannerEngine
 
         [OperationContract]
         string LastScan();
+        [OperationContract]
+        DataTable GetEBSTable();
 
         [OperationContract]
         DataTable GetEC2Table();
@@ -48,10 +50,12 @@ namespace ScannerEngine
         DataTable GetIAMTable();
 
         [OperationContract]
-        DataTable GetS3Table();
+        DataTable GetRDSTable();
 
         [OperationContract]
-        DataTable GetRDSTable();
+        DataTable GetS3Table();
+
+
 
         [OperationContract]
         DataTable GetSubnetsTable();
