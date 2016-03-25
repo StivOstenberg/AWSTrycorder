@@ -678,6 +678,166 @@ namespace AWSFunctions
         }
 
 
+
+        public DataTable ScanSnapshots(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetSnapshotDetailsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 128;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetSnapshotDetails(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+        public DataTable GetSnapshotDetails(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSTables.GetSnapshotDetailsTable();
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
+
+                // Describe snapshots has a max limit,  so we have to make sure we collect all the data we need.
+                DescribeSnapshotsRequest requesty = new DescribeSnapshotsRequest();
+                requesty.MaxResults = 1000;
+                //Ouch!  It lists all snaps we have access to. We only want ones we own and pay for..
+                //And it doesnt seem to return the ones we own. WTF????
+
+
+                var snapres = ec2.DescribeSnapshots();
+                var snappies = snapres.Snapshots;
+                Dictionary<string, Snapshot> snaplist = new Dictionary<string, Snapshot>();
+
+                while (snapres.NextToken != null)
+                {
+                    foreach (var av in snappies)
+                    {
+                        try
+                        {
+                            if (!snaplist.Keys.Contains(av.SnapshotId)) snaplist.Add(av.SnapshotId, av);
+                            else
+                            {
+                                var goob = snaplist[av.SnapshotId];
+                                if (goob.Equals(av))
+                                {
+                                    string itsadupe = "Yar";
+                                }
+                            }//Eliminate dupes
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteToEventLog("Snapshots on " + aprofile + "/" + Region2Scan + " failed:\n" + ex.Message);
+                        }
+                    }
+                    requesty.NextToken = snapres.NextToken;
+                    snapres = ec2.DescribeSnapshots(requesty);
+                }
+
+
+
+                foreach (var av in snappies)
+                {
+                    if (!snaplist.Keys.Contains(av.SnapshotId)) snaplist.Add(av.SnapshotId, av);
+                    else {
+                        var goob = snaplist[av.SnapshotId];
+                        if (goob.Equals(av))
+                        {
+                            string itsadupe = "Yar";
+                        }
+                    }//Eliminate dupes.
+                }
+                
+                foreach (var onesnap in snaplist.Values)
+                {
+                    var arow = ToReturn.NewRow();
+                    if (!accountid.Equals(onesnap.OwnerId))continue;
+                    arow["AccountID"] = accountid;
+
+                    var rr = onesnap.GetType();
+                    arow["Profile"] = aprofile  ;
+                    arow["Region"] = Region2Scan  ;
+                    arow["SnapshotID"] = onesnap.SnapshotId  ;
+                    arow["Description"] = onesnap.Description  ;
+                    arow["VolumeID"] = onesnap.VolumeId  ;
+                    arow["VolumeSize-GB"] = onesnap.VolumeSize  ;
+                    
+                    arow["Encrypted"] = onesnap.Encrypted.ToString()  ;
+                    arow["KMSKeyID"] = onesnap.KmsKeyId  ;
+                    arow["OwnerAlias"] = onesnap.OwnerAlias  ;
+                    arow["OwnerID"] = onesnap.OwnerId  ;
+                    arow["Progress"] = onesnap.Progress  ;
+                    arow["StartTime"] = onesnap.StartTime.ToString()  ;
+                    arow["State"] = onesnap.State.Value  ;
+                    arow["StateMessage"] = onesnap.StateMessage  ;
+
+                    var DKI = onesnap.DataEncryptionKeyId;
+                    if (String.IsNullOrEmpty(DKI)) { }
+                    else
+                    {
+                        arow["DataEncryptionKeyID"] = onesnap.DataEncryptionKeyId.ToString();
+                    }
+
+                    
+                    //**********  Some extra handling required**************///
+                    List<string> taglist = new List<string>();
+                    foreach (var atag in onesnap.Tags)
+                    {
+                        taglist.Add(atag.Key + ": " + atag.Value);
+                    }
+                    arow["Tags"] = List2String(taglist);
+
+
+
+
+                    ToReturn.Rows.Add(arow);
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                WriteToEventLog("Snapshots on " + aprofile + " failed:\n" + ex.Message);
+            }
+
+            return ToReturn;
+
+        }
+
+
         public DataTable GetIAMUsers(string aprofile)
         {
             DataTable IAMTable = AWSTables.GetUsersDetailsTable(); //Blank table to fill out.
@@ -1372,7 +1532,7 @@ namespace AWSFunctions
             DataTable ToReturn = AWSFunctions.AWSTables.GetUsersDetailsTable();
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 64;
+            po.MaxDegreeOfParallelism = 128;
             try
             {
                 Parallel.ForEach(Profiles2Scan, po, (profile) => {
@@ -1592,6 +1752,7 @@ namespace AWSFunctions
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 var ec2 = new Amazon.EC2.AmazonEC2Client(credential,Endpoint2scan);
                 var vippies = ec2.DescribeVpcs().Vpcs;
+
                 foreach(var avpc in vippies)
                 {
                     DataRow thisvpc = ToReturn.NewRow();
@@ -1950,6 +2111,36 @@ namespace AWSFunctions
             ToReturn.Columns.Add("VolumeID", typeof(string));
             ToReturn.Columns.Add("VolumeType", typeof(string));
 
+            ToReturn.TableName = "EBSTable";
+
+            return ToReturn;
+        }
+
+        public static DataTable GetSnapshotDetailsTable()
+        {
+            DataTable ToReturn = new DataTable();
+            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("Region", typeof(string));
+            ToReturn.Columns.Add("SnapshotID", typeof(string));
+            ToReturn.Columns.Add("Description", typeof(string));
+            ToReturn.Columns.Add("VolumeID", typeof(string));
+            ToReturn.Columns.Add("VolumeSize-GB", typeof(int));
+
+            ToReturn.Columns.Add("DataEncryptionKeyID", typeof(string));
+            ToReturn.Columns.Add("Encrypted", typeof(string));
+            ToReturn.Columns.Add("KMSKeyID", typeof(string));
+            ToReturn.Columns.Add("OwnerAlias", typeof(string));
+            ToReturn.Columns.Add("OwnerID", typeof(string));
+
+            ToReturn.Columns.Add("Progress", typeof(string));
+            ToReturn.Columns.Add("StartTime", typeof(string));
+            ToReturn.Columns.Add("State", typeof(string));
+            ToReturn.Columns.Add("StateMessage", typeof(string));
+            ToReturn.Columns.Add("Tags", typeof(string));
+
+            ToReturn.TableName = "SnapshotTable";
+
             return ToReturn;
         }
 
@@ -2070,6 +2261,7 @@ namespace AWSFunctions
             {"S3",true},
             {"RDS",true},
             {"VPC",true},
+            {"Snapshots",true},
             {"Subnets",true}
         };
 
@@ -2118,6 +2310,15 @@ namespace AWSFunctions
         };
 
         public Dictionary<string, string> S3Status = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Instances","" }
+        };
+
+        public Dictionary<string, string> SnapshotsStatus = new Dictionary<string, string>
         {
             { "Status","Idle" },
             { "StartTime","" },

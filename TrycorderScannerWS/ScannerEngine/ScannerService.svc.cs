@@ -30,6 +30,7 @@ namespace ScannerEngine
         DataTable SubnetsTable = AWSFunctions.AWSTables.GetSubnetDetailsTable();
         DataTable RDSTable = AWSFunctions.AWSTables.GetRDSDetailsTable();
         DataTable EBSTable = AWSFunctions.AWSTables.GetEBSDetailsTable();
+        DataTable SnapshotsTable = AWSFunctions.AWSTables.GetSnapshotDetailsTable();
 
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
@@ -73,6 +74,11 @@ namespace ScannerEngine
             return EC2Table ;
         }
 
+        public DataTable GetSnapshotsTable()
+        {
+            return SnapshotsTable;
+        }
+
         public DataTable GetRDSTable()
         {
             return RDSTable;
@@ -98,8 +104,9 @@ namespace ScannerEngine
             ToReturn += "Subnets :" + Settings.SubnetsStatus["Status"] + "  " + Settings.SubnetsStatus["EndTime"] + "  " + Settings.SubnetsStatus["Instances"] + " subnets\n";
             ToReturn += "VPC :" + Settings.VPCStatus["Status"] + "  " + Settings.VPCStatus["EndTime"] + "  " + Settings.VPCStatus["Instances"] + " VPCs\n";
             ToReturn += "RDS :" + Settings.RDSStatus["Status"] + "  " + Settings.RDSStatus["EndTime"] + "  " + Settings.RDSStatus["Instances"] + " RDSs\n";
+            ToReturn += "Snapshots :" + Settings.SnapshotsStatus["Status"] + "  " + Settings.SnapshotsStatus["EndTime"] + "  " + Settings.SnapshotsStatus["Instances"] + " Snapshots\n";
 
-            if(Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
+            if (Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
             return ToReturn;
         }
 
@@ -146,7 +153,8 @@ namespace ScannerEngine
             var N = String.Equals("Idle", Settings.SubnetsStatus["Status"]);
             var R = String.Equals("Idle", Settings.RDSStatus["Status"]);
             var A = String.Equals("Idle", Settings.EBSStatus["Status"]);
-            if (E & S & I & N & R & A)
+            var T = String.Equals("Idle", Settings.SnapshotsStatus["Status"]);
+            if (E & S & I & N & R & A & T)
             {
                 Settings.State = "Idle";
                 Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
@@ -166,9 +174,11 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(SubnetsTable);
                     DaWorks.Tables.Add(RDSTable);
                     DaWorks.Tables.Add(EBSTable);
+                    DaWorks.Tables.Add(SnapshotsTable);
                 }
                 catch
                 {
+
                 }
                 Settings.ScanDone = DateTime.Now;
             }
@@ -407,6 +417,33 @@ namespace ScannerEngine
                 worker.RunWorkerAsync();
             }
             else VPCTable.Clear();
+
+            //Snapshots Background Worker
+            if (Settings.Components["Snapshots"])
+            {
+                Settings.SnapshotsStatus["Status"] = "Scanning...";
+                Settings.SnapshotsStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanSnapshots(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    SnapshotsTable.Clear();
+                    SnapshotsTable.Merge(e.Result as DataTable);
+                    Settings.SnapshotsStatus["Status"] = "Idle";
+                    Settings.SnapshotsStatus["EndTime"] = Settings.GetTime();
+                    Settings.SnapshotsStatus["Instances"] = SnapshotsTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else SnapshotsTable.Clear();
+
+
+
             Scanner.WriteToEventLog("AWS Scan started " + DateTime.Now.TimeOfDay);
         }
 

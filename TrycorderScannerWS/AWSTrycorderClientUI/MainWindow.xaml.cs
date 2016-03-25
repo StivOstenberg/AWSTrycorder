@@ -460,6 +460,9 @@ namespace AWSTrycorderClientUI
                 case "RDS":
                     DaTable = Trycorder.GetRDSTable();
                     break;
+                case "Snapshots":
+                    DaTable = Trycorder.GetSnapshotsTable();
+                    break;
                 default:
                     DaTable = Trycorder.GetEC2Table();
                     break;
