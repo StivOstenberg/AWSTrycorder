@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+
 using System.Windows.Media;
 using System.IO;
 using System.Windows.Threading;
 
 namespace AWSTrycorderClientUI
 {
+    extern alias swformalias;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -22,7 +24,7 @@ namespace AWSTrycorderClientUI
     {
         string MyEndpoint = "net.tcp://127.0.0.1:8383/Scanner";
         NetTcpBinding bindbert = new NetTcpBinding(SecurityMode.None, true);
-        
+
         ServiceHost host = new ServiceHost(typeof(ScannerEngine.ScannerClass));
         IChannelFactory<ScannerEngine.ScannerInterfaceDefinition> MyScanneriChannel;
         ScannerEngine.ScannerInterfaceDefinition Trycorder;
@@ -37,7 +39,7 @@ namespace AWSTrycorderClientUI
             bindbert.MaxBufferSize = 2147483647;
 
             MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
-            Trycorder =  MyScanneriChannel.CreateChannel(ender);
+            Trycorder = MyScanneriChannel.CreateChannel(ender);
 
 
 
@@ -72,7 +74,7 @@ namespace AWSTrycorderClientUI
                 ScanButton.Background = Brushes.Green;
                 ScanButton.Content = "Scan";
             }
-            
+
         }
 
         public void StartWCFService()
@@ -144,7 +146,7 @@ namespace AWSTrycorderClientUI
                 Proot.Items.Add(mi);
             }
             bool Baddies = false;
-            foreach(KeyValuePair<string,string> KVP in Trycorder.GetBadProfiles())
+            foreach (KeyValuePair<string, string> KVP in Trycorder.GetBadProfiles())
             {
                 Baddies = true;
                 System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
@@ -201,7 +203,7 @@ namespace AWSTrycorderClientUI
             mit2.StaysOpenOnClick = true;
             mit2.Click += UCKAllCMP_Click;
             Proot.Items.Add(mit2);
-            foreach(var compy in Trycorder.GetComponents())
+            foreach (var compy in Trycorder.GetComponents())
             {
                 System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
                 mi.IsCheckable = true;
@@ -251,7 +253,7 @@ namespace AWSTrycorderClientUI
         public void ConfigureComponentSelectComboBox()
         {
             SelectedComponentComboBox.Items.Clear();
-            foreach(var tribble in Trycorder.GetComponents())
+            foreach (var tribble in Trycorder.GetComponents())
             {
                 if (tribble.Value) SelectedComponentComboBox.Items.Add(tribble.Key);
             }
@@ -326,8 +328,8 @@ namespace AWSTrycorderClientUI
             bool state = gopher.IsChecked;
             string theprofile = gopher.Header.ToString();
             Trycorder.setProfileStatus(theprofile, state);
-            
-            
+
+
         }
         private void RegionChecked(object sender, RoutedEventArgs e)
         {
@@ -368,7 +370,7 @@ namespace AWSTrycorderClientUI
             Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), thecolumn, state);
         }
 
-        private void ShowHideColumn(string thecolumn,bool isvisable)
+        private void ShowHideColumn(string thecolumn, bool isvisable)
         {
 
             foreach (var acol in DasGrid.Columns)
@@ -439,7 +441,7 @@ namespace AWSTrycorderClientUI
         {
             //Checks all Profilemenu items
             setdefcols();
-            
+
         }
 
         private void setdefcols()
@@ -457,14 +459,14 @@ namespace AWSTrycorderClientUI
 
         private DataTable GetSelectedDatatable(string Datatable2Get)
         {
-            DataTable DaTable =  Trycorder.GetComponentDataTable(Datatable2Get);
+            DataTable DaTable = Trycorder.GetComponentDataTable(Datatable2Get);
             return DaTable;
 
         }
         private void SelectedComponentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string IChooseYou = "";
-            try {IChooseYou= SelectedComponentComboBox.SelectedValue.ToString(); }
+            try { IChooseYou = SelectedComponentComboBox.SelectedValue.ToString(); }
             catch { IChooseYou = ""; }
             DataTable DaTable = GetSelectedDatatable(IChooseYou);
             TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName + " - " + Trycorder.LastScan();
@@ -477,7 +479,7 @@ namespace AWSTrycorderClientUI
                 SelectColumncomboBox.SelectedIndex = 0;
             }
             BuildColumnMenuList();
-            
+
 
 
         }
@@ -542,7 +544,7 @@ namespace AWSTrycorderClientUI
         private void LoadCredentialsMI_Click(object sender, RoutedEventArgs e)
         {
             string awscredsfile = GetDefaultAWSCredFile();
-            if (File.Exists(awscredsfile)) MessageBox.Show( Trycorder.LoadAWSCredentials(awscredsfile),"Credential Load Status");
+            if (File.Exists(awscredsfile)) MessageBox.Show(Trycorder.LoadAWSCredentials(awscredsfile), "Credential Load Status");
             else MessageBox.Show("Unable to find " + awscredsfile);
             BuildProfileMenuList();
         }
@@ -580,12 +582,12 @@ namespace AWSTrycorderClientUI
         private void ExportCredentialsMI_Click(object sender, RoutedEventArgs e)
         {
             string dafile = GetDefaultAWSCredFile();
-            MessageBox.Show( StivFunk.ExportCredentials(dafile),"Export Status");
+            MessageBox.Show(StivFunk.ExportCredentials(dafile), "Export Status");
         }
 
         private void RemoveBadMI_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show( Trycorder.RemoveBadProfiles(),"Remove Profiles Results");
+            MessageBox.Show(Trycorder.RemoveBadProfiles(), "Remove Profiles Results");
             BuildProfileMenuList();
         }
 
@@ -625,6 +627,36 @@ namespace AWSTrycorderClientUI
         {
             AddCredential acwin = new AddCredential();
             acwin.Show();
+        }
+
+
+        public string saveas()
+        {
+            //Note,  requires an alias to System.Windows.Forms to avoid hosing the WPF components.
+            var _SD = new swformalias.System.Windows.Forms.SaveFileDialog();
+            _SD.Filter = "Excel File (*.xls)|*.xls*";
+            _SD.FileName = "TrycorderOut" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Hour + DateTime.Now.Minute;
+            _SD.Title = "Save As";
+            if (_SD.ShowDialog() == swformalias.System.Windows.Forms.DialogResult.OK)
+            {
+                return (_SD.FileName);
+            }
+            return "";
+        }
+
+        private void ExcelMI_Click(object sender, RoutedEventArgs e)
+        {
+            string egsportfile = saveas();
+            var all = Trycorder.ScanResults().Tables;
+            Dictionary<string, DataTable> Outputter = new Dictionary<string, DataTable>();
+            foreach (DataTable something in all)
+            {
+                var namebert = something.TableName;
+                Outputter.Add(namebert, something);
+            }
+            var result = StivFunk.ExportToExcel(Outputter, egsportfile);
+            System.Windows.MessageBox.Show(result, "Export to Excel");
+            
         }
     }
 }
