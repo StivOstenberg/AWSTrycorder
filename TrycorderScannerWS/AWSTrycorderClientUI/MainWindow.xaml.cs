@@ -242,6 +242,7 @@ namespace AWSTrycorderClientUI
                 mi.Click += ColumnChecked;
                 mi.StaysOpenOnClick = true;
                 Proot.Items.Add(mi);
+                var defvis = vizlist[acol.Header.ToString()];
                 ShowHideColumn(acol.Header.ToString(), vizlist[acol.Header.ToString()]);
 
             }
@@ -367,14 +368,14 @@ namespace AWSTrycorderClientUI
             Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), thecolumn, state);
         }
 
-        private void ShowHideColumn(string thecolumn,bool state)
+        private void ShowHideColumn(string thecolumn,bool isvisable)
         {
 
             foreach (var acol in DasGrid.Columns)
             {
                 if (acol.Header.Equals(thecolumn))
                 {
-                    if (state) acol.Visibility = Visibility.Visible;
+                    if (isvisable) acol.Visibility = Visibility.Visible;
                     else acol.Visibility = Visibility.Hidden;
                 }
             }
@@ -476,6 +477,7 @@ namespace AWSTrycorderClientUI
                 SelectColumncomboBox.SelectedIndex = 0;
             }
             BuildColumnMenuList();
+            
 
 
         }
