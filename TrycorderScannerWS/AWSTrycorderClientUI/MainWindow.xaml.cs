@@ -73,6 +73,8 @@ namespace AWSTrycorderClientUI
             {
                 ScanButton.Background = Brushes.Green;
                 ScanButton.Content = "Scan";
+                if (String.IsNullOrEmpty(SelectedComponentComboBox.SelectedValue.ToString()))SelectedComponentComboBox.SelectedIndex=0 ;
+                UpdateTable();
             }
 
         }
@@ -261,10 +263,25 @@ namespace AWSTrycorderClientUI
 
         public void ConfigureComponentSelectComboBox()
         {
+            bool alreadyset = false;
+            string currentcomp = ""; ;
+            if (SelectedComponentComboBox.Items.Count < 0)
+            {
+                currentcomp = SelectedComponentComboBox.SelectedValue.ToString();
+                alreadyset = true;
+            }
             SelectedComponentComboBox.Items.Clear();
             foreach (var tribble in Trycorder.GetComponents())
             {
                 if (tribble.Value) SelectedComponentComboBox.Items.Add(tribble.Key);
+            }
+            if (alreadyset)
+            {
+                SelectedComponentComboBox.SelectedValue = currentcomp;
+            }
+            else
+            {
+                SelectedComponentComboBox.SelectedIndex = 0;
             }
         }
 
@@ -393,13 +410,8 @@ namespace AWSTrycorderClientUI
         }
         private void CKAllCMP_Click(object sender, RoutedEventArgs e)
         {
-            bool alreadyset = false;
-            string currentcomp = ""; ;
-            if (SelectedComponentComboBox.Items.Count < 0)
-            {
-                currentcomp = SelectedComponentComboBox.SelectedValue.ToString();
-                alreadyset = true;
-            }
+
+
             //Checks all Profilemenu items
             foreach (System.Windows.Controls.MenuItem anitem in ComponentsMenuItem.Items)
             {
@@ -411,14 +423,7 @@ namespace AWSTrycorderClientUI
             }
 
             ConfigureComponentSelectComboBox();
-            if (alreadyset)
-            {
-                SelectedComponentComboBox.SelectedValue = currentcomp;
-            }
-            else
-            {
-                SelectedComponentComboBox.SelectedIndex = 0;
-            }
+
             
         }
 
@@ -491,6 +496,11 @@ namespace AWSTrycorderClientUI
         }
         private void SelectedComponentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            UpdateTable();
+        }
+
+        private void UpdateTable()
+        {
             string IChooseYou = "";
             try { IChooseYou = SelectedComponentComboBox.SelectedValue.ToString(); }
             catch { IChooseYou = ""; }
@@ -505,10 +515,8 @@ namespace AWSTrycorderClientUI
                 SelectColumncomboBox.SelectedIndex = 0;
             }
             BuildColumnMenuList();
-
-
-
         }
+
         private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
         {
             string startout = Trycorder.GetStatus();

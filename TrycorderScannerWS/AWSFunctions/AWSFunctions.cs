@@ -619,7 +619,7 @@ namespace AWSFunctions
                         try { vollist.Add(av); }
                         catch (Exception ex)
                         {
-                            WriteToEventLog("EBS on " + aprofile + "/" + Region2Scan + " failed:\n" + ex.Message);
+                            WriteToEventLog("EBS on " + aprofile + "/" + Region2Scan + " failed:\n" + ex.Message,EventLogEntryType.Error);
                         }
                     }
                     requesty.NextToken = volres.NextToken;
@@ -673,7 +673,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                WriteToEventLog("EBS on " + aprofile + " failed:\n" + ex.Message);
+                WriteToEventLog("EBS on " + aprofile + " failed:\n" + ex.Message, EventLogEntryType.Error);
             }
 
 
@@ -767,7 +767,7 @@ namespace AWSFunctions
                         }
                         catch (Exception ex)
                         {
-                            WriteToEventLog("Snapshots on " + aprofile + "/" + Region2Scan + " failed:\n" + ex.Message);
+                            WriteToEventLog("Snapshots on " + aprofile + "/" + Region2Scan + " failed:\n" + ex.Message, EventLogEntryType.Error);
                         }
                     }
                     requesty.NextToken = snapres.NextToken;
@@ -838,7 +838,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                WriteToEventLog("Snapshots on " + aprofile + " failed:\n" + ex.Message);
+                WriteToEventLog("Snapshots on " + aprofile + " failed:\n" + ex.Message, EventLogEntryType.Error);
             }
 
             return ToReturn;
@@ -947,7 +947,6 @@ namespace AWSFunctions
                         auserdata["Cert2-Active"] = arow[20];//cert_2_active
                         auserdata["Cert2-Rotated"] = arow[21];//cert_2_last_rotated
 
-
                         var extradata = GetUserDetails(aprofile, username);
 
                         auserdata["User-Policies"] = extradata["Policies"];
@@ -969,7 +968,7 @@ namespace AWSFunctions
                 }
                 catch (Exception ex)
                 {
-                    WriteToEventLog(aprofile + " failed\n" + ex.Message.ToString());
+                    WriteToEventLog(aprofile + " failed\n" + ex.Message.ToString(), EventLogEntryType.Error);
                     //Deal with this later if necessary.
                 }
 
@@ -1400,7 +1399,7 @@ namespace AWSFunctions
             catch (Exception ex)
             {
                 ToReturn.TableName = ex.Message.ToString();
-                WriteToEventLog("Failed scanning IAM\n" + ex.Message);
+                WriteToEventLog("Failed scanning IAM\n" + ex.Message, EventLogEntryType.Error);
                 return ToReturn;
             }
             foreach (var rabbit in MyData.Values)
@@ -1445,7 +1444,7 @@ namespace AWSFunctions
             catch (Exception ex)
             {
                 ToReturn.TableName = ex.Message.ToString();
-                WriteToEventLog("Failed scanning Certs\n" + ex.Message);
+                WriteToEventLog("Failed scanning Certs\n" + ex.Message, EventLogEntryType.Error);
                 return ToReturn;
             }
             foreach (var rabbit in MyData.Values)
@@ -1538,7 +1537,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                WriteToEventLog("Failed scanning S3\n" + ex.Message);
+                WriteToEventLog("Failed scanning S3\n" + ex.Message, EventLogEntryType.Error);
                 ToReturn.TableName = ex.Message.ToString();
                 return ToReturn;
             }
@@ -1707,7 +1706,7 @@ namespace AWSFunctions
             catch (Exception ex)
             {
                 ToReturn.TableName = ex.Message.ToString();
-                WriteToEventLog("Failed scanning EC2\n" + ex.Message);
+                WriteToEventLog("Failed scanning EC2\n" + ex.Message, EventLogEntryType.Error);
                 return ToReturn;
             }
             foreach (var rabbit in MyData.Values)
@@ -1722,7 +1721,7 @@ namespace AWSFunctions
                         }
                         catch (Exception ex)
                         {
-                            WriteToEventLog(arow[0] + "\n" + ex.Message);
+                            WriteToEventLog(arow[0] + "\n" + ex.Message, EventLogEntryType.Error);
                         }
                     }
                 }
@@ -1903,11 +1902,24 @@ namespace AWSFunctions
         /// <param name="sEvent"></param>
         public void WriteToEventLog(string sEvent)
         {
-            var sSource = "ScanAWS Lib";
+            WriteToEventLog(sEvent, EventLogEntryType.Information);
+        }
+
+        public void WriteToEventLog(string sEvent,EventLogEntryType eventtype)
+        {
+            var sSource = "Trycorder ScanAWS Lib";
             var sLog = "Application";
-            if (!EventLog.SourceExists(sSource))
-                EventLog.CreateEventSource(sSource, sLog);
-            EventLog.WriteEntry(sSource, sEvent);
+            try
+            {
+                if (!EventLog.SourceExists(sSource))
+                    EventLog.CreateEventSource(sSource, sLog);
+                EventLog.WriteEntry(sSource, sEvent,eventtype);
+                
+            }
+            catch
+            {
+                //Probably cant write to event log. Need to run as Admin once!
+            }
         }
 
         public string ExportToExcel(Dictionary<string, DataTable> DataTables, string ExcelFilePath)
