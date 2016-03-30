@@ -1102,16 +1102,8 @@ namespace AWSFunctions
         {
             DataTable ToReturn = AWSTables.GetComponentTable("EC2");
             RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
-
-
-
             Amazon.Runtime.AWSCredentials credential;
-
-
-            Dictionary<string, Dictionary<String, String>> OldReturn = new Dictionary<string, Dictionary<String, String>>();
             credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-
-
             //Convert the Region2Scan to an AWS Endpoint.
             foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
             {
@@ -1122,9 +1114,7 @@ namespace AWSFunctions
                 }
             }
 
-            //var ec2 = AWSClientFactory.CreateAmazonEC2Client(credential, Endpoint2scan);
             var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
-
             string accountid = GetAccountID(aprofile);
             var request = new DescribeInstanceStatusRequest();
             request.IncludeAllInstances = true;
@@ -1146,30 +1136,26 @@ namespace AWSFunctions
                 indatarequest.InstanceIds.Sort();
             }
 
-
-            //DescribeInstancesResult DescResult = ec2.DescribeInstances(indatarequest);
-
             DescribeInstancesResponse DescResult = ec2.DescribeInstances();
-
             int count = instatresponse.InstanceStatuses.Count();
 
             //Build data dictionary of instances
-
             Dictionary<String, Instance> Bunchadata = new Dictionary<string, Instance>();
             foreach (var urtburgle in DescResult.Reservations)
             {
                 foreach (var instancedata in urtburgle.Instances)
                 {
                     try { Bunchadata.Add(instancedata.InstanceId, instancedata); }
-                    catch (Exception ex) { };
+                    catch (Exception ex) {
+                        var ff ="";//a duplicate??
+                    };
                 }
             }
-
-
 
             //Go through list of instances...
             foreach (var instat in instatresponse.InstanceStatuses)
             {
+                
                 string instanceid = instat.InstanceId;
                 Instance thisinstance = Bunchadata[instanceid];
                 DataRow thisinstancedatarow = ToReturn.NewRow();
@@ -1178,6 +1164,7 @@ namespace AWSFunctions
                 var status = instat.Status.Status;
                 string AZ = instat.AvailabilityZone;
                 var istate = instat.InstanceState.Name;
+
                 string profile = aprofile;
                 string myregion = Region2Scan;
                 int eventnumber = instat.Events.Count();
@@ -1198,9 +1185,6 @@ namespace AWSFunctions
                 }
                 innies.Sort();
 
-
-
-
                 List<string> tags = new List<string>();
                 var loadtags = thisinstance.Tags.AsEnumerable();
                 foreach (var atag in loadtags)
@@ -1209,14 +1193,11 @@ namespace AWSFunctions
                     if (atag.Key.Equals("Name")) instancename = atag.Value;
                 }
 
-
                 Dictionary<string, string> taglist = new Dictionary<string, string>();
                 foreach (var rekey in loadtags)
                 {
                     taglist.Add(rekey.Key, rekey.Value);
                 }
-
-
 
                 if (eventnumber > 0)
                 {
@@ -1238,13 +1219,15 @@ namespace AWSFunctions
                 {
                     Priv_IP = "?";
                 }
-
+                
                 String disinstance = thisinstance.InstanceId;
 
                 String publicIP = "";
                 try { publicIP = thisinstance.PublicIpAddress; }
                 catch { }
                 if (String.IsNullOrEmpty(publicIP)) publicIP = "";
+
+                
 
                 String publicDNS = "";
                 try { publicDNS = thisinstance.PublicDnsName; }
@@ -1256,6 +1239,7 @@ namespace AWSFunctions
                 { myvpcid = thisinstance.VpcId; }
                 catch { }
                 if (String.IsNullOrEmpty(myvpcid)) myvpcid = "";
+                
 
                 string mysubnetid = "";
                 try { mysubnetid = thisinstance.SubnetId; }

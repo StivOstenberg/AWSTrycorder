@@ -170,6 +170,7 @@ namespace ScannerEngine
                 Settings.State = "Idle";
                 Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
                 try {
+                    DaWorks.Tables.Clear();
                     DaWorks.Clear();
                 }
                 catch(Exception ex)
@@ -178,18 +179,18 @@ namespace ScannerEngine
                 }
                 try
                 {
-                    DaWorks.Tables.Add(VPCTable);
-                    DaWorks.Tables.Add(EC2Table);
-                    DaWorks.Tables.Add(IAMTable);
-                    DaWorks.Tables.Add(S3Table);
-                    DaWorks.Tables.Add(SubnetsTable);
-                    DaWorks.Tables.Add(RDSTable);
-                    DaWorks.Tables.Add(EBSTable);
-                    DaWorks.Tables.Add(SnapshotsTable);
+                    DaWorks.Tables.Add(VPCTable.Copy());
+                    DaWorks.Tables.Add(EC2Table.Copy());
+                    DaWorks.Tables.Add(IAMTable.Copy());
+                    DaWorks.Tables.Add(S3Table.Copy());
+                    DaWorks.Tables.Add(SubnetsTable.Copy());
+                    DaWorks.Tables.Add(RDSTable.Copy());
+                    DaWorks.Tables.Add(EBSTable.Copy());
+                    DaWorks.Tables.Add(SnapshotsTable.Copy());
                 }
-                catch
+                catch(Exception ex)
                 {
-
+                    var whyforfail = ex.Message;
                 }
                 Settings.ScanDone = DateTime.Now;
             }
@@ -319,8 +320,11 @@ namespace ScannerEngine
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
                 {
+                    var b4 = IAMTable.Rows.Count;
                     IAMTable.Clear();
+                    var newb = (e.Result as DataTable).Rows.Count;
                     IAMTable.Merge(e.Result as DataTable);
+                    var after = IAMTable.Rows.Count;
                     Settings.IAMStatus["Status"] = "Idle";
                     Settings.IAMStatus["EndTime"] = Settings.GetTime();
                     Settings.IAMStatus["Instances"] = IAMTable.Rows.Count.ToString();

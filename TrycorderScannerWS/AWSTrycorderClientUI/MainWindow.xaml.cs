@@ -219,6 +219,11 @@ namespace AWSTrycorderClientUI
         {
             System.Windows.Controls.MenuItem Proot = (System.Windows.Controls.MenuItem)this.TopMenu.Items[4];
             Proot.Items.Clear();
+            var testval = SelectedComponentComboBox.Items.Count;
+            if (testval < 1)
+            {
+                return;
+            }
             System.Windows.Controls.MenuItem mit = new System.Windows.Controls.MenuItem();
             mit.Header = "Select All";
             mit.StaysOpenOnClick = true;
@@ -234,7 +239,11 @@ namespace AWSTrycorderClientUI
             mit3.StaysOpenOnClick = true;
             mit3.Click += UCKMostCol_Click;
             Proot.Items.Add(mit3);
+
+
+
             var vizlist = Trycorder.GetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString());
+
             foreach (var acol in DasGrid.Columns)
             {
                 System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
@@ -384,6 +393,13 @@ namespace AWSTrycorderClientUI
         }
         private void CKAllCMP_Click(object sender, RoutedEventArgs e)
         {
+            bool alreadyset = false;
+            string currentcomp = ""; ;
+            if (SelectedComponentComboBox.Items.Count < 0)
+            {
+                currentcomp = SelectedComponentComboBox.SelectedValue.ToString();
+                alreadyset = true;
+            }
             //Checks all Profilemenu items
             foreach (System.Windows.Controls.MenuItem anitem in ComponentsMenuItem.Items)
             {
@@ -393,7 +409,17 @@ namespace AWSTrycorderClientUI
                     Trycorder.SetComponentScanBit(anitem.Header.ToString(), true);
                 }
             }
+
             ConfigureComponentSelectComboBox();
+            if (alreadyset)
+            {
+                SelectedComponentComboBox.SelectedValue = currentcomp;
+            }
+            else
+            {
+                SelectedComponentComboBox.SelectedIndex = 0;
+            }
+            
         }
 
         private void UCKAllCMP_Click(object sender, RoutedEventArgs e)
