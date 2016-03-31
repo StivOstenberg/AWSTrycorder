@@ -5,6 +5,7 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 
@@ -549,6 +550,97 @@ namespace AWSFunctions
 
             return ToReturn;
 
+        }
+
+
+        public DataTable ScanSNSSubs(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 128;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value),  GetSNSSubscriptions(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+        public DataTable GetSNSSubscriptions(string aprofile, string Region2Scan)
+        {
+
+            DataTable ToReturn = AWSTables.GetSNSSubsTable();
+            
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+
+                //SNS testing here
+                var snsclient = new AmazonSimpleNotificationServiceClient(credential,Endpoint2scan);
+                var subbies = snsclient.ListSubscriptions().Subscriptions;
+                //var toppies = snsclient.ListTopics().Topics;
+
+                foreach(var asub in subbies)
+                {
+                    var myrow = ToReturn.NewRow();
+                    myrow["AccountID"] = accountid   ;
+                    myrow["Profile"] = aprofile   ;
+                    myrow["Region"] = Region2Scan   ;
+
+                    myrow["Endpoint"] = asub.Endpoint   ;
+                    myrow["Owner"] = asub.Owner   ;
+                    myrow["Protocol"] = asub.Protocol   ;
+                    myrow["SubscriptionARN"] = asub.SubscriptionArn   ;
+                    myrow["TopicARN"] = asub.TopicArn   ;
+
+                    if (asub.SubscriptionArn.Contains(accountid))
+                    {
+                        myrow["CrossAccount"] = "No"   ;
+                    }
+                    else
+                    {
+                        myrow["CrossAccount"] = "Yup";
+                    }
+                    var checkker = myrow["CrossAccount"];
+                    ToReturn.Rows.Add(myrow);
+                }
+            }
+            catch
+            {
+
+            }
+            return ToReturn;
         }
 
 
@@ -1116,6 +1208,11 @@ namespace AWSFunctions
             var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
             string accountid = GetAccountID(aprofile);
             var request = new DescribeInstanceStatusRequest();
+
+
+
+            
+
             request.IncludeAllInstances = true;
             DescribeInstanceStatusResponse instatresponse = new DescribeInstanceStatusResponse();
             var indatarequest = new DescribeInstancesRequest();
@@ -1171,6 +1268,12 @@ namespace AWSFunctions
                 var reservations = DescResult.Reservations;
 
                 var myinstance = new Reservation();
+
+                var atreq = new DescribeInstanceAttributeRequest();
+                atreq.InstanceId = instanceid;
+                atreq.Attribute = "disableApiTermination";
+                var atresp = ec2.DescribeInstanceAttribute(atreq).InstanceAttribute;
+                string TerminationProtection = atresp.DisableApiTermination.ToString();
 
                 List<String> innies = new List<String>();
                 foreach (Reservation arez in DescResult.Reservations)
@@ -1311,6 +1414,7 @@ namespace AWSFunctions
                 thisinstancedatarow["Region"] = myregion;
                 thisinstancedatarow["InstanceName"] = instancename;
                 thisinstancedatarow["InstanceID"] = instanceid;
+                thisinstancedatarow["TerminationProtection"] = TerminationProtection;
                 thisinstancedatarow["AMI"] = AMI;
                 thisinstancedatarow["AMIDescription"] = AMIDesc;
                 thisinstancedatarow["AvailabilityZone"] = AZ;
@@ -1775,8 +1879,7 @@ namespace AWSFunctions
             }//End of the big Try
             catch (Exception ex)
             {
-                //Whyfor did it fail?
-                string w = "";
+                WriteToEventLog("VPC scan of " + aprofile + " failed:"+ ex.Message.ToString(), EventLogEntryType.Error);
             }
 
             return ToReturn;
@@ -2024,6 +2127,8 @@ namespace AWSFunctions
                     return GetUsersDetailsTable();
                 case "s3":
                     return GetS3DetailsTable();
+                case "sns":
+                    return GetSNSSubsTable();
                 case "subnets":
                     return GetSubnetDetailsTable();
                 case "vpc":
@@ -2082,6 +2187,7 @@ namespace AWSFunctions
             table.Columns.Add("Region", typeof(string));
             table.Columns.Add("InstanceName", typeof(string));
             table.Columns.Add("InstanceID", typeof(string));
+            table.Columns.Add("TerminationProtection", typeof(string));
             table.Columns.Add("AMI", typeof(string));
             table.Columns.Add("AMIDescription", typeof(string));
             table.Columns.Add("AvailabilityZone", typeof(string));
@@ -2105,12 +2211,8 @@ namespace AWSFunctions
             UniqueConstraint makeInstanceIDUnique =
                 new UniqueConstraint(new DataColumn[] { table.Columns["InstanceID"] });
             table.Constraints.Add(makeInstanceIDUnique);
-
             //Can we set the view on this table to expand IEnumerables?
             DataView mydataview = table.DefaultView;
-
-
-
             return table;
         }
         public static DataTable GetUsersDetailsTable()
@@ -2294,7 +2396,6 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-
         public static DataTable GetCertDetailsTable()
         {
             DataTable ToReturn = new DataTable();
@@ -2320,6 +2421,27 @@ namespace AWSFunctions
 
 
             ToReturn.TableName = "CertsTable";
+            return ToReturn;
+        }
+
+        public static DataTable GetSNSSubsTable()
+        {
+            DataTable ToReturn = new DataTable();
+
+            ToReturn.Columns.Add("AccountID", typeof(string));//
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("Region", typeof(string));
+
+            ToReturn.Columns.Add("Endpoint", typeof(string));
+            ToReturn.Columns.Add("Owner", typeof(string));
+            ToReturn.Columns.Add("Protocol", typeof(string));
+            ToReturn.Columns.Add("SubscriptionARN", typeof(string));
+            ToReturn.Columns.Add("TopicName", typeof(string));
+            ToReturn.Columns.Add("TopicARN", typeof(string));
+            ToReturn.Columns.Add("CrossAccount", typeof(string));
+
+
+            ToReturn.TableName = "SNSSubscriptionTable";
             return ToReturn;
         }
 
@@ -2392,15 +2514,16 @@ namespace AWSFunctions
         {
             //Set the columns we want visible by default per component.
             DefaultColumns["EBS"] = new List<string>() { "Profile", "Region", "InstanceID", "Attachments", "AttachState", "AttachTime", "DeleteonTerm", "AZ", "CreateTime", "IOPS", "Size-G", "State", "Tags", "VolumeID", "VolumeType" };
-            DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName", "InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
+            DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName", "TerminationProtection","InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
             DefaultColumns["IAM"] = new List<string>() { "Profile", "UserID", "Username", "ARN", "CreateDate", "PwdEnabled", "PwdLastUsed", "MFA Active", "AccessKey1-Active", "AccessKey1-LastUsedDate", "AccessKey1-LastUsedRegion", "AccessKey1-LastUsedService", "User-Policies", "Access-Keys", "Groups" };
             DefaultColumns["S3"] = new List<string>() { "Profile", "Bucket", "Region", "RegionEndpoint", "AuthRegion", "AuthService", "CreationDate", "LastAccess", "Owner", "Grants", "WebsiteHosting", "Versioning", "Tags" };
             DefaultColumns["RDS"] = new List<string>() { "Profile", "AvailabilityZone", "InstanceID", "Name", "Status", "EndPoint", "InstanceClass", "IOPS", "AllocatedStorage", "StorageType", "Engine", "EngineVersion", "Created" };
-            DefaultColumns["VPC"] = new List<string>() { "AccountID", "Profile", "VpcID", "CidrBlock", "IsDefault", "DHCPOptionsID", "InstanceTenancy", "State", "Tags" };
+            DefaultColumns["VPC"] = new List<string>() {  "Profile", "VpcID", "CidrBlock", "IsDefault", "DHCPOptionsID", "InstanceTenancy", "State", "Tags" };
             DefaultColumns["Snapshots"] = new List<string>() { "Profile", "Region", "SnapshotID", "Description", "VolumeID", "VolumeSize-GB", "Encrypted", "OwnerID", "Progress", "StartTime", "State", "Tags" };
-            DefaultColumns["Subnets"] = new List<string>() { "AccountID", "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };
+            DefaultColumns["Subnets"] = new List<string>() {  "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };
+            DefaultColumns["SNSSubs"] = new List<string>() {  "Profile", "Endpoint", "Protocol","TopicName", "TopicARN" , "CrossAccount" };
         }
-
+    
         /// <summary>
         /// A list of the components we can scan, along with a setting on to whether we WANT them scanned.
         /// </summary>
@@ -2413,6 +2536,7 @@ namespace AWSFunctions
             {"RDS",true },
             {"VPC",true },
             {"Snapshots",true },
+            {"SNSSubs",true },
             {"Subnets",true}
         };
 
@@ -2506,6 +2630,15 @@ namespace AWSFunctions
         };
 
         public Dictionary<string, string> RDSStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Instances","" }
+        };
+
+        public Dictionary<string, string> SNSSubs = new Dictionary<string, string>
         {
             { "Status","Idle" },
             { "StartTime","" },

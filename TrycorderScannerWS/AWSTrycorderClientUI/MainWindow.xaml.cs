@@ -73,7 +73,7 @@ namespace AWSTrycorderClientUI
             {
                 ScanButton.Background = Brushes.Green;
                 ScanButton.Content = "Scan";
-                if (String.IsNullOrEmpty(SelectedComponentComboBox.SelectedValue.ToString()))SelectedComponentComboBox.SelectedIndex=0 ;
+                if (SelectedComponentComboBox.SelectedValue != null)SelectedComponentComboBox.SelectedIndex=0 ;
                 UpdateTable();
             }
 

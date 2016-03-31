@@ -24,6 +24,7 @@
                     <MenuItem x:Name="ListSubnetsMenuItem" Header="ListSubnets" HorizontalAlignment="Left" Width="144.8" Click="ListSubnetsMenuItem_Click"  />
                     <MenuItem x:Name="ListCertsMenuItem" Header="ListCerts" HorizontalAlignment="Left" Width="144.8" Click="ListCertsMenuItem_Click"   />
                     <MenuItem x:Name="ListSQSMenuItem" Header="ListSQS" HorizontalAlignment="Left" Width="144.8" Click="ListSQSMenuItem_Click"   />
+                    <MenuItem x:Name="ListSNSMenuItem" Header="ListSNS" HorizontalAlignment="Left" Width="144.8" Click="ListSNSMenuItem_Click"    />
                     <MenuItem x:Name="ListEBSMenuItem" Header="ListEBS" HorizontalAlignment="Left" Width="144.8" Click="ListEBSMenuItem_Click"   />
                 </MenuItem>
                 <MenuItem Header="WebService">

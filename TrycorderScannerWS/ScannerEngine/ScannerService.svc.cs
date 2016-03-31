@@ -31,6 +31,7 @@ namespace ScannerEngine
         DataTable RDSTable = AWSFunctions.AWSTables.GetComponentTable("RDS");
         DataTable EBSTable = AWSFunctions.AWSTables.GetComponentTable("EBS");
         DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
+        DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("");
 
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
