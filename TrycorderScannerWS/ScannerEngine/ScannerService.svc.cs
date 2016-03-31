@@ -31,7 +31,7 @@ namespace ScannerEngine
         DataTable RDSTable = AWSFunctions.AWSTables.GetComponentTable("RDS");
         DataTable EBSTable = AWSFunctions.AWSTables.GetComponentTable("EBS");
         DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
-        DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("");
+        DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
 
         AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
@@ -87,6 +87,8 @@ namespace ScannerEngine
                     return IAMTable;
                 case "s3":
                     return S3Table;
+                case "snssubs":
+                    return SNSSubscriptionTable;
                 case "subnets":
                     return SubnetsTable;
                 case "vpc":
@@ -458,7 +460,29 @@ namespace ScannerEngine
             }
             else SnapshotsTable.Clear();
 
-
+            //SNS Background worker
+            if (Settings.Components["SNSSubs"])
+            {
+                Settings.SNSSubs["Status"] = "Scanning...";
+                Settings.SNSSubs["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanSNSSubs(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    SNSSubscriptionTable.Clear();
+                    SNSSubscriptionTable.Merge(e.Result as DataTable);
+                    Settings.SNSSubs["Status"] = "Idle";
+                    Settings.SNSSubs["EndTime"] = Settings.GetTime();
+                    Settings.SNSSubs["Instances"] = SNSSubscriptionTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else SNSSubscriptionTable.Clear();
 
             Scanner.WriteToEventLog("AWS Scan started " + DateTime.Now.TimeOfDay);
         }

@@ -243,7 +243,7 @@ namespace AWSTrycorderClientUI
             Proot.Items.Add(mit3);
 
 
-
+            if (SelectedComponentComboBox.SelectedValue == null) SelectedComponentComboBox.SelectedIndex = 0;
             var vizlist = Trycorder.GetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString());
 
             foreach (var acol in DasGrid.Columns)

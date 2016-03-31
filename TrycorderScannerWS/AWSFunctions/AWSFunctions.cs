@@ -636,9 +636,9 @@ namespace AWSFunctions
                     ToReturn.Rows.Add(myrow);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-
+                WriteToEventLog("SNS scan of " + aprofile + " failed\n" + ex.Message.ToString(), EventLogEntryType.Error);
             }
             return ToReturn;
         }
@@ -971,6 +971,7 @@ namespace AWSFunctions
                 try
                 {
                     credreport = iam.GetCredentialReport();
+                    System.Threading.Thread.Sleep(5000);//Give a nice long wait to allow report to generate.
                     getreportfinish = DateTime.Now;
                     var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
 
@@ -1060,7 +1061,7 @@ namespace AWSFunctions
                 }
                 catch (Exception ex)
                 {
-                    WriteToEventLog(aprofile + " failed\n" + ex.Message.ToString(), EventLogEntryType.Error);
+                    WriteToEventLog("IAM scan of " + aprofile + " failed\n" + ex.Message.ToString(), EventLogEntryType.Error);
                     //Deal with this later if necessary.
                 }
 
@@ -1800,7 +1801,7 @@ namespace AWSFunctions
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan;
             ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 128;
+            po.MaxDegreeOfParallelism = 256;
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
@@ -2111,6 +2112,11 @@ namespace AWSFunctions
 
     public class AWSTables
     {
+        /// <summary>
+        /// Returns a datatable associated with a particular component.
+        /// </summary>
+        /// <param name="The name of a supported component"></param>
+        /// <returns></returns>
         public static DataTable GetComponentTable(string component)
         {
             switch (component.ToLower())
@@ -2127,7 +2133,7 @@ namespace AWSFunctions
                     return GetUsersDetailsTable();
                 case "s3":
                     return GetS3DetailsTable();
-                case "sns":
+                case "snssubs":
                     return GetSNSSubsTable();
                 case "subnets":
                     return GetSubnetDetailsTable();
