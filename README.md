@@ -1,4 +1,7 @@
 # AWSTrycorder
+
+Requires .NET Framework 4 or later.
+
 Going to "release" this version as it seems to work pretty reliably.  It has some issues where sometimes after a scan, the tables are returned empty.
 
 This version is multithreaded, so it runs much faster than the prototype.
