@@ -119,6 +119,7 @@ namespace ScannerEngine
             ToReturn += "VPC :" + Settings.VPCStatus["Status"] + "  " + Settings.VPCStatus["EndTime"] + "  " + Settings.VPCStatus["Instances"] + " VPCs\n";
             ToReturn += "RDS :" + Settings.RDSStatus["Status"] + "  " + Settings.RDSStatus["EndTime"] + "  " + Settings.RDSStatus["Instances"] + " RDSs\n";
             ToReturn += "Snapshots :" + Settings.SnapshotsStatus["Status"] + "  " + Settings.SnapshotsStatus["EndTime"] + "  " + Settings.SnapshotsStatus["Instances"] + " Snapshots\n";
+            ToReturn += "SNS Subscriptions :" + Settings.SNSSubs["Status"] + "  " + Settings.SNSSubs["EndTime"] + "  " + Settings.SNSSubs["Instances"] + " Subscriptions\n";
 
             if (Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
             return ToReturn;
@@ -190,6 +191,7 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(RDSTable.Copy());
                     DaWorks.Tables.Add(EBSTable.Copy());
                     DaWorks.Tables.Add(SnapshotsTable.Copy());
+                    DaWorks.Tables.Add(SNSSubscriptionTable.Copy());
                 }
                 catch(Exception ex)
                 {
@@ -215,18 +217,7 @@ namespace ScannerEngine
             return Settings.ScannableRegions;
         }
 
-        public void PayPalDonate(string youremail, string description, string country, string currency)
-        {
-            string PayPalURL = "";
-            PayPalURL += "https://www.paypal.com/cgi-bin/webscr" +
-                "?cmd=" + "_donations" +
-                "&business=" + youremail +
-                "&lc=" + country +
-                "&item_name=" + description +
-                "&currency_code=" + currency +
-                "&bn=" + "PP%2dDonationsBF";
-            System.Diagnostics.Process.Start(PayPalURL);
-        }
+
 
         public void SetRegionStatus(string region, bool state)
         {
@@ -549,6 +540,19 @@ namespace ScannerEngine
         public void SetColumnVisSetting(string component, string column, bool visibility)
         {
             Settings.setcolumnvisibility(component, column, visibility);
+        }
+
+        public void PayPalDonate(string youremail, string description, string country, string currency)
+        {
+            string PayPalURL = "";
+            PayPalURL += "https://www.paypal.com/cgi-bin/webscr" +
+                "?cmd=" + "_donations" +
+                "&business=" + youremail +
+                "&lc=" + country +
+                "&item_name=" + description +
+                "&currency_code=" + currency +
+                "&bn=" + "PP%2dDonationsBF";
+            System.Diagnostics.Process.Start(PayPalURL);
         }
     }
 

@@ -2108,6 +2108,19 @@ namespace AWSFunctions
             }
         }
 
+        public void PayPalDonate(string youremail, string description, string country, string currency)
+        {
+            string PayPalURL = "";
+            PayPalURL += "https://www.paypal.com/cgi-bin/webscr" +
+                "?cmd=" + "_donations" +
+                "&business=" + youremail +
+                "&lc=" + country +
+                "&item_name=" + description +
+                "&currency_code=" + currency +
+                "&bn=" + "PP%2dDonationsBF";
+            System.Diagnostics.Process.Start(PayPalURL);
+        }
+
     }//EndScanAWS
 
     public class AWSTables
@@ -2450,6 +2463,8 @@ namespace AWSFunctions
             ToReturn.TableName = "SNSSubscriptionTable";
             return ToReturn;
         }
+
+        
 
         public static string Shrug = "¯\\_(ツ)_/¯";
     }

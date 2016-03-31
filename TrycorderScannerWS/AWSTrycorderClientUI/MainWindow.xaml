@@ -13,7 +13,7 @@
                 <MenuItem x:Name="LoadCredentialsMI" Header="Load Credentials" HorizontalAlignment="Left" Width="180" ToolTip="Load an AWS credentials file to the AWS credential store." Click="LoadCredentialsMI_Click"/>
                 <MenuItem x:Name="ExportCredentialsMI" Header="Export Credentials" HorizontalAlignment="Left" Width="185" ToolTip="Export Credentials from Store" Click="ExportCredentialsMI_Click" />
                 <MenuItem x:Name="RemoveBadMI" Header="RemoveBadCredentials" HorizontalAlignment="Left" Width="185" ToolTip="Expunge non working credentials from store" Visibility="Hidden" Click="RemoveBadMI_Click" />
-                <MenuItem x:Name="AddCredMI" Header="Add/Del Credential" HorizontalAlignment="Left" Width="185" ToolTip="Add or remove a credential"  Click="AddCredMI_Click"  />
+                <MenuItem x:Name="AddCredMI" Header="Add/Del Credential" HorizontalAlignment="Left" Width="195" ToolTip="Add or remove a credential"  Click="AddCredMI_Click"  />
                 <MenuItem x:Name="ExcelMI" Header="Export to Excel" HorizontalAlignment="Left" Width="185" ToolTip="Export data to Excel" Click="ExcelMI_Click"    />
 
             </MenuItem>
@@ -22,7 +22,8 @@
             <MenuItem x:Name="ComponentsMenuItem" Header="Components"/>
             <MenuItem x:Name="ColumnsMenuItem" Header="Columns"/>
             <MenuItem x:Name="AboutMenuItem" Header="About">
-                <MenuItem x:Name="CheckStatusMI" Header="CheckStatus" HorizontalAlignment="Left" Width="144.8" Click="CheckStatusMI_Click"/>
+                <MenuItem x:Name="CheckStatusMI" Header="CheckStatus" HorizontalAlignment="Left" Width="160.8" Click="CheckStatusMI_Click"/>
+                <MenuItem x:Name="PaypalMI" Header="Paypal Donate" HorizontalAlignment="Left" Width="180.8" Click="PaypalMI_Click" />
             </MenuItem>
         </Menu>
         <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2" AlternatingRowBackground="Aqua"/>

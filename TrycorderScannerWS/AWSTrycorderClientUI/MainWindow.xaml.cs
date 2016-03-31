@@ -692,5 +692,10 @@ namespace AWSTrycorderClientUI
             System.Windows.MessageBox.Show(result, "Export to Excel");
             
         }
+
+        private void PaypalMI_Click(object sender, RoutedEventArgs e)
+        {
+            StivFunk.PayPalDonate("stiv@stiv.com", "Support development of AWS Trycorder", "US", "USD");
+        }
     }
 }
