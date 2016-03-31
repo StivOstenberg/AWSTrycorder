@@ -22,6 +22,7 @@
             <MenuItem x:Name="ComponentsMenuItem" Header="Components"/>
             <MenuItem x:Name="ColumnsMenuItem" Header="Columns"/>
             <MenuItem x:Name="AboutMenuItem" Header="About">
+                <MenuItem x:Name="LicenseMI" Header="License" HorizontalAlignment="Left" Width="160.8" Click="LicenseMI_Click" />
                 <MenuItem x:Name="CheckStatusMI" Header="CheckStatus" HorizontalAlignment="Left" Width="160.8" Click="CheckStatusMI_Click"/>
                 <MenuItem x:Name="PaypalMI" Header="Paypal Donate" HorizontalAlignment="Left" Width="180.8" Click="PaypalMI_Click" />
             </MenuItem>
