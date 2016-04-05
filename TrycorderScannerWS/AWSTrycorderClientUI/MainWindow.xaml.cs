@@ -91,10 +91,14 @@ namespace AWSTrycorderClientUI
             }
             else if (ScanButton.Background != Brushes.Green)
             {
+                var selkie = SelectedComponentComboBox.SelectedValue;
                 ScanButton.Background = Brushes.Green;
                 ScanButton.Content = "Scan";
-                if (SelectedComponentComboBox.SelectedValue != null)SelectedComponentComboBox.SelectedIndex=0 ;
+
+
+                if (SelectedComponentComboBox.SelectedValue != null)SelectedComponentComboBox.SelectedValue=selkie ;
                 UpdateTable();
+                DoScan();
             }
 
         }
@@ -610,6 +614,11 @@ namespace AWSTrycorderClientUI
             DoScan();
         }
 
+        private void SelectColumncomboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DoScan();
+        }
+
         private void DoScan()
         {
             try
@@ -738,5 +747,7 @@ namespace AWSTrycorderClientUI
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.";
             System.Windows.MessageBox.Show(license,"AWS Trycorder License" );
         }
+
+
     }
 }
