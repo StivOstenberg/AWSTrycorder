@@ -989,6 +989,8 @@ namespace AWSFunctions
                             auserdata["Profile"] = aprofile;
                             auserdata["UserID"] = "Credential Report";
                             auserdata["UserName"] = "Not ready";
+                            IAMTable.Rows.Add(auserdata);
+                            return IAMTable;
 
                         }
                         //Sometimes reports take a LOOOOONG time.
