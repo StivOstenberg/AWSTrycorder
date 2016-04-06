@@ -316,7 +316,6 @@ namespace AWSFunctions
                 RegionNames.Add(EP.DisplayName);
             }
             return RegionNames;
-
         }
 
         public DataTable GetSubnets(string aprofile, string Region2Scan)
@@ -975,6 +974,28 @@ namespace AWSFunctions
                     unamelookup.Add(rabbit.UserId, rabbit.UserName);
                 }
                 var createcredreport = iam.GenerateCredentialReport();
+                bool notdone = true;
+                var genstart = DateTime.Now;
+                while(notdone)
+                {
+                    var status = createcredreport.State;
+                    if (status == ReportStateType.COMPLETE) notdone = false;
+                    else
+                    {
+                        if(DateTime.Now>genstart+TimeSpan.FromMinutes(2))
+                        {
+                            DataRow auserdata = IAMTable.NewRow();
+                            auserdata["AccountID"] = accountid;
+                            auserdata["Profile"] = aprofile;
+                            auserdata["UserID"] = "Credential Report";
+                            auserdata["UserName"] = "Not ready";
+
+                        }
+                        //Sometimes reports take a LOOOOONG time.
+
+                    }
+                }
+                
                 foreach (var auser in myUserList)
                 {
                     UserNameIdMap.Add(auser.UserName, auser.UserId);
@@ -985,9 +1006,15 @@ namespace AWSFunctions
                 DateTime getreportfinish = DateTime.Now;
 
                 try
-                {
+                { 
                     credreport = iam.GetCredentialReport();
-                    System.Threading.Thread.Sleep(5000);//Give a nice long wait to allow report to generate.
+                    //Wait for report to finish... how?
+
+                    var goombah = credreport.ResponseMetadata.Metadata;
+                    
+                    //while(credreport.ResponseMetadata.Metadata)
+
+
                     getreportfinish = DateTime.Now;
                     var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
 

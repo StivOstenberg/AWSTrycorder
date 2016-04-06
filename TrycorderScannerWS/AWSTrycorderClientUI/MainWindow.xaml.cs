@@ -628,8 +628,8 @@ namespace AWSTrycorderClientUI
                 string column2filter = SelectColumncomboBox.SelectedItem.ToString();
                 bool casesense = (bool)CaseCheckbox.IsChecked;
                 var filttab = Trycorder.FilterDataTablebyCol(Table2Scan, column2filter, filterstring, casesense);
-
                 DasGrid.ItemsSource = filttab.DefaultView;
+
             }
             catch (Exception ex)
             {
