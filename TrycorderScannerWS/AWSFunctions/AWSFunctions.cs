@@ -1230,7 +1230,16 @@ namespace AWSFunctions
             {
                 
                 string instanceid = instat.InstanceId;
-                Instance thisinstance = Bunchadata[instanceid];
+                Instance thisinstance = new Instance();
+                try
+                {
+                    thisinstance = Bunchadata[instanceid];
+                }
+                catch(Exception ex)
+                {
+
+                    continue;
+                }
                 DataRow thisinstancedatarow = ToReturn.NewRow();
                 //Collect the datases
                 string instancename = "";
@@ -1343,7 +1352,10 @@ namespace AWSFunctions
 
                 //Test section to try to pull out AMI data
                 string AMI = "";
+                string AMIName = "";
                 string AMIDesc = "";
+                string AMILocation = "";
+                string AMIState = "";
                 try { AMI = thisinstance.ImageId; }
                 catch { }
                 if (string.IsNullOrEmpty(AMI)) AMI = "";
@@ -1356,8 +1368,18 @@ namespace AWSFunctions
                     if (idata.Count > 0)
                     {
                         AMIDesc = idata[0].Description;
+                        AMIName = idata[0].Name;
+                        AMILocation = idata[0].ImageLocation;
+                        AMIState = idata[0].State;
+                        
                     }
-                    if (String.IsNullOrEmpty(AMIDesc)) AMIDesc = "AMI Image not accessible!!";
+                    else
+                    {
+                        AMILocation = idata[0].ImageLocation;
+                    }
+                    if (String.IsNullOrEmpty(AMIDesc)) {AMIDesc = ""; }
+                    if (String.IsNullOrEmpty(AMIName)) { AMIName = ""; }
+                 
                 }
 
                 //
@@ -1393,6 +1415,8 @@ namespace AWSFunctions
                 thisinstancedatarow["InstanceID"] = instanceid;
                 thisinstancedatarow["TerminationProtection"] = TerminationProtection;
                 thisinstancedatarow["AMI"] = AMI;
+                thisinstancedatarow["AMIState"] = AMIState;
+                thisinstancedatarow["AMILocation"] = AMILocation;
                 thisinstancedatarow["AMIDescription"] = AMIDesc;
                 thisinstancedatarow["AvailabilityZone"] = AZ;
                 thisinstancedatarow["Status"] = status;
@@ -2268,6 +2292,9 @@ namespace AWSFunctions
             table.Columns.Add("InstanceID", typeof(string));
             table.Columns.Add("TerminationProtection", typeof(string));
             table.Columns.Add("AMI", typeof(string));
+            table.Columns.Add("AMIState", typeof(string));
+            table.Columns.Add("AMIName", typeof(string));
+            table.Columns.Add("AMILocation", typeof(string));
             table.Columns.Add("AMIDescription", typeof(string));
             table.Columns.Add("AvailabilityZone", typeof(string));
             table.Columns.Add("Platform", typeof(string));
@@ -2380,6 +2407,20 @@ namespace AWSFunctions
             ToReturn.Columns.Add("Tags", typeof(string));
 
             ToReturn.TableName = "VPCTable";
+
+            return ToReturn;
+        }
+
+        public static DataTable GetAccountsTable()
+        {
+            DataTable ToReturn = new DataTable();
+            
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("Access Key", typeof(string));
+            ToReturn.Columns.Add("DupeDisable", typeof(bool));
+
+            ToReturn.TableName = "AccountsTable";
 
             return ToReturn;
         }
@@ -2595,7 +2636,7 @@ namespace AWSFunctions
         {
             //Set the columns we want visible by default per component.
             DefaultColumns["EBS"] = new List<string>() { "Profile", "Region", "InstanceID", "Attachments", "AttachState", "AttachTime", "DeleteonTerm", "AZ", "CreateTime", "IOPS", "Size-G", "State", "Tags", "VolumeID", "VolumeType" };
-            DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName", "TerminationProtection","InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
+            DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName","InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
             DefaultColumns["IAM"] = new List<string>() { "Profile", "UserID", "Username", "ARN", "CreateDate", "PwdEnabled", "PwdLastUsed", "MFA Active", "AccessKey1-Active", "AccessKey1-LastUsedDate", "AccessKey1-LastUsedRegion", "AccessKey1-LastUsedService", "User-Policies", "Access-Keys", "Groups" };
             DefaultColumns["S3"] = new List<string>() { "Profile", "Bucket", "Region", "RegionEndpoint", "AuthRegion", "AuthService", "CreationDate", "LastAccess", "Owner", "Grants", "WebsiteHosting", "Versioning", "Tags" };
             DefaultColumns["RDS"] = new List<string>() { "Profile", "AvailabilityZone", "InstanceID", "Name", "Status", "EndPoint", "InstanceClass", "IOPS", "AllocatedStorage", "StorageType", "Engine", "EngineVersion", "Created" };
