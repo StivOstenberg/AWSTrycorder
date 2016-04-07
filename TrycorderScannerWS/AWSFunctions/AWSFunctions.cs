@@ -318,76 +318,7 @@ namespace AWSFunctions
             return RegionNames;
         }
 
-        public DataTable GetSubnets(string aprofile, string Region2Scan)
-        {
 
-            string accountid = GetAccountID(aprofile);
-
-            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
-            //Convert the Region2Scan to an AWS Endpoint.
-            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
-            {
-                if (aregion.DisplayName.Equals(Region2Scan))
-                {
-                    Endpoint2scan = aregion;
-                    continue;
-                }
-            }
-
-            Amazon.Runtime.AWSCredentials credential;
-            DataTable ToReturn = AWSTables.GetComponentTable("Subnets");
-
-            try
-            {
-                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
-                var subbies = ec2.DescribeSubnets().Subnets;
-
-                foreach (var asubnet in subbies)
-                {
-                    DataRow disone = ToReturn.NewRow();
-                    disone["AccountID"] = accountid;
-                    disone["Profile"] = aprofile;
-                    disone["AvailabilityZone"] = asubnet.AvailabilityZone;
-                    disone["AvailableIPCount"] = asubnet.AvailableIpAddressCount.ToString();
-                    disone["Cidr"] = asubnet.CidrBlock;
-                    //Trickybits.  Cidr to IP
-                    //var dater = Network2IpRange(asubnet.CidrBlock);
-                    System.Net.IPNetwork danetwork = System.Net.IPNetwork.Parse(asubnet.CidrBlock);
-
-                    disone["[Network]"] = danetwork.Network;
-                    disone["[Netmask]"] = danetwork.Netmask;
-                    disone["[Broadcast]"] = danetwork.Broadcast;
-                    disone["[FirstUsable]"] = danetwork.FirstUsable;
-                    disone["[LastUsable]"] = danetwork.LastUsable;
-
-                    ///
-                    disone["DefaultForAZ"] = asubnet.DefaultForAz.ToString();
-                    disone["MapPubIPonLaunch"] = asubnet.MapPublicIpOnLaunch.ToString();
-                    disone["State"] = asubnet.State;
-                    disone["SubnetID"] = asubnet.SubnetId;
-                    var tagger = asubnet.Tags;
-                    List<string> taglist = new List<string>();
-                    foreach (var atag in tagger)
-                    {
-                        taglist.Add(atag.Key + ": " + atag.Value);
-                        if (atag.Key.Equals("Name")) disone["SubnetName"] = atag.Value;
-                    }
-
-                    disone["Tags"] = List2String(taglist);
-                    disone["VpcID"] = asubnet.VpcId;
-
-                    ToReturn.Rows.Add(disone);
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                string rabbit = "";
-            }
-            return ToReturn;
-        }
 
         public DataTable GetS3Buckets(string aprofile)
         {
@@ -1497,16 +1428,17 @@ namespace AWSFunctions
         /// </summary>
         /// <param name="List of Profiles"></param>
         /// <returns>Datatable of VPC details</returns>
-        public DataTable ScanVPCs(IEnumerable<string> Profiles2Scan)
+        public DataTable ScanVPCs(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
             DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("VPC");
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             ParallelOptions po = new ParallelOptions();
             po.MaxDegreeOfParallelism = 64;
             try
             {
-                Parallel.ForEach(Profiles2Scan, po, (profile) => {
-                    MyData.TryAdd((profile), GetVPCList(profile));
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetVPCs(KVP.Key, KVP.Value));
                 });
             }
             catch (Exception ex)
@@ -1525,6 +1457,60 @@ namespace AWSFunctions
 
                 }
             }
+            return ToReturn;
+        }
+
+        public DataTable GetVPCs(String aprofile, string Region2Scan)
+        {
+            string accountid = GetAccountID(aprofile);
+            DataTable ToReturn = AWSTables.GetVPCDetailsTable();
+            Amazon.Runtime.AWSCredentials credential;
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
+                var vippies = ec2.DescribeVpcs().Vpcs;
+
+                foreach (var avpc in vippies)
+                {
+                    DataRow thisvpc = ToReturn.NewRow();
+                    thisvpc["AccountID"] = accountid;
+                    thisvpc["Profile"] = aprofile;
+                    thisvpc["Region"] = Region2Scan;
+                    thisvpc["VpcID"] = avpc.VpcId;
+                    thisvpc["CidrBlock"] = avpc.CidrBlock;
+                    thisvpc["IsDefault"] = avpc.IsDefault.ToString();
+                    thisvpc["DHCPOptionsID"] = avpc.DhcpOptionsId;
+                    thisvpc["InstanceTenancy"] = avpc.InstanceTenancy;
+                    thisvpc["State"] = avpc.State;
+                    var tagger = avpc.Tags;
+                    List<string> tlist = new List<string>();
+                    foreach (var atag in tagger)
+                    {
+                        tlist.Add(atag.Key + ": " + atag.Value);
+                    }
+                    thisvpc["Tags"] = List2String(tlist);
+
+                    ToReturn.Rows.Add(thisvpc);
+                }
+
+
+            }//End of the big Try
+            catch (Exception ex)
+            {
+                WriteToEventLog("VPC scan of " + aprofile + " failed:" + ex.Message.ToString(), EventLogEntryType.Error);
+            }
+
             return ToReturn;
         }
 
@@ -1734,6 +1720,77 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public DataTable GetSubnets(string aprofile, string Region2Scan)
+        {
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+
+            Amazon.Runtime.AWSCredentials credential;
+            DataTable ToReturn = AWSTables.GetComponentTable("Subnets");
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
+                var subbies = ec2.DescribeSubnets().Subnets;
+
+                foreach (var asubnet in subbies)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    disone["AccountID"] = accountid;
+                    disone["Profile"] = aprofile;
+                    disone["AvailabilityZone"] = asubnet.AvailabilityZone;
+                    disone["AvailableIPCount"] = asubnet.AvailableIpAddressCount.ToString();
+                    disone["Cidr"] = asubnet.CidrBlock;
+                    //Trickybits.  Cidr to IP
+                    //var dater = Network2IpRange(asubnet.CidrBlock);
+                    System.Net.IPNetwork danetwork = System.Net.IPNetwork.Parse(asubnet.CidrBlock);
+
+                    disone["[Network]"] = danetwork.Network;
+                    disone["[Netmask]"] = danetwork.Netmask;
+                    disone["[Broadcast]"] = danetwork.Broadcast;
+                    disone["[FirstUsable]"] = danetwork.FirstUsable;
+                    disone["[LastUsable]"] = danetwork.LastUsable;
+
+                    ///
+                    disone["DefaultForAZ"] = asubnet.DefaultForAz.ToString();
+                    disone["MapPubIPonLaunch"] = asubnet.MapPublicIpOnLaunch.ToString();
+                    disone["State"] = asubnet.State;
+                    disone["SubnetID"] = asubnet.SubnetId;
+                    var tagger = asubnet.Tags;
+                    List<string> taglist = new List<string>();
+                    foreach (var atag in tagger)
+                    {
+                        taglist.Add(atag.Key + ": " + atag.Value);
+                        if (atag.Key.Equals("Name")) disone["SubnetName"] = atag.Value;
+                    }
+
+                    disone["Tags"] = List2String(taglist);
+                    disone["VpcID"] = asubnet.VpcId;
+
+                    ToReturn.Rows.Add(disone);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                string rabbit = "";
+            }
+            return ToReturn;
+        }
+
         public DataTable ScanRDS(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
             DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("RDS");
@@ -1887,49 +1944,7 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-        public DataTable GetVPCList(String aprofile)
-        {
-            string accountid = GetAccountID(aprofile);
-            DataTable ToReturn = AWSTables.GetVPCDetailsTable();
-            Amazon.Runtime.AWSCredentials credential;
-            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
-            try
-            {
-                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
-                var vippies = ec2.DescribeVpcs().Vpcs;
 
-                foreach (var avpc in vippies)
-                {
-                    DataRow thisvpc = ToReturn.NewRow();
-                    thisvpc["AccountID"] = accountid;
-                    thisvpc["Profile"] = aprofile;
-                    thisvpc["VpcID"] = avpc.VpcId;
-                    thisvpc["CidrBlock"] = avpc.CidrBlock;
-                    thisvpc["IsDefault"] = avpc.IsDefault.ToString();
-                    thisvpc["DHCPOptionsID"] = avpc.DhcpOptionsId;
-                    thisvpc["InstanceTenancy"] = avpc.InstanceTenancy;
-                    thisvpc["State"] = avpc.State;
-                    var tagger = avpc.Tags;
-                    List<string> tlist = new List<string>();
-                    foreach (var atag in tagger)
-                    {
-                        tlist.Add(atag.Key + ": " + atag.Value);
-                    }
-                    thisvpc["Tags"] = List2String(tlist);
-
-                    ToReturn.Rows.Add(thisvpc);
-                }
-
-
-            }//End of the big Try
-            catch (Exception ex)
-            {
-                WriteToEventLog("VPC scan of " + aprofile + " failed:"+ ex.Message.ToString(), EventLogEntryType.Error);
-            }
-
-            return ToReturn;
-        }
 
 
         public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
@@ -2355,6 +2370,7 @@ namespace AWSFunctions
             DataTable ToReturn = new DataTable();
             ToReturn.Columns.Add("AccountID", typeof(string));
             ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("Region", typeof(string));
             ToReturn.Columns.Add("VpcID", typeof(string));
             ToReturn.Columns.Add("CidrBlock", typeof(string));
             ToReturn.Columns.Add("IsDefault", typeof(string));
@@ -2564,7 +2580,6 @@ namespace AWSFunctions
                 {
                     bool isvis = false;
                     if (DefaultColumns[acomp].Contains(acol.ColumnName)) isvis = true;
-
                     if (isvis) compdict.Add(acol.ColumnName, true);
                     else { compdict.Add(acol.ColumnName, false); }
                 }

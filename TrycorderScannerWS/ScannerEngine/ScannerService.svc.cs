@@ -428,7 +428,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = Scanner.ScanVPCs(Settings.GetActiveProfiles());
+                    e.Result = Scanner.ScanVPCs(Settings.GetEnabledProfileandRegions);
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>

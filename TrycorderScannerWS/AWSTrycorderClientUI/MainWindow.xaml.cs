@@ -272,15 +272,22 @@ namespace AWSTrycorderClientUI
 
             foreach (var acol in DasGrid.Columns)
             {
-                System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
-                mi.IsCheckable = true;
-                mi.IsChecked = vizlist[acol.Header.ToString()];
-                mi.Header = acol.Header;
-                mi.Click += ColumnChecked;
-                mi.StaysOpenOnClick = true;
-                Proot.Items.Add(mi);
-                var defvis = vizlist[acol.Header.ToString()];
-                ShowHideColumn(acol.Header.ToString(), vizlist[acol.Header.ToString()]);
+                try {
+                    System.Windows.Controls.MenuItem mi = new System.Windows.Controls.MenuItem();
+                    mi.IsCheckable = true;
+
+                    mi.IsChecked = vizlist[acol.Header.ToString()];
+                    mi.Header = acol.Header;
+                    mi.Click += ColumnChecked;
+                    mi.StaysOpenOnClick = true;
+                    Proot.Items.Add(mi);
+                    var defvis = vizlist[acol.Header.ToString()];
+                    ShowHideColumn(acol.Header.ToString(), vizlist[acol.Header.ToString()]);
+                }
+                catch
+                {
+
+                }
 
             }
         }
