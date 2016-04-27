@@ -30,7 +30,7 @@ namespace ScannerTestUI
         {
             InitializeComponent();
             ProfilesComboBox.ItemsSource = Scanner.GetProfileNames();
-            ProfilesComboBox.SelectedIndex = 11;
+            ProfilesComboBox.SelectedIndex = 12;
             FillRegions();
         }
 
@@ -134,6 +134,13 @@ namespace ScannerTestUI
             var datable = Scanner.GetSNSSubscriptions(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
             var goob = datable.Rows[0];
             var cross = goob[8];
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
+
+        private void S3SizesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.S3CloudWatch(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+
             DasGrid.ItemsSource = datable.DefaultView;
         }
     }

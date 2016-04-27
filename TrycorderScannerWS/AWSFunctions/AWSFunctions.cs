@@ -24,6 +24,7 @@ using Amazon.S3.Model;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using Amazon.CloudWatch;
 
 
 using System;
@@ -318,7 +319,164 @@ namespace AWSFunctions
             return RegionNames;
         }
 
+        public DataTable S3CloudWatch(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn =AWSTables.GetS3SizesTable();
+            
+            string accountid = GetAccountID(aprofile);
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
 
+            DataTable metlist = new DataTable();
+            try
+            {
+                var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                AmazonCloudWatchClient CWClient = new AmazonCloudWatchClient(credential, Endpoint2scan);
+
+
+                Amazon.CloudWatch.Model.ListMetricsRequest LMReq = new Amazon.CloudWatch.Model.ListMetricsRequest();               
+
+
+                //Using to explore the metrics
+                LMReq.Namespace = "AWS/S3";
+                LMReq.MetricName = "BucketSizeBytes";
+                var getemback = CWClient.ListMetrics(LMReq).Metrics;
+
+
+
+                //This is just stuff I used to view data from the List
+                metlist.Columns.Add("MetricName");
+                metlist.Columns.Add("NameSpace");
+
+                //These are the dimensions for S3.
+                metlist.Columns.Add("Bucketname");
+                metlist.Columns.Add("StorageType");
+
+                foreach (var rabbit in getemback)
+                {
+                    var DR = metlist.NewRow();
+                    try
+                    {
+                        DR["MetricName"] = rabbit.MetricName;
+                        DR["NameSpace"] = rabbit.Namespace;
+                        var dim = rabbit.Dimensions;
+                        //These are the dimensions for S3.
+                        DR["BucketName"] = dim[0].Value;
+                        DR["StorageType"] =  dim[1].Value;
+                        metlist.Rows.Add(DR);
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
+                }
+
+                // Okay, collect the daters for these here buckets
+
+
+
+
+                foreach (var abucket in metlist.AsEnumerable())
+                {
+                    Amazon.CloudWatch.Model.GetMetricStatisticsRequest GMReq = new Amazon.CloudWatch.Model.GetMetricStatisticsRequest();
+                    string bucketname = abucket[2].ToString();
+                    string storagetype = abucket[3].ToString();
+
+                    try
+                    {
+                        Amazon.CloudWatch.Model.Dimension dimbo = new Amazon.CloudWatch.Model.Dimension();
+                        dimbo.Name = "BucketName";
+                        dimbo.Value = bucketname;
+                        GMReq.Dimensions.Add(dimbo);
+                        Amazon.CloudWatch.Model.Dimension dimbo2 = new Amazon.CloudWatch.Model.Dimension();
+                        dimbo2.Name = "StorageType";
+                        dimbo2.Value = storagetype;
+                        GMReq.Dimensions.Add(dimbo2);
+
+                        //Build the request:
+                        GMReq.Namespace = "AWS/S3";
+                        GMReq.EndTime = DateTime.Now;
+                        GMReq.StartTime = DateTime.Now - TimeSpan.FromDays(14);
+                        GMReq.Period = (60 * 60 * 24 * 7);//Seconds in a week.
+                        GMReq.Statistics.Add("Minimum");
+                        GMReq.Statistics.Add("Maximum");
+                        GMReq.Statistics.Add("Average");
+                        GMReq.MetricName = "BucketSizeBytes";
+
+                        //Execute request:
+                        var goobtastic = CWClient.GetMetricStatistics(GMReq);
+
+                        //Process Return
+                        var dp = goobtastic.Datapoints;
+
+                        bool firstpassdone = false;
+                        DateTime earlytime = new DateTime();
+                        DateTime lasttime = new DateTime();
+                        var arow = ToReturn.NewRow();
+                        foreach (var ap in dp)//The results are not sorted, so we need to figger it out.
+                        {
+                            var min = ap.Minimum;
+                            var max = ap.Maximum;
+                            var av = ap.Average;
+                            var ts = ap.Timestamp;
+                            if (!firstpassdone)
+                            {
+                                earlytime = ts;
+                                lasttime = ts;
+                                arow["AccountID"] = accountid;
+                                arow["Profile"] = aprofile;
+                                arow["Bucket"] = bucketname;
+                                arow["Region"] = Region2Scan;
+                                arow["StartDate"] = ts.ToShortDateString();
+                                arow["EndDate"] = ts.ToShortDateString();
+                                arow["MinSize"] = min.ToString();
+                                arow["MaxSize"] = max.ToString();
+                                firstpassdone = true;
+                            }
+                            else
+                            {
+                                if (lasttime > ts) arow["EndDate"] = ts.ToShortDateString();
+                                if (earlytime < ts) arow["StartDate"] = ts.ToShortDateString();
+                                var rmin = arow["MinSize"];
+                                var rmax = arow["MaxSize"];
+                                if (Convert.ToDouble(rmin) > min) arow["MinSize"] = min;
+                                if (Convert.ToDouble(rmax) < max) arow["MaxSize"] = max;
+                            }
+                        }//End DP foreach
+                        var goober = arow.ItemArray;
+                        ToReturn.ImportRow(arow);
+
+
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
+
+                }
+
+
+               
+
+
+
+
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+            return ToReturn;
+        }
 
         public DataTable GetS3Buckets(string aprofile)
         {
@@ -1365,20 +1523,29 @@ namespace AWSFunctions
                     DIR.ImageIds.Add(AMI);
                     var imresp = ec2.DescribeImages(DIR);
                     var idata = imresp.Images;
-                    if (idata.Count > 0)
-                    {
-                        AMIDesc = idata[0].Description;
-                        AMIName = idata[0].Name;
-                        AMILocation = idata[0].ImageLocation;
-                        AMIState = idata[0].State;
-                        
+                    try {
+                        if (idata.Count > 0)
+                        {
+                            AMIDesc = idata[0].Description;
+                            AMIName = idata[0].Name;
+                            AMILocation = idata[0].ImageLocation;
+                            AMIState = idata[0].State;
+
+                        }
+                        else
+                        {
+                            AMIDesc = "na";
+                            AMIName = "na";
+                            AMILocation = "na";
+                            AMIState = "na";
+                        }
+                        if (String.IsNullOrEmpty(AMIDesc)) { AMIDesc = ""; }
+                        if (String.IsNullOrEmpty(AMIName)) { AMIName = ""; }
                     }
-                    else
+                    catch(Exception ex)
                     {
-                        AMILocation = idata[0].ImageLocation;
+                        string whyforerror = ex.Message;
                     }
-                    if (String.IsNullOrEmpty(AMIDesc)) {AMIDesc = ""; }
-                    if (String.IsNullOrEmpty(AMIName)) { AMIName = ""; }
                  
                 }
 
@@ -2481,6 +2648,29 @@ namespace AWSFunctions
             ToReturn.Columns.Add("Tags", typeof(string));
 
             ToReturn.TableName = "SnapshotTable";
+
+            return ToReturn;
+        }
+
+        public static DataTable GetS3SizesTable()
+        {
+            DataTable ToReturn = new DataTable();
+            ToReturn.Columns.Add("AccountID", typeof(string));
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("Region", typeof(string));
+            ToReturn.Columns.Add("Bucket", typeof(string));
+
+            ToReturn.Columns.Add("StartDate", typeof(string));
+            ToReturn.Columns.Add("EndDate", typeof(string));
+
+            ToReturn.Columns.Add("MinSize", typeof(string));
+            ToReturn.Columns.Add("MaxSize", typeof(string));
+
+            ToReturn.Columns.Add("MinItems", typeof(string));
+            ToReturn.Columns.Add("MaxItems", typeof(string));
+
+
+            ToReturn.TableName = "S3SizesTable";
 
             return ToReturn;
         }
