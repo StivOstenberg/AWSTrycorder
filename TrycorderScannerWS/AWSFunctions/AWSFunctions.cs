@@ -201,6 +201,21 @@ namespace AWSFunctions
 
         }
 
+
+        public string GetFileSize(double byteCount)
+        {
+            string size = "0 Bytes";
+            if (byteCount >= 1073741824.0)
+                size = String.Format("{0:##.##}", byteCount / 1073741824.0) + " GB";
+            else if (byteCount >= 1048576.0)
+                size = String.Format("{0:##.##}", byteCount / 1048576.0) + " MB";
+            else if (byteCount >= 1024.0)
+                size = String.Format("{0:##.##}", byteCount / 1024.0) + " KB";
+            else if (byteCount > 0 && byteCount < 1024.0)
+                size = byteCount.ToString() + " Bytes";
+
+            return size;
+        }
         public string ExportCredentials(string filename)
         {
             string ToReturn = "";
@@ -348,7 +363,7 @@ namespace AWSFunctions
                 //Using to explore the metrics
                 LMReq.Namespace = "AWS/S3";
                 LMReq.MetricName = "BucketSizeBytes";
-                var getemback = CWClient.ListMetrics(LMReq).Metrics;
+                var getmetrics = CWClient.ListMetrics(LMReq).Metrics;
 
 
 
@@ -360,14 +375,14 @@ namespace AWSFunctions
                 metlist.Columns.Add("Bucketname");
                 metlist.Columns.Add("StorageType");
 
-                foreach (var rabbit in getemback)
+                foreach (var ametric in getmetrics)
                 {
                     var DR = metlist.NewRow();
                     try
                     {
-                        DR["MetricName"] = rabbit.MetricName;
-                        DR["NameSpace"] = rabbit.Namespace;
-                        var dim = rabbit.Dimensions;
+                        DR["MetricName"] = ametric.MetricName;
+                        DR["NameSpace"] = ametric.Namespace;
+                        var dim = ametric.Dimensions;
                         //These are the dimensions for S3.
                         DR["BucketName"] = dim[0].Value;
                         DR["StorageType"] =  dim[1].Value;
@@ -404,7 +419,7 @@ namespace AWSFunctions
                         //Build the request:
                         GMReq.Namespace = "AWS/S3";
                         GMReq.EndTime = DateTime.Now;
-                        GMReq.StartTime = DateTime.Now - TimeSpan.FromDays(14);
+                        GMReq.StartTime = DateTime.Now - TimeSpan.FromDays(21);
                         GMReq.Period = (60 * 60 * 24 * 7);//Seconds in a week.
                         GMReq.Statistics.Add("Minimum");
                         GMReq.Statistics.Add("Maximum");
@@ -421,8 +436,15 @@ namespace AWSFunctions
                         DateTime earlytime = new DateTime();
                         DateTime lasttime = new DateTime();
                         var arow = ToReturn.NewRow();
+
+
+                        
+                        
+                 //need better proccesung of dates!!!
+
                         foreach (var ap in dp)//The results are not sorted, so we need to figger it out.
                         {
+                            
                             var min = ap.Minimum;
                             var max = ap.Maximum;
                             var av = ap.Average;
@@ -443,16 +465,30 @@ namespace AWSFunctions
                             }
                             else
                             {
-                                if (lasttime > ts) arow["EndDate"] = ts.ToShortDateString();
-                                if (earlytime < ts) arow["StartDate"] = ts.ToShortDateString();
+                                if (lasttime > ts)
+                                  {
+                                    lasttime = ts;
+                                    arow["EndDate"] = lasttime.ToShortDateString();
+                                }
+                                if (earlytime < ts)
+                                  {
+                                    earlytime = ts;
+                                    arow["StartDate"] = earlytime.ToShortDateString();
+                                }
                                 var rmin = arow["MinSize"];
                                 var rmax = arow["MaxSize"];
                                 if (Convert.ToDouble(rmin) > min) arow["MinSize"] = min;
                                 if (Convert.ToDouble(rmax) < max) arow["MaxSize"] = max;
                             }
                         }//End DP foreach
-                        var goober = arow.ItemArray;
-                        ToReturn.ImportRow(arow);
+
+                        // Making the number more readable...
+                        arow["MinSize"] = GetFileSize(Convert.ToDouble(arow["MinSize"]));
+                        arow["MaxSize"] = GetFileSize(Convert.ToDouble(arow["MaxSize"]));
+
+                        ToReturn.Rows.Add(arow.ItemArray);
+                        
+
 
 
                     }
