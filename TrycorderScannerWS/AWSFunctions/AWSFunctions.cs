@@ -432,65 +432,50 @@ namespace AWSFunctions
                         //Process Return
                         var dp = goobtastic.Datapoints;
 
-                        bool firstpassdone = false;
-                        DateTime earlytime = new DateTime();
-                        DateTime lasttime = new DateTime();
+
+
                         var arow = ToReturn.NewRow();
 
-
-                        
-                        
-                 //need better proccesung of dates!!!
-
-                        foreach (var ap in dp)//The results are not sorted, so we need to figger it out.
+                        Dictionary<DateTime, Amazon.CloudWatch.Model.Datapoint> sortem = new Dictionary<DateTime, Amazon.CloudWatch.Model.Datapoint>();
+                        foreach(var ap in dp)
                         {
-                            
+                            sortem.Add(ap.Timestamp, ap);
+                        }
+                        var sorteddates = sortem.Keys.ToList();
+                        sorteddates.Sort();
+                        var firstpass = true;
+                        foreach(var key in sorteddates)
+                        {
+                            var ap = sortem[key];
                             var min = ap.Minimum;
                             var max = ap.Maximum;
                             var av = ap.Average;
                             var ts = ap.Timestamp;
-                            if (!firstpassdone)
+
+                            if (firstpass)
                             {
-                                earlytime = ts;
-                                lasttime = ts;
+                                firstpass = false;
                                 arow["AccountID"] = accountid;
                                 arow["Profile"] = aprofile;
                                 arow["Bucket"] = bucketname;
                                 arow["Region"] = Region2Scan;
                                 arow["StartDate"] = ts.ToShortDateString();
                                 arow["EndDate"] = ts.ToShortDateString();
-                                arow["MinSize"] = min.ToString();
-                                arow["MaxSize"] = max.ToString();
-                                firstpassdone = true;
+                                arow["StartSizeMin"] =GetFileSize( min);
+                                arow["StartSizeMax"] =GetFileSize( max);
+                                arow["StartSizeAVG"]= GetFileSize(av);
                             }
                             else
                             {
-                                if (lasttime > ts)
-                                  {
-                                    lasttime = ts;
-                                    arow["EndDate"] = lasttime.ToShortDateString();
-                                }
-                                if (earlytime < ts)
-                                  {
-                                    earlytime = ts;
-                                    arow["StartDate"] = earlytime.ToShortDateString();
-                                }
-                                var rmin = arow["MinSize"];
-                                var rmax = arow["MaxSize"];
-                                if (Convert.ToDouble(rmin) > min) arow["MinSize"] = min;
-                                if (Convert.ToDouble(rmax) < max) arow["MaxSize"] = max;
+                                arow["EndDate"] = ts.ToShortDateString();
+                                arow["EndSizeMin"] = GetFileSize(min);
+                                arow["EndSizeAVG"] = GetFileSize(av);
+                                arow["EndSizeMax"] = GetFileSize(max);
+                                arow["EndSizeMaxBytes"] = Math.Round(av);
+
                             }
-                        }//End DP foreach
-
-                        // Making the number more readable...
-                        arow["MinSize"] = GetFileSize(Convert.ToDouble(arow["MinSize"]));
-                        arow["MaxSize"] = GetFileSize(Convert.ToDouble(arow["MaxSize"]));
-
+                        }
                         ToReturn.Rows.Add(arow.ItemArray);
-                        
-
-
-
                     }
                     catch(Exception ex)
                     {
@@ -2697,15 +2682,21 @@ namespace AWSFunctions
             ToReturn.Columns.Add("Bucket", typeof(string));
 
             ToReturn.Columns.Add("StartDate", typeof(string));
+            ToReturn.Columns.Add("StartSizeMin", typeof(string));
+            ToReturn.Columns.Add("StartSizeAVG", typeof(string));
+            ToReturn.Columns.Add("StartSizeMax", typeof(string));
+
+
             ToReturn.Columns.Add("EndDate", typeof(string));
-
-            ToReturn.Columns.Add("MinSize", typeof(string));
-            ToReturn.Columns.Add("MaxSize", typeof(string));
-
-            ToReturn.Columns.Add("MinItems", typeof(string));
-            ToReturn.Columns.Add("MaxItems", typeof(string));
+            ToReturn.Columns.Add("EndSizeMin", typeof(string));
+            ToReturn.Columns.Add("EndSizeAVG", typeof(string));
+            ToReturn.Columns.Add("EndSizeMax", typeof(string));
+            ToReturn.Columns.Add("EndSizeMaxBytes", typeof(double));
 
 
+
+            //ToReturn.Columns.Add("MinItems", typeof(string));
+            //ToReturn.Columns.Add("MaxItems", typeof(string));
             ToReturn.TableName = "S3SizesTable";
 
             return ToReturn;
