@@ -354,7 +354,7 @@ namespace ScannerEngine
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, e) =>
                 {
-                    e.Result = Scanner.ScanS3(Settings.GetEnabledProfiles.AsEnumerable());
+                    e.Result = Scanner.ScanS3(Settings.GetEnabledProfileandRegions);
                 };
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>

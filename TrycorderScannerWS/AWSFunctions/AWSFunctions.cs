@@ -333,8 +333,14 @@ namespace AWSFunctions
             }
             return RegionNames;
         }
-
-        public DataTable S3CloudWatch(string aprofile, string Region2Scan)
+        /// <summary>
+        /// Given a Profile and Region, return a table with data about bucket sizes,
+        /// collected from CloudWatch.
+        /// </summary>
+        /// <param name="aprofile"></param>
+        /// <param name="Region2Scan"></param>
+        /// <returns></returns>
+        public DataTable S3SizeCloudWatch(string aprofile, string Region2Scan)
         {
             DataTable ToReturn =AWSTables.GetS3SizesTable();
             
@@ -481,13 +487,7 @@ namespace AWSFunctions
                     {
 
                     }
-
                 }
-
-
-               
-
-
 
 
             }
@@ -495,25 +495,93 @@ namespace AWSFunctions
             {
 
             }
+            int buckets = metlist.Rows.Count;
 
+            int returning = ToReturn.Rows.Count;
             return ToReturn;
         }
 
-        public DataTable GetS3Buckets(string aprofile)
+        public DataTable GetS3Buckets(string aprofile,string Region2Scan)
         {
             string accountid = GetAccountID(aprofile);
             Amazon.Runtime.AWSCredentials credential;
             DataTable ToReturn = AWSTables.GetComponentTable("S3");
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+
+
+            //Query Cloudwatch to get list of buckets and sizes in this here region
+            var Sizetable = S3SizeCloudWatch(aprofile, Region2Scan);
+            int sizerows = Sizetable.Rows.Count;
+
+
+
             try
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
 
-                AmazonS3Client S3Client = new AmazonS3Client(credential, Amazon.RegionEndpoint.USEast1);
+                AmazonS3Client S3Client = new AmazonS3Client(credential, Endpoint2scan);
                 ListBucketsResponse response = S3Client.ListBuckets();
                 foreach (S3Bucket abucket in response.Buckets)
                 {
                     DataRow abucketrow = ToReturn.NewRow();
                     var name = abucket.BucketName;
+                    DataRow bucketsizedata = AWSTables.GetS3SizesTable().NewRow();
+                    Boolean havesize = true;
+
+                    try
+                    {
+
+
+                        //This is equivalent to the LINQ query.
+                        Boolean foundinsizetable = false;
+                        List<string> bn = new List<string>();
+                        foreach(var rabbit in Sizetable.AsEnumerable())
+                        {
+                            String thisun = rabbit["Bucket"].ToString();
+                            bn.Add(thisun);
+                            if (thisun.Equals(name))
+                            {
+                                bucketsizedata = rabbit;
+                                foundinsizetable = true;
+                            }
+
+                        }
+                        if(!foundinsizetable)
+                        {
+
+                            bn.Sort();
+                            if (bn.Contains(name))
+                            {
+                                string rabbit = "Yes it does!";
+                            }
+
+                            //why not?
+                        }
+
+
+
+                        if (bucketsizedata == null)
+                        {
+                            abucketrow["EndDate"] = AWSTables.Shrug;
+                            havesize = false;
+                        }
+
+                    }
+                    catch
+                    {
+
+                    }
+
+
                     try
                     {
                         GetBucketLocationRequest gbr = new GetBucketLocationRequest();
@@ -576,11 +644,6 @@ namespace AWSFunctions
                             }
                         }
 
-
-
-
-
-
                         GetBucketWebsiteRequest GBWReq = new GetBucketWebsiteRequest();
                         GBWReq.BucketName = name;
                         GetBucketWebsiteResponse GBWRes = BS3Client.GetBucketWebsite(GBWReq);
@@ -604,6 +667,32 @@ namespace AWSFunctions
                         abucketrow["LastAccess"] = lastaccess;
                         abucketrow["Owner"] = owner;
                         abucketrow["Grants"] = grants;
+                        abucketrow["StartDate"] = "NA";
+                        abucketrow["StartSizeMin"] = "NA";
+                        abucketrow["StartSizeAVG"] = "NA";
+                        abucketrow["StartSizeMax"] = "NA";
+
+                        abucketrow["EndDate"] = "NA";
+                        abucketrow["EndSizeMin"] = "NA";
+                        abucketrow["EndSizeAVG"] = "NA";
+                        abucketrow["EndSizeMax"] = "NA";
+                        abucketrow["EndSizeMaxBytes"] = 0;
+
+                        if (havesize)
+                        {
+                            abucketrow["StartDate"] = bucketsizedata["StartDate"];
+                            abucketrow["StartSizeMin"] = bucketsizedata["StartSizeMin"];
+                            abucketrow["StartSizeAVG"] = bucketsizedata["StartSizeAVG"];
+                            abucketrow["StartSizeMax"] = bucketsizedata["StartSizeMax"];
+
+                            abucketrow["EndDate"] = bucketsizedata["EndDate"];
+                            abucketrow["EndSizeMin"] = bucketsizedata["EndSizeMin"];
+                            abucketrow["EndSizeAVG"] = bucketsizedata["EndSizeAVG"];
+                            abucketrow["EndSizeMax"] = bucketsizedata["EndSizeMax"];
+                            abucketrow["EndSizeMaxBytes"] = bucketsizedata["EndSizeMaxBytes"];
+                        }
+
+
 
                         abucketrow["WebsiteHosting"] = website;
                         abucketrow["Logging"] = "X";
@@ -622,6 +711,35 @@ namespace AWSFunctions
                         abucketrow["Profile"] = aprofile;
                         abucketrow["Bucket"] = name;
                         abucketrow["Region"] = ex.InnerException.Message;
+
+                        if (havesize)
+                        {
+                            abucketrow["StartDate"] = bucketsizedata["StartDate"];
+                            abucketrow["StartSizeMin"] = bucketsizedata["StartSizeMin"];
+                            abucketrow["StartSizeAVG"] = bucketsizedata["StartSizeAVG"];
+                            abucketrow["StartSizeMax"] = bucketsizedata["StartSizeMax"];
+
+                            abucketrow["EndDate"] = bucketsizedata["EndDate"];
+                            abucketrow["EndSizeMin"] = bucketsizedata["EndSizeMin"];
+                            abucketrow["EndSizeAVG"] = bucketsizedata["EndSizeAVG"];
+                            abucketrow["EndSizeMax"] = bucketsizedata["EndSizeMax"];
+                            abucketrow["EndSizeMaxBytes"] = bucketsizedata["EndSizeMaxBytes"];
+
+                        }
+                        else
+                        {
+                            abucketrow["StartDate"] = "NA";
+                            abucketrow["StartSizeMin"] = "NA";
+                            abucketrow["StartSizeAVG"] = "NA";
+                            abucketrow["StartSizeMax"] = "NA";
+
+                            abucketrow["EndDate"] = "NA";
+                            abucketrow["EndSizeMin"] = "NA";
+                            abucketrow["EndSizeAVG"] = "NA";
+                            abucketrow["EndSizeMax"] = "NA";
+                            abucketrow["EndSizeMaxBytes"] = 0;
+                        }
+
                         ToReturn.Rows.Add(abucketrow.ItemArray);
                     }
                 }
@@ -630,16 +748,51 @@ namespace AWSFunctions
 
 
             }
-            catch
+            catch(Exception ex)
             {
                 //Croak
             }
-
-
+            int sizesreturned = Sizetable.Rows.Count;
+            int rowsreturned = ToReturn.Rows.Count;
             return ToReturn;
         }
 
-
+        /// <summary>
+        /// Give a list of Profiles, return details on S3 buckets
+        /// </summary>
+        /// <param name="Profiles2Scan"></param>
+        /// <returns></returns>
+        public DataTable ScanS3(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("S3");
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            ParallelOptions po = new ParallelOptions();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            po.MaxDegreeOfParallelism = 128;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetS3Buckets(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                WriteToEventLog("Failed scanning S3\n" + ex.Message, EventLogEntryType.Error);
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                    ToReturn.Merge(rabbit);
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            return ToReturn;
+        }
         public DataTable GetSQSQ(string aprofile, string Region2Scan)
         {
             DataTable ToReturn = new DataTable();
@@ -1866,42 +2019,7 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-        /// <summary>
-        /// Give a list of Profiles, return details on S3 buckets
-        /// </summary>
-        /// <param name="Profiles2Scan"></param>
-        /// <returns></returns>
-        public DataTable ScanS3(IEnumerable<string> Profiles2Scan)
-        {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("S3");
-            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = 128;
-            try
-            {
-                Parallel.ForEach(Profiles2Scan, po, (profile) => {
-                    MyData.TryAdd((profile), GetS3Buckets(profile));
-                });
-            }
-            catch (Exception ex)
-            {
-                WriteToEventLog("Failed scanning S3\n" + ex.Message, EventLogEntryType.Error);
-                ToReturn.TableName = ex.Message.ToString();
-                return ToReturn;
-            }
-            foreach (var rabbit in MyData.Values)
-            {
-                try
-                {
-                    ToReturn.Merge(rabbit);
-                }
-                catch (Exception ex)
-                {
 
-                }
-            }
-            return ToReturn;
-        }
 
         public DataTable ScanSubnets(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
@@ -2568,6 +2686,17 @@ namespace AWSFunctions
             table.Columns.Add("Owner", typeof(string));
             table.Columns.Add("Grants", typeof(string));
 
+            table.Columns.Add("StartDate", typeof(string));
+            table.Columns.Add("StartSizeMin", typeof(string));
+            table.Columns.Add("StartSizeAVG", typeof(string));
+            table.Columns.Add("StartSizeMax", typeof(string));
+
+            table.Columns.Add("EndDate", typeof(string));
+            table.Columns.Add("EndSizeMin", typeof(string));
+            table.Columns.Add("EndSizeAVG", typeof(string));
+            table.Columns.Add("EndSizeMax", typeof(string));
+            table.Columns.Add("EndSizeMaxBytes", typeof(double));
+
 
             table.Columns.Add("WebsiteHosting", typeof(string));
             table.Columns.Add("Logging", typeof(string));
@@ -2685,7 +2814,6 @@ namespace AWSFunctions
             ToReturn.Columns.Add("StartSizeMin", typeof(string));
             ToReturn.Columns.Add("StartSizeAVG", typeof(string));
             ToReturn.Columns.Add("StartSizeMax", typeof(string));
-
 
             ToReturn.Columns.Add("EndDate", typeof(string));
             ToReturn.Columns.Add("EndSizeMin", typeof(string));
@@ -2855,9 +2983,9 @@ namespace AWSFunctions
             DefaultColumns["EBS"] = new List<string>() { "Profile", "Region", "InstanceID", "Attachments", "AttachState", "AttachTime", "DeleteonTerm", "AZ", "CreateTime", "IOPS", "Size-G", "State", "Tags", "VolumeID", "VolumeType" };
             DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName","InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
             DefaultColumns["IAM"] = new List<string>() { "Profile", "UserID", "Username", "ARN", "CreateDate", "PwdEnabled", "PwdLastUsed", "MFA Active", "AccessKey1-Active", "AccessKey1-LastUsedDate", "AccessKey1-LastUsedRegion", "AccessKey1-LastUsedService", "User-Policies", "Access-Keys", "Groups" };
-            DefaultColumns["S3"] = new List<string>() { "Profile", "Bucket", "Region", "RegionEndpoint", "AuthRegion", "AuthService", "CreationDate", "LastAccess", "Owner", "Grants", "WebsiteHosting", "Versioning", "Tags" };
+            DefaultColumns["S3"] = new List<string>() { "Profile", "Bucket", "Region", "RegionEndpoint", "AuthRegion", "AuthService", "CreationDate", "LastAccess", "Owner", "EndDate", "EndSizeMax", "EndSizeMaxBytes","Grants", "WebsiteHosting", "Versioning", "Tags" };
             DefaultColumns["RDS"] = new List<string>() { "Profile", "AvailabilityZone", "InstanceID", "Name", "Status", "EndPoint", "InstanceClass", "IOPS", "AllocatedStorage", "StorageType", "Engine", "EngineVersion", "Created" };
-            DefaultColumns["VPC"] = new List<string>() {  "Profile", "VpcID", "CidrBlock", "IsDefault", "DHCPOptionsID", "InstanceTenancy", "State", "Tags" };
+            DefaultColumns["VPC"] = new List<string>() {  "Profile", "VpcID", "CidrBlock", "IsDefault", "DHCPOptionsID", "InstanceTenancy", "State", "Tags" }; 
             DefaultColumns["Snapshots"] = new List<string>() { "Profile", "Region", "SnapshotID", "Description", "VolumeID", "VolumeSize-GB", "Encrypted", "OwnerID", "Progress", "StartTime", "State", "Tags" };
             DefaultColumns["Subnets"] = new List<string>() {  "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };
             DefaultColumns["SNSSubs"] = new List<string>() {  "Profile", "Endpoint", "Protocol","TopicName", "TopicARN" , "CrossAccount" };

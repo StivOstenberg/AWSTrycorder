@@ -82,14 +82,14 @@ namespace ScannerTestUI
 
         private void ListS3MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (ProfilesComboBox.SelectedItem.ToString().Length > 2 )
+            if (ProfilesComboBox.SelectedItem.ToString().Length > 2 && RegionListcomboBox.SelectedItem.ToString().Length >1)
             {
-                var datable = Scanner.GetS3Buckets(ProfilesComboBox.SelectedItem.ToString());
+                var datable = Scanner.GetS3Buckets(ProfilesComboBox.SelectedItem.ToString(),RegionListcomboBox.SelectedItem.ToString());
                 DasGrid.ItemsSource = datable.DefaultView;
             }
             else
             {
-                MessageBox.Show("You fool, you must select a profile for to scan S3!");
+                MessageBox.Show("You fool, you must select a profile and region for to scan S3!");
             }
         }
 
@@ -139,7 +139,7 @@ namespace ScannerTestUI
 
         private void S3SizesMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var datable = Scanner.S3CloudWatch(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            var datable = Scanner.S3SizeCloudWatch(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
 
             DasGrid.ItemsSource = datable.DefaultView;
         }
