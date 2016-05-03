@@ -410,7 +410,7 @@ namespace AWSFunctions
                     Amazon.CloudWatch.Model.GetMetricStatisticsRequest GMReq = new Amazon.CloudWatch.Model.GetMetricStatisticsRequest();
                     string bucketname = abucket[2].ToString();
                     string storagetype = abucket[3].ToString();
-
+                    
                     try
                     {
                         Amazon.CloudWatch.Model.Dimension dimbo = new Amazon.CloudWatch.Model.Dimension();
@@ -433,11 +433,14 @@ namespace AWSFunctions
                         GMReq.MetricName = "BucketSizeBytes";
 
                         //Execute request:
-                        var goobtastic = CWClient.GetMetricStatistics(GMReq);
-
+                        var metricresponse = CWClient.GetMetricStatistics(GMReq);
+                        
                         //Process Return
-                        var dp = goobtastic.Datapoints;
-
+                        var dp = metricresponse.Datapoints;
+                         if(dp.Count==0)
+                        {
+                            //none
+                        }
 
 
                         var arow = ToReturn.NewRow();
@@ -528,8 +531,15 @@ namespace AWSFunctions
             {
                 credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
 
+
+                
+                
                 AmazonS3Client S3Client = new AmazonS3Client(credential, Endpoint2scan);
                 ListBucketsResponse response = S3Client.ListBuckets();
+
+                //Why are we getting USEast buckets?  Because the Cloudwatch returns buckets by region, but list buckets does care about regions!
+
+
                 foreach (S3Bucket abucket in response.Buckets)
                 {
                     DataRow abucketrow = ToReturn.NewRow();
@@ -537,10 +547,8 @@ namespace AWSFunctions
                     DataRow bucketsizedata = AWSTables.GetS3SizesTable().NewRow();
                     Boolean havesize = true;
 
-                    try
+                    try//Lookup the record in the Sizetable for this bucket.
                     {
-
-
                         //This is equivalent to the LINQ query.
                         Boolean foundinsizetable = false;
                         List<string> bn = new List<string>();
@@ -553,17 +561,14 @@ namespace AWSFunctions
                                 bucketsizedata = rabbit;
                                 foundinsizetable = true;
                             }
-
                         }
                         if(!foundinsizetable)
                         {
-
                             bn.Sort();
                             if (bn.Contains(name))
                             {
                                 string rabbit = "Yes it does!";
                             }
-
                             //why not?
                         }
 
@@ -589,7 +594,20 @@ namespace AWSFunctions
                         GetBucketLocationResponse location = S3Client.GetBucketLocation(gbr);
 
                         var region = location.Location.Value;
-                        if (region.Equals("")) region = "us-east-1";
+
+                        if (region.Equals(""))
+                        {
+                            
+                            region = "us-east-1";
+                        }
+
+                        if (!region.Contains(Endpoint2scan.SystemName))
+                        {
+                            name = name;//Bucketname
+                            region = region;//BucketRegion
+                            string target = Endpoint2scan.SystemName;
+                            continue;
+                        }
                         var pointy = RegionEndpoint.GetBySystemName(region);
 
                         //Build a config that references the buckets region.

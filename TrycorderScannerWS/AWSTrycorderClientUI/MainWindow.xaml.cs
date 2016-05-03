@@ -423,8 +423,8 @@ namespace AWSTrycorderClientUI
             var gopher = sender as MenuItem;
             bool state = gopher.IsChecked;
             string thecolumn = gopher.Header.ToString();
-            ShowHideColumn(thecolumn, state);
             Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), thecolumn, state);
+            ShowHideColumn(thecolumn, state);
         }
 
         private void ShowHideColumn(string thecolumn, bool isvisable)
