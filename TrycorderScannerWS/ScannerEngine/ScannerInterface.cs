@@ -22,7 +22,7 @@ namespace ScannerEngine
         DataSet ScanResults();
 
         [OperationContract]
-        void ScanAll();
+        string ScanAll();
 
         [OperationContract]
         string LoadAWSCredentials(string credentialfile);

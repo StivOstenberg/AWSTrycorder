@@ -175,7 +175,9 @@ namespace ScannerEngine
 
 
 
-
+        /// <summary>
+        /// CheckoverOverallStatus is run to see if any processes have not completed.
+        /// </summary>
         private void CheckOverallStatus()
         {
             var E = String.Equals("Idle", Settings.EC2Status["Status"]);
@@ -261,10 +263,10 @@ namespace ScannerEngine
             return DaWorks;
         }
 
-        public void ScanAll()
+        public string ScanAll()
         {
 
-            if (Settings.State.Equals("Scanning...")) return;//Dont run if already running.  What if we croak?
+            if (Settings.State.Equals("Scanning...")) return("Already Running!");//Dont run if already running.  What if we croak?
             Settings.ScanStart = DateTime.Now;
 
 
@@ -493,6 +495,7 @@ namespace ScannerEngine
             else SNSSubscriptionTable.Clear();
 
             Scanner.WriteToEventLog("AWS Scan started " + DateTime.Now.TimeOfDay);
+            return ("AWS Scan started " + DateTime.Now.TimeOfDay);
         }
 
 
