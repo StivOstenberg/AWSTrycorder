@@ -73,7 +73,7 @@ namespace ScannerEngine
             return "Initialized";
         }
 
-
+        
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
@@ -511,6 +511,19 @@ namespace ScannerEngine
         {
             return Scanner.FilterDataTable(Table2Filter, filterstring, caseinsensitive);
         }
+        
+        /// <summary>
+        /// Given a datatable NAME returns a filtered datatable based on current datatable in the scanner.
+        /// </summary>
+        /// <param name="Tablename"></param>
+        /// <param name="filterstring"></param>
+        /// <param name="caseinsensitive"></param>
+        /// <returns></returns>
+        public DataTable FilterDataTable(string Tablename, string filterstring, bool caseinsensitive)
+        {
+            DataTable ToReturn = FilterDataTable(GetComponentDataTable(Tablename), filterstring, caseinsensitive);
+            return ToReturn;
+        }
 
         /// <summary>
         /// Filters a datatable returning all results where a specified column matches the search string.
@@ -533,6 +546,13 @@ namespace ScannerEngine
             if (currentsize.Equals(newsize)) ToReturn.TableName = currentname;
             else ToReturn.TableName = currentname + " showing " + newsize + " out of " + currentsize;
             return ToReturn;
+        }
+
+        public DataTable FilterDataTablebyCol(String Table2Filter, string column2filter, string filterstring, bool casesensitive)
+        {
+            DataTable ToReturn = FilterDataTablebyCol(GetComponentDataTable(Table2Filter), column2filter,filterstring, casesensitive);
+            return ToReturn;
+
         }
 
         public string LoadAWSCredentials(string credentialfile)
