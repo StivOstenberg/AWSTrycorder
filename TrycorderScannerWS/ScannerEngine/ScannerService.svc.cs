@@ -50,7 +50,7 @@ namespace ScannerEngine
         DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
         DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
 
-        AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
+        static AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
         private System.Timers.Timer timer;
