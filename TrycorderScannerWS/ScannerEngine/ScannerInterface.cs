@@ -62,7 +62,13 @@ namespace ScannerEngine
         DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive);
 
         [OperationContract]
+        DataTable FilterScannerDataTable(String Component, string filterstring, bool caseinsensitive);
+
+        [OperationContract]
         DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive);
+
+        [OperationContract]
+        DataTable FilterScannerDataTablebyCol(String Component, string column2filter, string filterstring, bool caseinsensitive);
 
 
         [OperationContract]

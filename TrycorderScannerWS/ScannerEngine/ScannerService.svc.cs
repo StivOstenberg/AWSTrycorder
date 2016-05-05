@@ -519,7 +519,7 @@ namespace ScannerEngine
         /// <param name="filterstring"></param>
         /// <param name="caseinsensitive"></param>
         /// <returns></returns>
-        public DataTable FilterDataTable(string Tablename, string filterstring, bool caseinsensitive)
+        public DataTable FilterScannerDataTable(string Tablename, string filterstring, bool caseinsensitive)
         {
             DataTable ToReturn = FilterDataTable(GetComponentDataTable(Tablename), filterstring, caseinsensitive);
             return ToReturn;
@@ -548,7 +548,7 @@ namespace ScannerEngine
             return ToReturn;
         }
 
-        public DataTable FilterDataTablebyCol(String Table2Filter, string column2filter, string filterstring, bool casesensitive)
+        public DataTable FilterScannerDataTablebyCol(String Table2Filter, string column2filter, string filterstring, bool casesensitive)
         {
             DataTable ToReturn = FilterDataTablebyCol(GetComponentDataTable(Table2Filter), column2filter,filterstring, casesensitive);
             return ToReturn;
