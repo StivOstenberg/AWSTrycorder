@@ -40,16 +40,16 @@ namespace ScannerEngine
     {
         DataSet DaWorks = new DataSet();
 
-        DataTable EC2Table = AWSFunctions.AWSTables.GetComponentTable("EC2");
-        DataTable S3Table = AWSFunctions.AWSTables.GetComponentTable("S3");
-        DataTable IAMTable = AWSFunctions.AWSTables.GetComponentTable("IAM");
-        DataTable VPCTable = AWSFunctions.AWSTables.GetComponentTable("VPC");
-        DataTable SubnetsTable = AWSFunctions.AWSTables.GetComponentTable("Subnets");
-        DataTable RDSTable = AWSFunctions.AWSTables.GetComponentTable("RDS");
-        DataTable EBSTable = AWSFunctions.AWSTables.GetComponentTable("EBS");
-        DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
-        DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
-
+        static DataTable EC2Table = AWSFunctions.AWSTables.GetComponentTable("EC2");
+        static DataTable S3Table = AWSFunctions.AWSTables.GetComponentTable("S3");
+        static DataTable IAMTable = AWSFunctions.AWSTables.GetComponentTable("IAM");
+        static DataTable VPCTable = AWSFunctions.AWSTables.GetComponentTable("VPC");
+        static DataTable SubnetsTable = AWSFunctions.AWSTables.GetComponentTable("Subnets");
+        static DataTable RDSTable = AWSFunctions.AWSTables.GetComponentTable("RDS");
+        static DataTable EBSTable = AWSFunctions.AWSTables.GetComponentTable("EBS");
+        static DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
+        static DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
+        
         static AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
@@ -93,6 +93,7 @@ namespace ScannerEngine
             switch (component.ToLower())
             {
                 case "ec2":
+                    int rowcount = EBSTable.Rows.Count;
                     return EC2Table;
                 case "snapshots":
                     return SnapshotsTable;
@@ -505,24 +506,25 @@ namespace ScannerEngine
         /// </summary>
         /// <param name="Table2Filter"></param>
         /// <param name="filterstring"></param>
-        /// <param name="caseinsensitive"></param>
+        /// <param name="casesensitive">set to false to ignore case</param>
         /// <returns></returns>
-        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive)
+        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
         {
-            return Scanner.FilterDataTable(Table2Filter, filterstring, caseinsensitive);
+            return Scanner.FilterDataTable(Table2Filter, filterstring, casesensitive);
         }
         
         /// <summary>
         /// Given a datatable NAME returns a filtered datatable based on current datatable in the scanner.
         /// </summary>
-        /// <param name="Tablename"></param>
+        /// <param name="ComponentName"></param>
         /// <param name="filterstring"></param>
-        /// <param name="caseinsensitive"></param>
+        /// <param name="casesensitive"></param>
         /// <returns></returns>
-        public DataTable FilterScannerDataTable(string Tablename, string filterstring, bool caseinsensitive)
+        public DataTable FilterScannerDataTable(string ComponentName, string filterstring, bool casesensitive)
         {
-            DataTable ToReturn = FilterDataTable(GetComponentDataTable(Tablename), filterstring, caseinsensitive);
+            DataTable ToReturn = FilterDataTable(GetComponentDataTable(ComponentName), filterstring, casesensitive);
             return ToReturn;
+            
         }
 
         /// <summary>

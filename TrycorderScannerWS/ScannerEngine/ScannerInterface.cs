@@ -62,13 +62,13 @@ namespace ScannerEngine
         DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive);
 
         [OperationContract]
-        DataTable FilterScannerDataTable(String Component, string filterstring, bool caseinsensitive);
-
-        [OperationContract]
         DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive);
 
         [OperationContract]
-        DataTable FilterScannerDataTablebyCol(String Component, string column2filter, string filterstring, bool caseinsensitive);
+        DataTable FilterScannerDataTable(string  Table2Filter, string filterstring, bool caseinsensitive);
+
+        [OperationContract]
+        DataTable FilterScannerDataTablebyCol(string Table2Filter, string column2filter, string filterstring, bool caseinsensitive);
 
 
         [OperationContract]
@@ -126,4 +126,16 @@ namespace ScannerEngine
             set { stringValue = value; }
         }
     }
+
+    [DataContract]
+    public class  GimmeData
+    {
+        [DataMember]
+        public DataTable TableOffered
+        {
+            get;
+            set;
+        }
+    }
+
 }
