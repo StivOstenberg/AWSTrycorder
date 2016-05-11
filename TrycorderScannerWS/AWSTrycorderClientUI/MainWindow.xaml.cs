@@ -59,6 +59,7 @@ namespace AWSTrycorderClientUI
             bindbert.MaxBufferSize = 2147483647;
 
             MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
+            
             Trycorder = MyScanneriChannel.CreateChannel(ender);
 
 
@@ -114,6 +115,16 @@ namespace AWSTrycorderClientUI
 
                     MyScanneriChannel = new ChannelFactory<ScannerEngine.ScannerInterfaceDefinition>(bindbert);
                     host.AddServiceEndpoint(typeof(ScannerEngine.ScannerInterfaceDefinition), bindbert, MyEndpoint);
+
+                    //Override the option that makes she work as IIS service
+                    var behaviour =host.Description.Behaviors.Find<ServiceBehaviorAttribute>();
+                    behaviour.UseSynchronizationContext = false;
+                    behaviour.InstanceContextMode = InstanceContextMode.PerSession;
+                    
+                    
+
+                    var huhn = host.Description.Behaviors.Find<ServiceBehaviorAttribute>().UseSynchronizationContext;
+
 
                     // Enable metadata exchange
                     ServiceMetadataBehavior smb = new ServiceMetadataBehavior() { HttpGetEnabled = false };
