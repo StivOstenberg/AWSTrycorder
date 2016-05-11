@@ -32,8 +32,8 @@ using System.Timers;
 /// </summary>
 namespace ScannerEngine
 {
-    //[ServiceBehavior(UseSynchronizationContext = false)]// This causes each request to process on a different thread,  not use the UI thread.
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]// This causes each request to process on a different thread,  not use the UI thread.
+    [ServiceBehavior(UseSynchronizationContext = false)]// This causes each request to process on a different thread,  not use the UI thread.
+    //[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]// This causes each request to process on a different thread,  not use the UI thread.
 
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.

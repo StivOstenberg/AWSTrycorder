@@ -64,6 +64,8 @@ C:\Users\s.ostenberg\Documents\GitHubVisualStudio\AWSTrycorder\TrycorderScannerW
 C:\Users\s.ostenberg\Documents\GitHubVisualStudio\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\AWSFunctions.dll
 C:\Users\s.ostenberg\Documents\GitHubVisualStudio\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\AWSFunctions.pdb
 C:\Users\s.ostenberg\Documents\GitHubVisualStudio\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\StivAWSLib.csprojResolveAssemblyReference.cache
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.EC2.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.EC2.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSFunctions.dll.config
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSFunctions.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSFunctions.pdb
@@ -82,8 +84,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\b
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.CloudWatch.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.Core.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.Core.xml
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.EC2.pdb
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.EC2.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.IdentityManagement.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.IdentityManagement.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.RDS.pdb

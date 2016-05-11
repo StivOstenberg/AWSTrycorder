@@ -19,6 +19,7 @@ using Amazon;
 using Amazon.EC2.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.SimpleNotificationService;
@@ -787,6 +788,7 @@ namespace AWSFunctions
             ParallelOptions po = new ParallelOptions();
             var myscope = ProfilesandRegions2Scan.AsEnumerable();
             po.MaxDegreeOfParallelism = 128;
+            
             try
             {
                 Parallel.ForEach(myscope, po, (KVP) => {
@@ -1560,6 +1562,7 @@ namespace AWSFunctions
             }
 
             DescribeInstancesResponse DescResult = ec2.DescribeInstances();
+           
             int count = instatresponse.InstanceStatuses.Count();
 
             //Build data dictionary of instances

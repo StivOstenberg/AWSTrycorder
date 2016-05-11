@@ -555,7 +555,7 @@
         </member>
         <member name="T:Amazon.CloudWatch.Model.DeleteAlarmsResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DeleteAlarms operation.
             </summary>
         </member>
         <member name="T:Amazon.CloudWatch.Model.DescribeAlarmHistoryRequest">
@@ -855,7 +855,7 @@
         </member>
         <member name="T:Amazon.CloudWatch.Model.DisableAlarmActionsResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DisableAlarmActions operation.
             </summary>
         </member>
         <member name="T:Amazon.CloudWatch.Model.EnableAlarmActionsRequest">
@@ -874,7 +874,7 @@
         </member>
         <member name="T:Amazon.CloudWatch.Model.EnableAlarmActionsResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the EnableAlarmActions operation.
             </summary>
         </member>
         <member name="T:Amazon.CloudWatch.Model.GetMetricStatisticsRequest">
@@ -1951,7 +1951,7 @@
         </member>
         <member name="T:Amazon.CloudWatch.Model.PutMetricAlarmResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the PutMetricAlarm operation.
             </summary>
         </member>
         <member name="T:Amazon.CloudWatch.Model.PutMetricDataRequest">
@@ -2000,7 +2000,7 @@
         </member>
         <member name="T:Amazon.CloudWatch.Model.PutMetricDataResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the PutMetricData operation.
             </summary>
         </member>
         <member name="T:Amazon.CloudWatch.Model.ResourceNotFoundException">
@@ -2101,7 +2101,7 @@
         </member>
         <member name="T:Amazon.CloudWatch.Model.SetAlarmStateResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the SetAlarmState operation.
             </summary>
         </member>
         <member name="T:Amazon.CloudWatch.Model.StatisticSet">
@@ -2985,7 +2985,7 @@
              <note> Amazon CloudWatch retains the history of an alarm for two weeks, whether or
             not you delete the alarm. </note>
             </summary>
-            <param name="cancellationToken"> ttd1
+            <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             
@@ -3036,7 +3036,7 @@
             the user are returned. Alarms can be retrieved by using only a prefix for the alarm
             name, the alarm state, or a prefix for any action.
             </summary>
-            <param name="cancellationToken"> ttd1
+            <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             
@@ -3241,7 +3241,7 @@
             action. Statistics about the metric, however, are available sooner using <a>GetMetricStatistics</a>.
             </note>
             </summary>
-            <param name="cancellationToken"> ttd1
+            <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             
@@ -3497,7 +3497,7 @@
              <note> Amazon CloudWatch retains the history of an alarm for two weeks, whether or
             not you delete the alarm. </note>
             </summary>
-            <param name="cancellationToken"> ttd1
+            <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             
@@ -3548,7 +3548,7 @@
             the user are returned. Alarms can be retrieved by using only a prefix for the alarm
             name, the alarm state, or a prefix for any action.
             </summary>
-            <param name="cancellationToken"> ttd1
+            <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             
@@ -3753,7 +3753,7 @@
             action. Statistics about the metric, however, are available sooner using <a>GetMetricStatistics</a>.
             </note>
             </summary>
-            <param name="cancellationToken"> ttd1
+            <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             

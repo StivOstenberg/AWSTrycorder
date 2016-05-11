@@ -509,11 +509,25 @@
             <para>
             If a volume has an AWS Marketplace product code:
             </para>
-             <ul> <li>The volume can be attached only to a stopped instance.</li> <li>AWS Marketplace
-            product codes are copied from the volume to the instance.</li> <li>You must be subscribed
-            to the product.</li> <li>The instance type and operating system of the instance must
-            support the product. For example, you can't detach a volume from a Windows instance
-            and attach it to a Linux instance.</li> </ul> 
+             <ul> <li> 
+            <para>
+            The volume can be attached only to a stopped instance.
+            </para>
+             </li> <li> 
+            <para>
+            AWS Marketplace product codes are copied from the volume to the instance.
+            </para>
+             </li> <li> 
+            <para>
+            You must be subscribed to the product.
+            </para>
+             </li> <li> 
+            <para>
+            The instance type and operating system of the instance must support the product. For
+            example, you can't detach a volume from a Windows instance and attach it to a Linux
+            instance.
+            </para>
+             </li> </ul> 
             <para>
             For an overview of the AWS Marketplace, see <a href="https://aws.amazon.com/marketplace/help/200900000">Introducing
             AWS Marketplace</a>.
@@ -998,24 +1012,41 @@
             can specify. For more information about the options, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC
             2132</a>.
             
-             <ul> <li><code>domain-name-servers</code> - The IP addresses of up to four domain
-            name servers, or <code>AmazonProvidedDNS</code>. The default DHCP option set specifies
-            <code>AmazonProvidedDNS</code>. If specifying more than one domain name server, specify
-            the IP addresses in a single parameter, separated by commas.</li> <li><code>domain-name</code>
-            - If you're using AmazonProvidedDNS in <code>us-east-1</code>, specify <code>ec2.internal</code>.
-            If you're using AmazonProvidedDNS in another region, specify <code>region.compute.internal</code>
-            (for example, <code>ap-northeast-1.compute.internal</code>). Otherwise, specify a
-            domain name (for example, <code>MyCompany.com</code>). <b>Important</b>: Some Linux
-            operating systems accept multiple domain names separated by spaces. However, Windows
-            and other Linux operating systems treat the value as a single domain, which results
-            in unexpected behavior. If your DHCP options set is associated with a VPC that has
-            instances with multiple operating systems, specify only one domain name.</li> <li><code>ntp-servers</code>
-            - The IP addresses of up to four Network Time Protocol (NTP) servers.</li> <li><code>netbios-name-servers</code>
-            - The IP addresses of up to four NetBIOS name servers.</li> <li><code>netbios-node-type</code>
-            - The NetBIOS node type (1, 2, 4, or 8). We recommend that you specify 2 (broadcast
-            and multicast are not currently supported). For more information about these node
-            types, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC 2132</a>. </li> </ul>
-            
+             <ul> <li>
+            <para>
+            <code>domain-name-servers</code> - The IP addresses of up to four domain name servers,
+            or AmazonProvidedDNS. The default DHCP option set specifies AmazonProvidedDNS. If
+            specifying more than one domain name server, specify the IP addresses in a single
+            parameter, separated by commas.
+            </para>
+            </li> <li>
+            <para>
+            <code>domain-name</code> - If you're using AmazonProvidedDNS in "us-east-1", specify
+            "ec2.internal". If you're using AmazonProvidedDNS in another region, specify "region.compute.internal"
+            (for example, "ap-northeast-1.compute.internal"). Otherwise, specify a domain name
+            (for example, "MyCompany.com"). <b>Important</b>: Some Linux operating systems accept
+            multiple domain names separated by spaces. However, Windows and other Linux operating
+            systems treat the value as a single domain, which results in unexpected behavior.
+            If your DHCP options set is associated with a VPC that has instances with multiple
+            operating systems, specify only one domain name.
+            </para>
+            </li> <li>
+            <para>
+            <code>ntp-servers</code> - The IP addresses of up to four Network Time Protocol (NTP)
+            servers.
+            </para>
+            </li> <li>
+            <para>
+            <code>netbios-name-servers</code> - The IP addresses of up to four NetBIOS name servers.
+            </para>
+            </li> <li>
+            <para>
+            <code>netbios-node-type</code> - The NetBIOS node type (1, 2, 4, or 8). We recommend
+            that you specify 2 (broadcast and multicast are not currently supported). For more
+            information about these node types, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC
+            2132</a>.
+            </para>
+            </li> </ul> 
             <para>
             Your VPC automatically starts out with a set of DHCP options that includes only a
             DNS server that we provide (AmazonProvidedDNS). If you create a set of options, and
@@ -1760,6 +1791,12 @@
             about DHCP options, see <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html">DHCP
             Options Sets</a> in the <i>Amazon Virtual Private Cloud User Guide</i>.
             </para>
+             
+            <para>
+            You can specify the instance tenancy value for the VPC when you create it. You can't
+            change this value for the VPC after you create it. For more information, see <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/dedicated-instance.html.html">Dedicated
+            Instances</a> in the <i>Amazon Virtual Private Cloud User Guide</i>.
+            </para>
             </summary>
             <param name="request">Container for the necessary parameters to execute the CreateVpc service method.</param>
             
@@ -1857,6 +1894,11 @@
             If you decide to shut down your VPN connection for any reason and later create a new
             VPN connection, you must reconfigure your customer gateway with the new information
             returned from this call.
+            </para>
+             
+            <para>
+            This is an idempotent operation. If you perform the operation more than once, Amazon
+            EC2 doesn't return an error.
             </para>
              
             <para>
@@ -3114,8 +3156,8 @@
             
              
             <para>
-            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>.
-            
+            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>
+            | <code>snapshot</code> | <code>volume</code>. 
             </para>
              
             <para>
@@ -3368,7 +3410,8 @@
         </member>
         <member name="M:Amazon.EC2.AmazonEC2Client.DescribeInstanceStatus">
             <summary>
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -3402,7 +3445,8 @@
         </member>
         <member name="M:Amazon.EC2.AmazonEC2Client.DescribeInstanceStatus(Amazon.EC2.Model.DescribeInstanceStatusRequest)">
             <summary>
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -3437,7 +3481,8 @@
         </member>
         <member name="M:Amazon.EC2.AmazonEC2Client.DescribeInstanceStatusAsync(System.Threading.CancellationToken)">
             <summary>
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -4378,12 +4423,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -4439,12 +4495,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -4501,12 +4568,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -6063,7 +6141,8 @@
             <summary>
             Modifies the ID format for the specified resource on a per-region basis. You can specify
             that resources should receive longer IDs (17-character IDs) when they are created.
-            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>.
+            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>
+            | <code>snapshot</code> | <code>volume</code>.
             
              
             <para>
@@ -6413,6 +6492,46 @@
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
         </member>
+        <member name="M:Amazon.EC2.AmazonEC2Client.ModifyVpcPeeringConnectionOptions(Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest)">
+            <summary>
+            Modifies the VPC peering connection options on one side of a VPC peering connection.
+            You can do the following:
+            
+             <ul> <li>
+            <para>
+            Enable/disable communication over the peering connection between an EC2-Classic instance
+            that's linked to your VPC (using ClassicLink) and instances in the peer VPC. 
+            </para>
+            </li> <li>
+            <para>
+            Enable/disable communication over the peering connection between instances in your
+            VPC and an EC2-Classic instance that's linked to the peer VPC.
+            </para>
+            </li> </ul> 
+            <para>
+            If the peered VPCs are in different accounts, each owner must initiate a separate
+            request to enable or disable communication in either direction, depending on whether
+            their VPC was the requester or accepter for the VPC peering connection. If the peered
+            VPCs are in the same account, you can modify the requester and accepter options in
+            the same request. To confirm which VPC is the accepter and requester for a VPC peering
+            connection, use the <a>DescribeVpcPeeringConnections</a> command.
+            </para>
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the ModifyVpcPeeringConnectionOptions service method.</param>
+            
+            <returns>The response from the ModifyVpcPeeringConnectionOptions service method, as returned by EC2.</returns>
+        </member>
+        <member name="M:Amazon.EC2.AmazonEC2Client.ModifyVpcPeeringConnectionOptionsAsync(Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the ModifyVpcPeeringConnectionOptions operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the ModifyVpcPeeringConnectionOptions operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
         <member name="M:Amazon.EC2.AmazonEC2Client.MonitorInstances(Amazon.EC2.Model.MonitorInstancesRequest)">
             <summary>
             Enables monitoring for a running instance. For more information about monitoring instances,
@@ -6441,9 +6560,9 @@
             it must not be associated with an instance. After the Elastic IP address is moved,
             it is no longer available for use in the EC2-Classic platform, unless you move it
             back using the <a>RestoreAddressToClassic</a> request. You cannot move an Elastic
-            IP address that's allocated for use in the EC2-VPC platform to the EC2-Classic platform.
-            You cannot migrate an Elastic IP address that's associated with a reverse DNS record.
-            Contact AWS account and billing support to remove the reverse DNS record.
+            IP address that was originally allocated for use in the EC2-VPC platform to the EC2-Classic
+            platform. You cannot migrate an Elastic IP address that's associated with a reverse
+            DNS record. Contact AWS account and billing support to remove the reverse DNS record.
             </summary>
             <param name="request">Container for the necessary parameters to execute the MoveAddressToVpc service method.</param>
             
@@ -6502,7 +6621,14 @@
             <para>
             Scheduled Instances enable you to purchase Amazon EC2 compute capacity by the hour
             for a one-year term. Before you can purchase a Scheduled Instance, you must call <a>DescribeScheduledInstanceAvailability</a>
-            to check for available schedules and obtain a purchase token.
+            to check for available schedules and obtain a purchase token. After you purchase a
+            Scheduled Instance, you must call <a>RunScheduledInstances</a> during each scheduled
+            time period.
+            </para>
+             
+            <para>
+            After you purchase a Scheduled Instance, you can't cancel, modify, or resell your
+            purchase.
             </para>
             </summary>
             <param name="request">Container for the necessary parameters to execute the PurchaseScheduledInstances service method.</param>
@@ -6529,8 +6655,8 @@
             
              
             <para>
-            If a Linux/Unix instance does not cleanly shut down within four minutes, Amazon EC2
-            performs a hard reboot.
+            If an instance does not cleanly shut down within four minutes, Amazon EC2 performs
+            a hard reboot.
             </para>
              
             <para>
@@ -7189,7 +7315,8 @@
             You must launch a Scheduled Instance during its scheduled time period. You can't stop
             or reboot a Scheduled Instance, but you can terminate it as needed. If you terminate
             a Scheduled Instance before the current scheduled time period ends, you can launch
-            it again after a few minutes.
+            it again after a few minutes. For more information, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-scheduled-instances.html">Scheduled
+            Instances</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
             </summary>
             <param name="request">Container for the necessary parameters to execute the RunScheduledInstances service method.</param>
@@ -7254,41 +7381,33 @@
         </member>
         <member name="M:Amazon.EC2.AmazonEC2Client.StopInstances(Amazon.EC2.Model.StopInstancesRequest)">
             <summary>
-            Stops an Amazon EBS-backed instance. Each time you transition an instance from stopped
-            to started, Amazon EC2 charges a full instance hour, even if transitions happen multiple
-            times within a single hour.
+            Stops an Amazon EBS-backed instance. 
             
              
             <para>
-            You can't start or stop Spot instances.
+            We don't charge hourly usage for a stopped instance, or data transfer fees; however,
+            your root partition Amazon EBS volume remains, continues to persist your data, and
+            you are charged for Amazon EBS volume usage. Each time you transition an instance
+            from stopped to started, Amazon EC2 charges a full instance hour, even if transitions
+            happen multiple times within a single hour.
             </para>
              
             <para>
-            Instances that use Amazon EBS volumes as their root devices can be quickly stopped
-            and started. When an instance is stopped, the compute resources are released and you
-            are not billed for hourly instance usage. However, your root partition Amazon EBS
-            volume remains, continues to persist your data, and you are charged for Amazon EBS
-            volume usage. You can restart your instance at any time.
+            You can't start or stop Spot instances, and you can't stop instance store-backed instances.
             </para>
              
             <para>
+            When you stop an instance, we shut it down. You can restart your instance at any time.
             Before stopping an instance, make sure it is in a state from which it can be restarted.
             Stopping an instance does not preserve data stored in RAM.
             </para>
              
             <para>
-            Performing this operation on an instance that uses an instance store as its root device
-            returns an error.
-            </para>
-             
-            <para>
-            You can stop, start, and terminate EBS-backed instances. You can only terminate instance
-            store-backed instances. What happens to an instance differs if you stop it or terminate
-            it. For example, when you stop an instance, the root device and any other devices
-            attached to the instance persist. When you terminate an instance, the root device
-            and any other devices attached during the instance launch are automatically deleted.
-            For more information about the differences between stopping and terminating instances,
-            see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html">Instance
+            Stopping an instance is different to rebooting or terminating it. For example, when
+            you stop an instance, the root device and any other devices attached to the instance
+            persist. When you terminate an instance, the root device and any other devices attached
+            during the instance launch are automatically deleted. For more information about the
+            differences between rebooting, stopping, and terminating instances, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html">Instance
             Lifecycle</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
              
@@ -7561,23 +7680,23 @@
             <summary>
             Gets and sets the property Iops. 
             <para>
-            The number of I/O operations per second (IOPS) that the volume supports. For Provisioned
-            IOPS (SSD) volumes, this represents the number of IOPS that are provisioned for the
-            volume. For General Purpose (SSD) volumes, this represents the baseline performance
-            of the volume and the rate at which the volume accumulates I/O credits for bursting.
-            For more information on General Purpose (SSD) baseline performance, I/O credits, and
-            bursting, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Amazon
+            The number of I/O operations per second (IOPS) that the volume supports. For io1,
+            this represents the number of IOPS that are provisioned for the volume. For <code>gp2</code>,
+            this represents the baseline performance of the volume and the rate at which the volume
+            accumulates I/O credits for bursting. For more information on General Purpose SSD
+            baseline performance, I/O credits, and bursting, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Amazon
             EBS Volume Types</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
              
             <para>
-            Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes and 3 to 10000
-            for General Purpose (SSD) volumes.
+            Constraint: Range is 100-20000 IOPS for io1 volumes and 100-10000 IOPS for <code>gp2</code>
+            volumes.
             </para>
              
             <para>
-            Condition: This parameter is required for requests to create <code>io1</code> volumes;
-            it is not used in requests to create <code>standard</code> or <code>gp2</code> volumes.
+            Condition: This parameter is required for requests to create <code><code>io1</code></code>
+            volumes; it is not used in requests to create <code>gp2</code>, <code>st1</code>,
+            <code>sc1</code>, or <code>standard</code> volumes.
             </para>
             </summary>
         </member>
@@ -7597,10 +7716,11 @@
             </para>
              
             <para>
-            Constraints: <code>1-1024</code> for <code>standard</code> volumes, <code>1-16384</code>
-            for <code>gp2</code> volumes, and <code>4-16384</code> for <code>io1</code> volumes.
-            If you specify a snapshot, the volume size must be equal to or larger than the snapshot
-            size.
+            Constraints: 1-16384 for General Purpose SSD (<code>gp2</code>), 4-16384 for Provisioned
+            IOPS SSD (<code>io1</code>), 500-16384 for Throughput Optimized HDD (<code>st1</code>),
+            500-16384 for Cold HDD (<code>sc1</code>), and 1-1024 for Magnetic (<code>standard</code>)
+            volumes. If you specify a snapshot, the volume size must be equal to or larger than
+            the snapshot size.
             </para>
              
             <para>
@@ -7613,8 +7733,8 @@
             <summary>
             Gets and sets the property VolumeType. 
             <para>
-            The volume type. <code>gp2</code> for General Purpose (SSD) volumes, <code>io1</code>
-            for Provisioned IOPS (SSD) volumes, and <code>standard</code> for Magnetic volumes.
+            The volume type: <code>gp2</code>, <code>io1</code>, <code>st1</code>, <code>sc1</code>,
+            or <code>standard</code>.
             </para>
              
             <para>
@@ -7624,7 +7744,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.GetPasswordDataResponse">
             <summary>
-            This is the response object from the GetPasswordData operation.
+            Contains the output of GetPasswordData.
             </summary>
         </member>
         <member name="M:Amazon.EC2.Model.GetPasswordDataResponse.GetDecryptedPassword(System.String)">
@@ -7687,7 +7807,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AcceptVpcPeeringConnectionResponse">
             <summary>
-            This is the response object from the AcceptVpcPeeringConnection operation.
+            Contains the output of AcceptVpcPeeringConnection.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AcceptVpcPeeringConnectionResponse.VpcPeeringConnection">
@@ -7858,7 +7978,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AllocateAddressResponse">
             <summary>
-            This is the response object from the AllocateAddress operation.
+            Contains the output of AllocateAddress.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AllocateAddressResponse.AllocationId">
@@ -7946,7 +8066,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AllocateHostsResponse">
             <summary>
-            This is the response object from the AllocateHosts operation.
+            Contains the output of AllocateHosts.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AllocateHostsResponse.HostIds">
@@ -8125,7 +8245,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AssociateAddressResponse">
             <summary>
-            This is the response object from the AssociateAddress operation.
+            Contains the output of AssociateAddress.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AssociateAddressResponse.AssociationId">
@@ -8225,7 +8345,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AssociateRouteTableResponse">
             <summary>
-            This is the response object from the AssociateRouteTable operation.
+            Contains the output of AssociateRouteTable.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AssociateRouteTableResponse.AssociationId">
@@ -8284,7 +8404,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AttachClassicLinkVpcResponse">
             <summary>
-            This is the response object from the AttachClassicLinkVpc operation.
+            Contains the output of AttachClassicLinkVpc.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AttachClassicLinkVpcResponse.Return">
@@ -8357,7 +8477,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AttachNetworkInterfaceResponse">
             <summary>
-            This is the response object from the AttachNetworkInterface operation.
+            Contains the output of AttachNetworkInterface.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AttachNetworkInterfaceResponse.AttachmentId">
@@ -8391,11 +8511,25 @@
             <para>
             If a volume has an AWS Marketplace product code:
             </para>
-             <ul> <li>The volume can be attached only to a stopped instance.</li> <li>AWS Marketplace
-            product codes are copied from the volume to the instance.</li> <li>You must be subscribed
-            to the product.</li> <li>The instance type and operating system of the instance must
-            support the product. For example, you can't detach a volume from a Windows instance
-            and attach it to a Linux instance.</li> </ul> 
+             <ul> <li> 
+            <para>
+            The volume can be attached only to a stopped instance.
+            </para>
+             </li> <li> 
+            <para>
+            AWS Marketplace product codes are copied from the volume to the instance.
+            </para>
+             </li> <li> 
+            <para>
+            You must be subscribed to the product.
+            </para>
+             </li> <li> 
+            <para>
+            The instance type and operating system of the instance must support the product. For
+            example, you can't detach a volume from a Windows instance and attach it to a Linux
+            instance.
+            </para>
+             </li> </ul> 
             <para>
             For an overview of the AWS Marketplace, see <a href="https://aws.amazon.com/marketplace/help/200900000">Introducing
             AWS Marketplace</a>.
@@ -8493,7 +8627,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.AttachVpnGatewayResponse">
             <summary>
-            This is the response object from the AttachVpnGateway operation.
+            Contains the output of AttachVpnGateway.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.AttachVpnGatewayResponse.VpcAttachment">
@@ -8814,7 +8948,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.BundleInstanceResponse">
             <summary>
-            This is the response object from the BundleInstance operation.
+            Contains the output of BundleInstance.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.BundleInstanceResponse.BundleTask">
@@ -8942,7 +9076,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CancelBundleTaskResponse">
             <summary>
-            This is the response object from the CancelBundleTask operation.
+            Contains the output of CancelBundleTask.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CancelBundleTaskResponse.BundleTask">
@@ -9035,7 +9169,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CancelImportTaskResponse">
             <summary>
-            This is the response object from the CancelImportTask operation.
+            Contains the output for CancelImportTask.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CancelImportTaskResponse.ImportTaskId">
@@ -9105,7 +9239,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CancelReservedInstancesListingResponse">
             <summary>
-            This is the response object from the CancelReservedInstancesListing operation.
+            Contains the output of CancelReservedInstancesListing.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CancelReservedInstancesListingResponse.ReservedInstancesListings">
@@ -9423,7 +9557,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ConfirmProductInstanceResponse">
             <summary>
-            This is the response object from the ConfirmProductInstance operation.
+            Contains the output of ConfirmProductInstance.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ConfirmProductInstanceResponse.OwnerId">
@@ -9592,7 +9726,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CopyImageResponse">
             <summary>
-            This is the response object from the CopyImage operation.
+            Contains the output of CopyImage.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CopyImageResponse.ImageId">
@@ -9718,7 +9852,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CopySnapshotResponse">
             <summary>
-            This is the response object from the CopySnapshot operation.
+            Contains the output of CopySnapshot.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CopySnapshotResponse.SnapshotId">
@@ -9812,7 +9946,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateCustomerGatewayResponse">
             <summary>
-            This is the response object from the CreateCustomerGateway operation.
+            Contains the output of CreateCustomerGateway.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateCustomerGatewayResponse.CustomerGateway">
@@ -9832,24 +9966,41 @@
             can specify. For more information about the options, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC
             2132</a>.
             
-             <ul> <li><code>domain-name-servers</code> - The IP addresses of up to four domain
-            name servers, or <code>AmazonProvidedDNS</code>. The default DHCP option set specifies
-            <code>AmazonProvidedDNS</code>. If specifying more than one domain name server, specify
-            the IP addresses in a single parameter, separated by commas.</li> <li><code>domain-name</code>
-            - If you're using AmazonProvidedDNS in <code>us-east-1</code>, specify <code>ec2.internal</code>.
-            If you're using AmazonProvidedDNS in another region, specify <code>region.compute.internal</code>
-            (for example, <code>ap-northeast-1.compute.internal</code>). Otherwise, specify a
-            domain name (for example, <code>MyCompany.com</code>). <b>Important</b>: Some Linux
-            operating systems accept multiple domain names separated by spaces. However, Windows
-            and other Linux operating systems treat the value as a single domain, which results
-            in unexpected behavior. If your DHCP options set is associated with a VPC that has
-            instances with multiple operating systems, specify only one domain name.</li> <li><code>ntp-servers</code>
-            - The IP addresses of up to four Network Time Protocol (NTP) servers.</li> <li><code>netbios-name-servers</code>
-            - The IP addresses of up to four NetBIOS name servers.</li> <li><code>netbios-node-type</code>
-            - The NetBIOS node type (1, 2, 4, or 8). We recommend that you specify 2 (broadcast
-            and multicast are not currently supported). For more information about these node
-            types, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC 2132</a>. </li> </ul>
-            
+             <ul> <li>
+            <para>
+            <code>domain-name-servers</code> - The IP addresses of up to four domain name servers,
+            or AmazonProvidedDNS. The default DHCP option set specifies AmazonProvidedDNS. If
+            specifying more than one domain name server, specify the IP addresses in a single
+            parameter, separated by commas.
+            </para>
+            </li> <li>
+            <para>
+            <code>domain-name</code> - If you're using AmazonProvidedDNS in "us-east-1", specify
+            "ec2.internal". If you're using AmazonProvidedDNS in another region, specify "region.compute.internal"
+            (for example, "ap-northeast-1.compute.internal"). Otherwise, specify a domain name
+            (for example, "MyCompany.com"). <b>Important</b>: Some Linux operating systems accept
+            multiple domain names separated by spaces. However, Windows and other Linux operating
+            systems treat the value as a single domain, which results in unexpected behavior.
+            If your DHCP options set is associated with a VPC that has instances with multiple
+            operating systems, specify only one domain name.
+            </para>
+            </li> <li>
+            <para>
+            <code>ntp-servers</code> - The IP addresses of up to four Network Time Protocol (NTP)
+            servers.
+            </para>
+            </li> <li>
+            <para>
+            <code>netbios-name-servers</code> - The IP addresses of up to four NetBIOS name servers.
+            </para>
+            </li> <li>
+            <para>
+            <code>netbios-node-type</code> - The NetBIOS node type (1, 2, 4, or 8). We recommend
+            that you specify 2 (broadcast and multicast are not currently supported). For more
+            information about these node types, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC
+            2132</a>.
+            </para>
+            </li> </ul> 
             <para>
             Your VPC automatically starts out with a set of DHCP options that includes only a
             DNS server that we provide (AmazonProvidedDNS). If you create a set of options, and
@@ -9881,7 +10032,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateDhcpOptionsResponse">
             <summary>
-            This is the response object from the CreateDhcpOptions operation.
+            Contains the output of CreateDhcpOptions.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateDhcpOptionsResponse.DhcpOptions">
@@ -9961,7 +10112,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateFlowLogsResponse">
             <summary>
-            This is the response object from the CreateFlowLogs operation.
+            Contains the output of CreateFlowLogs.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateFlowLogsResponse.ClientToken">
@@ -10062,9 +10213,8 @@
             <summary>
             Gets and sets the property NoReboot. 
             <para>
-            By default, this parameter is set to <code>false</code>, which means Amazon EC2 attempts
-            to shut down the instance cleanly before image creation and then reboots the instance.
-            When the parameter is set to <code>true</code>, Amazon EC2 doesn't shut down the instance
+            By default, Amazon EC2 attempts to shut down and reboot the instance before creating
+            the image. If the 'No Reboot' option is set, Amazon EC2 doesn't shut down the instance
             before creating the image. When this option is used, file system integrity on the
             created image can't be guaranteed.
             </para>
@@ -10072,7 +10222,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateImageResponse">
             <summary>
-            This is the response object from the CreateImage operation.
+            Contains the output of CreateImage.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateImageResponse.ImageId">
@@ -10131,7 +10281,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateInstanceExportTaskResponse">
             <summary>
-            This is the response object from the CreateInstanceExportTask operation.
+            Contains the output for CreateInstanceExportTask.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateInstanceExportTaskResponse.ExportTask">
@@ -10157,7 +10307,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateInternetGatewayResponse">
             <summary>
-            This is the response object from the CreateInternetGateway operation.
+            Contains the output of CreateInternetGateway.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateInternetGatewayResponse.InternetGateway">
@@ -10269,7 +10419,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateNatGatewayResponse">
             <summary>
-            This is the response object from the CreateNatGateway operation.
+            Contains the output of CreateNatGateway.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateNatGatewayResponse.ClientToken">
@@ -10415,7 +10565,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateNetworkAclResponse">
             <summary>
-            This is the response object from the CreateNetworkAcl operation.
+            Contains the output of CreateNetworkAcl.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateNetworkAclResponse.NetworkAcl">
@@ -10501,7 +10651,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateNetworkInterfaceResponse">
             <summary>
-            This is the response object from the CreateNetworkInterface operation.
+            Contains the output of CreateNetworkInterface.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateNetworkInterfaceResponse.NetworkInterface">
@@ -10631,7 +10781,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateReservedInstancesListingResponse">
             <summary>
-            This is the response object from the CreateReservedInstancesListing operation.
+            Contains the output of CreateReservedInstancesListing.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateReservedInstancesListingResponse.ReservedInstancesListings">
@@ -10739,7 +10889,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateRouteResponse">
             <summary>
-            This is the response object from the CreateRoute operation.
+            Contains the output of CreateRoute.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateRouteResponse.Return">
@@ -10773,7 +10923,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateRouteTableResponse">
             <summary>
-            This is the response object from the CreateRouteTable operation.
+            Contains the output of CreateRouteTable.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateRouteTableResponse.RouteTable">
@@ -10889,7 +11039,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateSecurityGroupResponse">
             <summary>
-            This is the response object from the CreateSecurityGroup operation.
+            Contains the output of CreateSecurityGroup.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateSecurityGroupResponse.GroupId">
@@ -11111,7 +11261,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateSubnetResponse">
             <summary>
-            This is the response object from the CreateSubnet operation.
+            Contains the output of CreateSubnet.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateSubnetResponse.Subnet">
@@ -11258,7 +11408,7 @@
             Instantiates CreateVolumeRequest with the parameterized properties
             </summary>
             <param name="availabilityZone">The Availability Zone in which to create the volume. Use <a>DescribeAvailabilityZones</a> to list the Availability Zones that are currently available to you.</param>
-            <param name="size">The size of the volume, in GiBs. Constraints: <code>1-1024</code> for <code>standard</code> volumes, <code>1-16384</code> for <code>gp2</code> volumes, and <code>4-16384</code> for <code>io1</code> volumes. If you specify a snapshot, the volume size must be equal to or larger than the snapshot size. Default: If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.</param>
+            <param name="size">The size of the volume, in GiBs. Constraints: 1-16384 for <code>gp2</code>, 4-16384 for <code>io1</code>, 500-16384 for <code>st1</code>, 500-16384 for <code>sc1</code>, and 1-1024 for <code>standard</code>. If you specify a snapshot, the volume size must be equal to or larger than the snapshot size. Default: If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.</param>
         </member>
         <member name="M:Amazon.EC2.Model.CreateVolumeRequest.#ctor(System.String,System.String)">
             <summary>
@@ -11294,12 +11444,12 @@
             <summary>
             Gets and sets the property Iops. 
             <para>
-            Only valid for Provisioned IOPS (SSD) volumes. The number of I/O operations per second
+            Only valid for Provisioned IOPS SSD volumes. The number of I/O operations per second
             (IOPS) to provision for the volume, with a maximum ratio of 30 IOPS/GiB.
             </para>
              
             <para>
-            Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes 
+            Constraint: Range is 100 to 20000 for Provisioned IOPS SSD volumes 
             </para>
             </summary>
         </member>
@@ -11326,8 +11476,8 @@
             </para>
              
             <para>
-            Constraints: <code>1-1024</code> for <code>standard</code> volumes, <code>1-16384</code>
-            for <code>gp2</code> volumes, and <code>4-16384</code> for <code>io1</code> volumes.
+            Constraints: 1-16384 for <code>gp2</code>, 4-16384 for <code>io1</code>, 500-16384
+            for <code>st1</code>, 500-16384 for <code>sc1</code>, and 1-1024 for <code>standard</code>.
             If you specify a snapshot, the volume size must be equal to or larger than the snapshot
             size.
             </para>
@@ -11350,8 +11500,9 @@
             <summary>
             Gets and sets the property VolumeType. 
             <para>
-            The volume type. This can be <code>gp2</code> for General Purpose (SSD) volumes, <code>io1</code>
-            for Provisioned IOPS (SSD) volumes, or <code>standard</code> for Magnetic volumes.
+            The volume type. This can be <code>gp2</code> for General Purpose SSD, <code>io1</code>
+            for Provisioned IOPS SSD, <code>st1</code> for Throughput Optimized HDD, <code>sc1</code>
+            for Cold HDD, or <code>standard</code> for Magnetic volumes.
             </para>
              
             <para>
@@ -11431,7 +11582,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateVpcEndpointResponse">
             <summary>
-            This is the response object from the CreateVpcEndpoint operation.
+            Contains the output of CreateVpcEndpoint.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateVpcEndpointResponse.ClientToken">
@@ -11500,7 +11651,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateVpcPeeringConnectionResponse">
             <summary>
-            This is the response object from the CreateVpcPeeringConnection operation.
+            Contains the output of CreateVpcPeeringConnection.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateVpcPeeringConnectionResponse.VpcPeeringConnection">
@@ -11530,6 +11681,12 @@
             about DHCP options, see <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html">DHCP
             Options Sets</a> in the <i>Amazon Virtual Private Cloud User Guide</i>.
             </para>
+             
+            <para>
+            You can specify the instance tenancy value for the VPC when you create it. You can't
+            change this value for the VPC after you create it. For more information, see <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/dedicated-instance.html.html">Dedicated
+            Instances</a> in the <i>Amazon Virtual Private Cloud User Guide</i>.
+            </para>
             </summary>
         </member>
         <member name="M:Amazon.EC2.Model.CreateVpcRequest.#ctor">
@@ -11555,11 +11712,11 @@
             <summary>
             Gets and sets the property InstanceTenancy. 
             <para>
-            The supported tenancy options for instances launched into the VPC. A value of <code>default</code>
-            means that instances can be launched with any tenancy; a value of <code>dedicated</code>
-            means all instances launched into the VPC are launched as dedicated tenancy instances
-            regardless of the tenancy assigned to the instance at launch. Dedicated tenancy instances
-            run on single-tenant hardware.
+            The tenancy options for instances launched into the VPC. For <code>default</code>,
+            instances are launched with shared tenancy by default. You can launch instances with
+            any tenancy into a shared tenancy VPC. For <code>dedicated</code>, instances are launched
+            as dedicated tenancy instances by default. You can only launch instances with a tenancy
+            of <code>dedicated</code> or <code>host</code> into a dedicated tenancy VPC. 
             </para>
              
             <para>
@@ -11574,7 +11731,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateVpcResponse">
             <summary>
-            This is the response object from the CreateVpc operation.
+            Contains the output of CreateVpc.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateVpcResponse.Vpc">
@@ -11606,6 +11763,11 @@
             If you decide to shut down your VPN connection for any reason and later create a new
             VPN connection, you must reconfigure your customer gateway with the new information
             returned from this call.
+            </para>
+             
+            <para>
+            This is an idempotent operation. If you perform the operation more than once, Amazon
+            EC2 doesn't return an error.
             </para>
              
             <para>
@@ -11667,7 +11829,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateVpnConnectionResponse">
             <summary>
-            This is the response object from the CreateVpnConnection operation.
+            Contains the output of CreateVpnConnection.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateVpnConnectionResponse.VpnConnection">
@@ -11758,7 +11920,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.CreateVpnGatewayResponse">
             <summary>
-            This is the response object from the CreateVpnGateway operation.
+            Contains the output of CreateVpnGateway.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.CreateVpnGatewayResponse.VpnGateway">
@@ -11902,7 +12064,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DeleteFlowLogsResponse">
             <summary>
-            This is the response object from the DeleteFlowLogs operation.
+            Contains the output of DeleteFlowLogs.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DeleteFlowLogsResponse.Unsuccessful">
@@ -11981,7 +12143,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DeleteNatGatewayResponse">
             <summary>
-            This is the response object from the DeleteNatGateway operation.
+            Contains the output of DeleteNatGateway.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DeleteNatGatewayResponse.NatGatewayId">
@@ -12391,7 +12553,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DeleteVpcEndpointsResponse">
             <summary>
-            This is the response object from the DeleteVpcEndpoints operation.
+            Contains the output of DeleteVpcEndpoints.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DeleteVpcEndpointsResponse.Unsuccessful">
@@ -12646,7 +12808,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeAccountAttributesResponse">
             <summary>
-            This is the response object from the DescribeAccountAttributes operation.
+            Contains the output of DescribeAccountAttributes.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeAccountAttributesResponse.AccountAttributes">
@@ -12741,7 +12903,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeAddressesResponse">
             <summary>
-            This is the response object from the DescribeAddresses operation.
+            Contains the output of DescribeAddresses.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeAddressesResponse.Addresses">
@@ -12804,7 +12966,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeAvailabilityZonesResponse">
             <summary>
-            This is the response object from the DescribeAvailabilityZones operation.
+            Contains the output of DescribeAvailabiltyZones.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeAvailabilityZonesResponse.AvailabilityZones">
@@ -12896,7 +13058,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeBundleTasksResponse">
             <summary>
-            This is the response object from the DescribeBundleTasks operation.
+            Contains the output of DescribeBundleTasks.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeBundleTasksResponse.BundleTasks">
@@ -12990,7 +13152,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeClassicLinkInstancesResponse">
             <summary>
-            This is the response object from the DescribeClassicLinkInstances operation.
+            Contains the output of DescribeClassicLinkInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeClassicLinkInstancesResponse.Instances">
@@ -13042,7 +13204,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeConversionTasksResponse">
             <summary>
-            This is the response object from the DescribeConversionTasks operation.
+            Contains the output for DescribeConversionTasks.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeConversionTasksResponse.ConversionTasks">
@@ -13132,7 +13294,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeCustomerGatewaysResponse">
             <summary>
-            This is the response object from the DescribeCustomerGateways operation.
+            Contains the output of DescribeCustomerGateways.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeCustomerGatewaysResponse.CustomerGateways">
@@ -13209,7 +13371,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeDhcpOptionsResponse">
             <summary>
-            This is the response object from the DescribeDhcpOptions operation.
+            Contains the output of DescribeDhcpOptions.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeDhcpOptionsResponse.DhcpOptions">
@@ -13236,7 +13398,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeExportTasksResponse">
             <summary>
-            This is the response object from the DescribeExportTasks operation.
+            Contains the output for DescribeExportTasks.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeExportTasksResponse.ExportTasks">
@@ -13316,7 +13478,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeFlowLogsResponse">
             <summary>
-            This is the response object from the DescribeFlowLogs operation.
+            Contains the output of DescribeFlowLogs.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeFlowLogsResponse.FlowLogs">
@@ -13418,7 +13580,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeHostsResponse">
             <summary>
-            This is the response object from the DescribeHosts operation.
+            Contains the output of DescribeHosts.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeHostsResponse.Hosts">
@@ -13448,8 +13610,8 @@
             
              
             <para>
-            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>.
-            
+            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>
+            | <code>snapshot</code> | <code>volume</code>. 
             </para>
              
             <para>
@@ -13472,7 +13634,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeIdFormatResponse">
             <summary>
-            This is the response object from the DescribeIdFormat operation.
+            Contains the output of DescribeIdFormat.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeIdFormatResponse.Statuses">
@@ -13591,7 +13753,7 @@
              </li> <li> 
             <para>
             <code>block-device-mapping.volume-type</code> - The volume type of the EBS volume
-            (<code>gp2</code> | <code>standard</code> | <code>io1</code>).
+            (<code>gp2</code> | <code>io1</code> | <code>st1 </code>| <code>sc1</code> | <code>standard</code>).
             </para>
              </li> <li> 
             <para>
@@ -13725,7 +13887,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeImagesResponse">
             <summary>
-            This is the response object from the DescribeImages operation.
+            Contains the output of DescribeImages.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeImagesResponse.Images">
@@ -13747,7 +13909,8 @@
             <summary>
             Gets and sets the property Filters. 
             <para>
-            One or more filters.
+            Filter tasks using the <code>task-state</code> filter and one of the following values:
+            active, completed, deleting, deleted.
             </para>
             </summary>
         </member>
@@ -13763,7 +13926,8 @@
             <summary>
             Gets and sets the property MaxResults. 
             <para>
-            The maximum number of results to return in a single request.
+            The maximum number of results to return in a single call. To retrieve the remaining
+            results, make another call with the returned <code>NextToken</code> value.
             </para>
             </summary>
         </member>
@@ -13777,7 +13941,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeImportImageTasksResponse">
             <summary>
-            This is the response object from the DescribeImportImageTasks operation.
+            Contains the output for DescribeImportImageTasks.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeImportImageTasksResponse.ImportImageTasks">
@@ -13824,7 +13988,8 @@
             <summary>
             Gets and sets the property MaxResults. 
             <para>
-            The maximum number of results to return in a single request.
+            The maximum number of results to return in a single call. To retrieve the remaining
+            results, make another call with the returned <code>NextToken</code> value.
             </para>
             </summary>
         </member>
@@ -13838,7 +14003,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeImportSnapshotTasksResponse">
             <summary>
-            This is the response object from the DescribeImportSnapshotTasks operation.
+            Contains the output for DescribeImportSnapshotTasks.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeImportSnapshotTasksResponse.ImportSnapshotTasks">
@@ -14349,11 +14514,10 @@
             <summary>
             Gets and sets the property MaxResults. 
             <para>
-            The maximum number of results to return for the request in a single page. The remaining
-            results of the initial request can be seen by sending another request with the returned
-            <code>NextToken</code> value. This value can be between 5 and 1000; if <code>MaxResults</code>
-            is given a value larger than 1000, only 1000 results are returned. You cannot specify
-            this parameter and the instance IDs parameter in the same request.
+            The maximum number of results to return in a single call. To retrieve the remaining
+            results, make another call with the returned <code>NextToken</code> value. This value
+            can be between 5 and 1000. You cannot specify this parameter and the instance IDs
+            parameter in the same call.
             </para>
             </summary>
         </member>
@@ -14367,7 +14531,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeInstancesResponse">
             <summary>
-            This is the response object from the DescribeInstances operation.
+            Contains the output of DescribeInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeInstancesResponse.NextToken">
@@ -14390,7 +14554,8 @@
         <member name="T:Amazon.EC2.Model.DescribeInstanceStatusRequest">
             <summary>
             Container for the parameters to the DescribeInstanceStatus operation.
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -14523,11 +14688,10 @@
             <summary>
             Gets and sets the property MaxResults. 
             <para>
-            The maximum number of results to return for the request in a single page. The remaining
-            results of the initial request can be seen by sending another request with the returned
-            <code>NextToken</code> value. This value can be between 5 and 1000; if <code>MaxResults</code>
-            is given a value larger than 1000, only 1000 results are returned. You cannot specify
-            this parameter and the instance IDs parameter in the same request.
+            The maximum number of results to return in a single call. To retrieve the remaining
+            results, make another call with the returned <code>NextToken</code> value. This value
+            can be between 5 and 1000. You cannot specify this parameter and the instance IDs
+            parameter in the same call.
             </para>
             </summary>
         </member>
@@ -14541,7 +14705,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeInstanceStatusResponse">
             <summary>
-            This is the response object from the DescribeInstanceStatus operation.
+            Contains the output of DescribeInstanceStatus.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeInstanceStatusResponse.InstanceStatuses">
@@ -14622,7 +14786,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeInternetGatewaysResponse">
             <summary>
-            This is the response object from the DescribeInternetGateways operation.
+            Contains the output of DescribeInternetGateways.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeInternetGatewaysResponse.InternetGateways">
@@ -14676,7 +14840,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeKeyPairsResponse">
             <summary>
-            This is the response object from the DescribeKeyPairs operation.
+            Contains the output of DescribeKeyPairs.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeKeyPairsResponse.KeyPairs">
@@ -14742,7 +14906,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeMovingAddressesResponse">
             <summary>
-            This is the response object from the DescribeMovingAddresses operation.
+            Contains the output of DescribeMovingAddresses.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeMovingAddressesResponse.MovingAddressStatuses">
@@ -14825,7 +14989,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeNatGatewaysResponse">
             <summary>
-            This is the response object from the DescribeNatGateways operation.
+            Contains the output of DescribeNatGateways.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeNatGatewaysResponse.NatGateways">
@@ -14966,7 +15130,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeNetworkAclsResponse">
             <summary>
-            This is the response object from the DescribeNetworkAcls operation.
+            Contains the output of DescribeNetworkAcls.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeNetworkAclsResponse.NetworkAcls">
@@ -15001,7 +15165,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeNetworkInterfaceAttributeResponse">
             <summary>
-            This is the response object from the DescribeNetworkInterfaceAttribute operation.
+            Contains the output of DescribeNetworkInterfaceAttribute.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeNetworkInterfaceAttributeResponse.Attachment">
@@ -15246,7 +15410,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeNetworkInterfacesResponse">
             <summary>
-            This is the response object from the DescribeNetworkInterfaces operation.
+            Contains the output of DescribeNetworkInterfaces.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeNetworkInterfacesResponse.NetworkInterfaces">
@@ -15301,7 +15465,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribePlacementGroupsResponse">
             <summary>
-            This is the response object from the DescribePlacementGroups operation.
+            Contains the output of DescribePlacementGroups.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribePlacementGroupsResponse.PlacementGroups">
@@ -15370,7 +15534,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribePrefixListsResponse">
             <summary>
-            This is the response object from the DescribePrefixLists operation.
+            Contains the output of DescribePrefixLists.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribePrefixListsResponse.NextToken">
@@ -15429,7 +15593,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeRegionsResponse">
             <summary>
-            This is the response object from the DescribeRegions operation.
+            Contains the output of DescribeRegions.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeRegionsResponse.Regions">
@@ -15517,7 +15681,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeReservedInstancesListingsResponse">
             <summary>
-            This is the response object from the DescribeReservedInstancesListings operation.
+            Contains the output of DescribeReservedInstancesListings.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeReservedInstancesListingsResponse.ReservedInstancesListings">
@@ -15629,7 +15793,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeReservedInstancesModificationsResponse">
             <summary>
-            This is the response object from the DescribeReservedInstancesModifications operation.
+            Contains the output of DescribeReservedInstancesModifications.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeReservedInstancesModificationsResponse.NextToken">
@@ -15854,7 +16018,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeReservedInstancesOfferingsResponse">
             <summary>
-            This is the response object from the DescribeReservedInstancesOfferings operation.
+            Contains the output of DescribeReservedInstancesOfferings.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeReservedInstancesOfferingsResponse.NextToken">
@@ -15993,7 +16157,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeReservedInstancesResponse">
             <summary>
-            This is the response object from the DescribeReservedInstances operation.
+            Contains the output for DescribeReservedInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeReservedInstancesResponse.ReservedInstances">
@@ -16134,7 +16298,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeRouteTablesResponse">
             <summary>
-            This is the response object from the DescribeRouteTables operation.
+            Contains the output of DescribeRouteTables.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeRouteTablesResponse.RouteTables">
@@ -16475,7 +16639,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeSecurityGroupsResponse">
             <summary>
-            This is the response object from the DescribeSecurityGroups operation.
+            Contains the output of DescribeSecurityGroups.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeSecurityGroupsResponse.SecurityGroups">
@@ -16529,7 +16693,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeSnapshotAttributeResponse">
             <summary>
-            This is the response object from the DescribeSnapshotAttribute operation.
+            Contains the output of DescribeSnapshotAttribute.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeSnapshotAttributeResponse.CreateVolumePermissions">
@@ -16568,12 +16732,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -16741,7 +16916,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeSnapshotsResponse">
             <summary>
-            This is the response object from the DescribeSnapshots operation.
+            Contains the output of DescribeSnapshots.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeSnapshotsResponse.NextToken">
@@ -17079,7 +17254,9 @@
              </li> <li> 
             <para>
             <code>launch.block-device-mapping.volume-type</code> - The type of the Amazon EBS
-            volume (<code>gp2</code> | <code>standard</code> | <code>io1</code>).
+            volume: <code>gp2</code> for General Purpose SSD, <code>io1</code> for Provisioned
+            IOPS SSD, <code>st1</code> for Throughput Optimized HDD, <code>sc1</code>for Cold
+            HDD, or <code>standard</code> for Magnetic.
             </para>
              </li> <li> 
             <para>
@@ -17466,7 +17643,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeSubnetsResponse">
             <summary>
-            This is the response object from the DescribeSubnets operation.
+            Contains the output of DescribeSubnets.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeSubnetsResponse.Subnets">
@@ -17534,10 +17711,9 @@
             <summary>
             Gets and sets the property MaxResults. 
             <para>
-            The maximum number of results to return for the request in a single page. The remaining
-            results of the initial request can be seen by sending another request with the returned
-            <code>NextToken</code> value. This value can be between 5 and 1000; if <code>MaxResults</code>
-            is given a value larger than 1000, only 1000 results are returned. 
+            The maximum number of results to return in a single call. This value can be between
+            5 and 1000. To retrieve the remaining results, make another call with the returned
+            <code>NextToken</code> value.
             </para>
             </summary>
         </member>
@@ -17551,7 +17727,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeTagsResponse">
             <summary>
-            This is the response object from the DescribeTags operation.
+            Contains the output of DescribeTags.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeTagsResponse.NextToken">
@@ -17602,7 +17778,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVolumeAttributeResponse">
             <summary>
-            This is the response object from the DescribeVolumeAttribute operation.
+            Contains the output of DescribeVolumeAttribute.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVolumeAttributeResponse.AutoEnableIO">
@@ -17742,8 +17918,9 @@
              </li> <li> 
             <para>
             <code>volume-type</code> - The Amazon EBS volume type. This can be <code>gp2</code>
-            for General Purpose (SSD) volumes, <code>io1</code> for Provisioned IOPS (SSD) volumes,
-            or <code>standard</code> for Magnetic volumes.
+            for General Purpose SSD, <code>io1</code> for Provisioned IOPS SSD, <code>st1</code>
+            for Throughput Optimized HDD, <code>sc1</code> for Cold HDD, or <code>standard</code>
+            for Magnetic volumes.
             </para>
              </li> </ul>
             </summary>
@@ -17786,7 +17963,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVolumesResponse">
             <summary>
-            This is the response object from the DescribeVolumes operation.
+            Contains the output of DescribeVolumes.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVolumesResponse.NextToken">
@@ -17963,7 +18140,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVolumeStatusResponse">
             <summary>
-            This is the response object from the DescribeVolumeStatus operation.
+            Contains the output of DescribeVolumeStatus.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVolumeStatusResponse.NextToken">
@@ -18008,7 +18185,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcAttributeResponse">
             <summary>
-            This is the response object from the DescribeVpcAttribute operation.
+            Contains the output of DescribeVpcAttribute.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcAttributeResponse.EnableDnsHostnames">
@@ -18077,7 +18254,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcClassicLinkDnsSupportResponse">
             <summary>
-            This is the response object from the DescribeVpcClassicLinkDnsSupport operation.
+            Contains the output of DescribeVpcClassicLinkDnsSupport.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcClassicLinkDnsSupportResponse.NextToken">
@@ -18145,7 +18322,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcClassicLinkResponse">
             <summary>
-            This is the response object from the DescribeVpcClassicLink operation.
+            Contains the output of DescribeVpcClassicLink.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcClassicLinkResponse.Vpcs">
@@ -18186,7 +18363,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcEndpointServicesResponse">
             <summary>
-            This is the response object from the DescribeVpcEndpointServices operation.
+            Contains the output of DescribeVpcEndpointServices.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcEndpointServicesResponse.NextToken">
@@ -18270,7 +18447,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcEndpointsResponse">
             <summary>
-            This is the response object from the DescribeVpcEndpoints operation.
+            Contains the output of DescribeVpcEndpoints.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcEndpointsResponse.NextToken">
@@ -18384,7 +18561,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcPeeringConnectionsResponse">
             <summary>
-            This is the response object from the DescribeVpcPeeringConnections operation.
+            Contains the output of DescribeVpcPeeringConnections.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcPeeringConnectionsResponse.VpcPeeringConnections">
@@ -18465,7 +18642,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpcsResponse">
             <summary>
-            This is the response object from the DescribeVpcs operation.
+            Contains the output of DescribeVpcs.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpcsResponse.Vpcs">
@@ -18575,7 +18752,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpnConnectionsResponse">
             <summary>
-            This is the response object from the DescribeVpnConnections operation.
+            Contains the output of DescribeVpnConnections.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpnConnectionsResponse.VpnConnections">
@@ -18670,7 +18847,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DescribeVpnGatewaysResponse">
             <summary>
-            This is the response object from the DescribeVpnGateways operation.
+            Contains the output of DescribeVpnGateways.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DescribeVpnGatewaysResponse.VpnGateways">
@@ -18707,7 +18884,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DetachClassicLinkVpcResponse">
             <summary>
-            This is the response object from the DetachClassicLinkVpc operation.
+            Contains the output of DetachClassicLinkVpc.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DetachClassicLinkVpcResponse.Return">
@@ -19000,7 +19177,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DisableVpcClassicLinkDnsSupportResponse">
             <summary>
-            This is the response object from the DisableVpcClassicLinkDnsSupport operation.
+            Contains the output of DisableVpcClassicLinkDnsSupport.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DisableVpcClassicLinkDnsSupportResponse.Return">
@@ -19028,7 +19205,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.DisableVpcClassicLinkResponse">
             <summary>
-            This is the response object from the DisableVpcClassicLink operation.
+            Contains the output of DisableVpcClassicLink.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.DisableVpcClassicLinkResponse.Return">
@@ -19290,7 +19467,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.EbsInstanceBlockDeviceSpecification">
             <summary>
-            
+            Describes information used to set up an EBS volume specified in a block device mapping.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.EbsInstanceBlockDeviceSpecification.DeleteOnTermination">
@@ -19378,7 +19555,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.EnableVpcClassicLinkDnsSupportResponse">
             <summary>
-            This is the response object from the EnableVpcClassicLinkDnsSupport operation.
+            Contains the output of EnableVpcClassicLinkDnsSupport.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.EnableVpcClassicLinkDnsSupportResponse.Return">
@@ -19411,7 +19588,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.EnableVpcClassicLinkResponse">
             <summary>
-            This is the response object from the EnableVpcClassicLink operation.
+            Contains the output of EnableVpcClassicLink.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.EnableVpcClassicLinkResponse.Return">
@@ -19848,7 +20025,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.GetConsoleOutputResponse">
             <summary>
-            This is the response object from the GetConsoleOutput operation.
+            Contains the output of GetConsoleOutput.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.GetConsoleOutputResponse.InstanceId">
@@ -20067,7 +20244,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.HostInstance">
             <summary>
-            
+            Describes an instance running on a Dedicated host.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.HostInstance.InstanceId">
@@ -20082,13 +20259,13 @@
             <summary>
             Gets and sets the property InstanceType. 
             <para>
-            The instance type size (e.g., m3.medium) of the running instance.
+            The instance type size (for example, m3.medium) of the running instance.
             </para>
             </summary>
         </member>
         <member name="T:Amazon.EC2.Model.HostProperties">
             <summary>
-            
+            Describes properties of a Dedicated host.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.HostProperties.Cores">
@@ -20103,7 +20280,7 @@
             <summary>
             Gets and sets the property InstanceType. 
             <para>
-            The instance type size that the Dedicated host supports (e.g., m3.medium).
+            The instance type size that the Dedicated host supports (for example, m3.medium).
             </para>
             </summary>
         </member>
@@ -20637,7 +20814,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ImportImageResponse">
             <summary>
-            This is the response object from the ImportImage operation.
+            Contains the output for ImportImage.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ImportImageResponse.Architecture">
@@ -20976,7 +21153,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ImportInstanceResponse">
             <summary>
-            This is the response object from the ImportInstance operation.
+            Contains the output for ImportInstance.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ImportInstanceResponse.ConversionTask">
@@ -21111,7 +21288,7 @@
             Instantiates ImportKeyPairRequest with the parameterized properties
             </summary>
             <param name="keyName">A unique name for the key pair.</param>
-            <param name="publicKeyMaterial">The public key. You must base64 encode the public key material before sending it to AWS.</param>
+            <param name="publicKeyMaterial">The public key. For API calls, the text must be base64-encoded. For command line tools, base64 encoding is performed for you.</param>
         </member>
         <member name="P:Amazon.EC2.Model.ImportKeyPairRequest.KeyName">
             <summary>
@@ -21125,14 +21302,14 @@
             <summary>
             Gets and sets the property PublicKeyMaterial. 
             <para>
-            The public key. You must base64 encode the public key material before sending it to
-            AWS.
+            The public key. For API calls, the text must be base64-encoded. For command line tools,
+            base64 encoding is performed for you.
             </para>
             </summary>
         </member>
         <member name="T:Amazon.EC2.Model.ImportKeyPairResponse">
             <summary>
-            This is the response object from the ImportKeyPair operation.
+            Contains the output of ImportKeyPair.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ImportKeyPairResponse.KeyFingerprint">
@@ -21199,7 +21376,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ImportSnapshotResponse">
             <summary>
-            This is the response object from the ImportSnapshot operation.
+            Contains the output for ImportSnapshot.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ImportSnapshotResponse.Description">
@@ -21306,7 +21483,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ImportVolumeResponse">
             <summary>
-            This is the response object from the ImportVolume operation.
+            Contains the output for ImportVolume.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ImportVolumeResponse.ConversionTask">
@@ -22285,31 +22462,31 @@
             The low byte represents the state. The high byte is an opaque internal value and should
             be ignored.
             </para>
-             <ul> <li>
+             <ul> <li> 
             <para>
             <code>0</code> : <code>pending</code>
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>16</code> : <code>running</code>
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>32</code> : <code>shutting-down</code>
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>48</code> : <code>terminated</code>
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>64</code> : <code>stopping</code>
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>80</code> : <code>stopped</code>
             </para>
-            </li> </ul>
+             </li> </ul>
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.InstanceState.Name">
@@ -22738,6 +22915,11 @@
             <para>
             One or more block device mapping entries.
             </para>
+             
+            <para>
+            Although you can specify encrypted EBS volumes in this block device mapping for your
+            Spot Instances, these volumes are not encrypted.
+            </para>
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.LaunchSpecification.EbsOptimized">
@@ -22878,7 +23060,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ModifyHostsResponse">
             <summary>
-            This is the response object from the ModifyHosts operation.
+            Contains the output of ModifyHosts.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ModifyHostsResponse.Successful">
@@ -22903,7 +23085,8 @@
             Container for the parameters to the ModifyIdFormat operation.
             Modifies the ID format for the specified resource on a per-region basis. You can specify
             that resources should receive longer IDs (17-character IDs) when they are created.
-            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>.
+            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>
+            | <code>snapshot</code> | <code>volume</code>.
             
              
             <para>
@@ -23209,7 +23392,8 @@
             <summary>
             Gets and sets the property UserData. 
             <para>
-            Changes the instance's user data to the specified value.
+            Changes the instance's user data to the specified base64-encoded value. For command
+            line tools, base64 encoding is performed for you.
             </para>
             </summary>
         </member>
@@ -23293,7 +23477,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ModifyInstancePlacementResponse">
             <summary>
-            This is the response object from the ModifyInstancePlacement operation.
+            Contains the output of ModifyInstancePlacement.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ModifyInstancePlacementResponse.Return">
@@ -23407,7 +23591,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ModifyReservedInstancesResponse">
             <summary>
-            This is the response object from the ModifyReservedInstances operation.
+            Contains the output of ModifyReservedInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ModifyReservedInstancesResponse.ReservedInstancesModificationId">
@@ -23750,7 +23934,79 @@
         </member>
         <member name="T:Amazon.EC2.Model.ModifyVpcEndpointResponse">
             <summary>
-            This is the response object from the ModifyVpcEndpoint operation.
+            Contains the output of ModifyVpcEndpoint.
+            </summary>
+        </member>
+        <member name="T:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest">
+            <summary>
+            Container for the parameters to the ModifyVpcPeeringConnectionOptions operation.
+            Modifies the VPC peering connection options on one side of a VPC peering connection.
+            You can do the following:
+            
+             <ul> <li>
+            <para>
+            Enable/disable communication over the peering connection between an EC2-Classic instance
+            that's linked to your VPC (using ClassicLink) and instances in the peer VPC. 
+            </para>
+            </li> <li>
+            <para>
+            Enable/disable communication over the peering connection between instances in your
+            VPC and an EC2-Classic instance that's linked to the peer VPC.
+            </para>
+            </li> </ul> 
+            <para>
+            If the peered VPCs are in different accounts, each owner must initiate a separate
+            request to enable or disable communication in either direction, depending on whether
+            their VPC was the requester or accepter for the VPC peering connection. If the peered
+            VPCs are in the same account, you can modify the requester and accepter options in
+            the same request. To confirm which VPC is the accepter and requester for a VPC peering
+            connection, use the <a>DescribeVpcPeeringConnections</a> command.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest.AccepterPeeringConnectionOptions">
+            <summary>
+            Gets and sets the property AccepterPeeringConnectionOptions. 
+            <para>
+            The VPC peering connection options for the accepter VPC.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest.RequesterPeeringConnectionOptions">
+            <summary>
+            Gets and sets the property RequesterPeeringConnectionOptions. 
+            <para>
+            The VPC peering connection options for the requester VPC.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest.VpcPeeringConnectionId">
+            <summary>
+            Gets and sets the property VpcPeeringConnectionId. 
+            <para>
+            The ID of the VPC peering connection.
+            </para>
+            </summary>
+        </member>
+        <member name="T:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsResponse">
+            <summary>
+            This is the response object from the ModifyVpcPeeringConnectionOptions operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsResponse.AccepterPeeringConnectionOptions">
+            <summary>
+            Gets and sets the property AccepterPeeringConnectionOptions. 
+            <para>
+            Information about the VPC peering connection options for the accepter VPC.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsResponse.RequesterPeeringConnectionOptions">
+            <summary>
+            Gets and sets the property RequesterPeeringConnectionOptions. 
+            <para>
+            Information about the VPC peering connection options for the requester VPC.
+            </para>
             </summary>
         </member>
         <member name="T:Amazon.EC2.Model.Monitoring">
@@ -23795,7 +24051,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.MonitorInstancesResponse">
             <summary>
-            This is the response object from the MonitorInstances operation.
+            Contains the output of MonitorInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.MonitorInstancesResponse.InstanceMonitorings">
@@ -23814,9 +24070,9 @@
             it must not be associated with an instance. After the Elastic IP address is moved,
             it is no longer available for use in the EC2-Classic platform, unless you move it
             back using the <a>RestoreAddressToClassic</a> request. You cannot move an Elastic
-            IP address that's allocated for use in the EC2-VPC platform to the EC2-Classic platform.
-            You cannot migrate an Elastic IP address that's associated with a reverse DNS record.
-            Contact AWS account and billing support to remove the reverse DNS record.
+            IP address that was originally allocated for use in the EC2-VPC platform to the EC2-Classic
+            platform. You cannot migrate an Elastic IP address that's associated with a reverse
+            DNS record. Contact AWS account and billing support to remove the reverse DNS record.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.MoveAddressToVpcRequest.PublicIp">
@@ -23829,7 +24085,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.MoveAddressToVpcResponse">
             <summary>
-            This is the response object from the MoveAddressToVpc operation.
+            Contains the output of MoveAddressToVpc.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.MoveAddressToVpcResponse.AllocationId">
@@ -23909,15 +24165,35 @@
             If the NAT gateway could not be created, specifies the error message for the failure,
             that corresponds to the error code. 
             </para>
-             <ul> <li>For InsufficientFreeAddressesInSubnet: <code>Subnet has insufficient free
-            addresses to create this NAT gateway</code></li> <li>For Gateway.NotAttached: <code>Network
-            vpc-xxxxxxxx has no Internet gateway attached</code></li> <li>For InvalidAllocationID.NotFound:
-            <code>Elastic IP address eipalloc-xxxxxxxx could not be associated with this NAT gateway</code></li>
-            <li>For Resource.AlreadyAssociated: <code>Elastic IP address eipalloc-xxxxxxxx is
-            already associated</code></li> <li>For InternalError: <code>Network interface eni-xxxxxxxx,
-            created and used internally by this NAT gateway is in an invalid state. Please try
-            again.</code></li> <li>For InvalidSubnetID.NotFound: <code>The specified subnet subnet-xxxxxxxx
-            does not exist or could not be found.</code></li> </ul>
+             <ul> <li>
+            <para>
+            For InsufficientFreeAddressesInSubnet: "Subnet has insufficient free addresses to
+            create this NAT gateway"
+            </para>
+            </li> <li>
+            <para>
+            For Gateway.NotAttached: "Network vpc-xxxxxxxx has no Internet gateway attached"
+            </para>
+            </li> <li>
+            <para>
+            For InvalidAllocationID.NotFound: "Elastic IP address eipalloc-xxxxxxxx could not
+            be associated with this NAT gateway"
+            </para>
+            </li> <li>
+            <para>
+            For Resource.AlreadyAssociated: "Elastic IP address eipalloc-xxxxxxxx is already associated"
+            </para>
+            </li> <li>
+            <para>
+            For InternalError: "Network interface eni-xxxxxxxx, created and used internally by
+            this NAT gateway is in an invalid state. Please try again."
+            </para>
+            </li> <li>
+            <para>
+            For InvalidSubnetID.NotFound: "The specified subnet subnet-xxxxxxxx does not exist
+            or could not be found."
+            </para>
+            </li> </ul>
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.NatGateway.NatGatewayAddresses">
@@ -24465,6 +24741,52 @@
             </para>
             </summary>
         </member>
+        <member name="T:Amazon.EC2.Model.PeeringConnectionOptions">
+            <summary>
+            Describes the VPC peering connection options.
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.PeeringConnectionOptions.AllowEgressFromLocalClassicLinkToRemoteVpc">
+            <summary>
+            Gets and sets the property AllowEgressFromLocalClassicLinkToRemoteVpc. 
+            <para>
+            If true, enables outbound communication from an EC2-Classic instance that's linked
+            to a local VPC via ClassicLink to instances in a peer VPC.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.PeeringConnectionOptions.AllowEgressFromLocalVpcToRemoteClassicLink">
+            <summary>
+            Gets and sets the property AllowEgressFromLocalVpcToRemoteClassicLink. 
+            <para>
+            If true, enables outbound communication from instances in a local VPC to an EC2-Classic
+            instance that's linked to a peer VPC via ClassicLink.
+            </para>
+            </summary>
+        </member>
+        <member name="T:Amazon.EC2.Model.PeeringConnectionOptionsRequest">
+            <summary>
+            The VPC peering connection options.
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.PeeringConnectionOptionsRequest.AllowEgressFromLocalClassicLinkToRemoteVpc">
+            <summary>
+            Gets and sets the property AllowEgressFromLocalClassicLinkToRemoteVpc. 
+            <para>
+            If true, enables outbound communication from an EC2-Classic instance that's linked
+            to a local VPC via ClassicLink to instances in a peer VPC.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.PeeringConnectionOptionsRequest.AllowEgressFromLocalVpcToRemoteClassicLink">
+            <summary>
+            Gets and sets the property AllowEgressFromLocalVpcToRemoteClassicLink. 
+            <para>
+            If true, enables outbound communication from instances in a local VPC to an EC2-Classic
+            instance that's linked to a peer VPC via ClassicLink.
+            </para>
+            </summary>
+        </member>
         <member name="T:Amazon.EC2.Model.Placement">
             <summary>
             Describes the placement for the instance.
@@ -24866,7 +25188,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.PurchaseReservedInstancesOfferingResponse">
             <summary>
-            This is the response object from the PurchaseReservedInstancesOffering operation.
+            Contains the output of PurchaseReservedInstancesOffering.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.PurchaseReservedInstancesOfferingResponse.ReservedInstancesId">
@@ -24886,7 +25208,14 @@
             <para>
             Scheduled Instances enable you to purchase Amazon EC2 compute capacity by the hour
             for a one-year term. Before you can purchase a Scheduled Instance, you must call <a>DescribeScheduledInstanceAvailability</a>
-            to check for available schedules and obtain a purchase token.
+            to check for available schedules and obtain a purchase token. After you purchase a
+            Scheduled Instance, you must call <a>RunScheduledInstances</a> during each scheduled
+            time period.
+            </para>
+             
+            <para>
+            After you purchase a Scheduled Instance, you can't cancel, modify, or resell your
+            purchase.
             </para>
             </summary>
         </member>
@@ -24931,8 +25260,8 @@
             
              
             <para>
-            If a Linux/Unix instance does not cleanly shut down within four minutes, Amazon EC2
-            performs a hard reboot.
+            If an instance does not cleanly shut down within four minutes, Amazon EC2 performs
+            a hard reboot.
             </para>
              
             <para>
@@ -25177,7 +25506,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.RegisterImageResponse">
             <summary>
-            This is the response object from the RegisterImage operation.
+            Contains the output of RegisterImage.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.RegisterImageResponse.ImageId">
@@ -25300,7 +25629,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ReleaseHostsResponse">
             <summary>
-            This is the response object from the ReleaseHosts operation.
+            Contains the output of ReleaseHosts.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ReleaseHostsResponse.Successful">
@@ -25346,7 +25675,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ReplaceNetworkAclAssociationResponse">
             <summary>
-            This is the response object from the ReplaceNetworkAclAssociation operation.
+            Contains the output of ReplaceNetworkAclAssociation.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ReplaceNetworkAclAssociationResponse.NewAssociationId">
@@ -25549,7 +25878,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ReplaceRouteTableAssociationResponse">
             <summary>
-            This is the response object from the ReplaceRouteTableAssociation operation.
+            Contains the output of ReplaceRouteTableAssociation.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ReplaceRouteTableAssociationResponse.NewAssociationId">
@@ -25605,46 +25934,46 @@
             <para>
             One or more reason codes that describes the health state of your instance.
             </para>
-             <ul> <li>
+             <ul> <li> 
             <para>
             <code>instance-stuck-in-state</code>: My instance is stuck in a state.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>unresponsive</code>: My instance is unresponsive.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>not-accepting-credentials</code>: My instance is not accepting my credentials.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>password-not-available</code>: A password is not available for my instance.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>performance-network</code>: My instance is experiencing performance problems
             which I believe are network related.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>performance-instance-store</code>: My instance is experiencing performance problems
             which I believe are related to the instance stores.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>performance-ebs-volume</code>: My instance is experiencing performance problems
             which I believe are related to an EBS volume.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>performance-other</code>: My instance is experiencing performance problems.
             </para>
-            </li> <li>
+             </li> <li> 
             <para>
             <code>other</code>: [explain using the description parameter]
             </para>
-            </li> </ul>
+             </li> </ul>
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ReportInstanceStatusRequest.StartTime">
@@ -26327,7 +26656,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.ReservedInstancesModificationResult">
             <summary>
-            
+            Describes the modification request/s.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.ReservedInstancesModificationResult.ReservedInstancesId">
@@ -26649,7 +26978,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.RestoreAddressToClassicResponse">
             <summary>
-            This is the response object from the RestoreAddressToClassic operation.
+            Contains the output of RestoreAddressToClassic.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.RestoreAddressToClassicResponse.PublicIp">
@@ -26840,10 +27169,20 @@
             <para>
             Describes how the route was created.
             </para>
-             <ul> <li><code>CreateRouteTable</code> indicates that route was automatically created
-            when the route table was created.</li> <li><code>CreateRoute</code> indicates that
-            the route was manually added to the route table.</li> <li><code>EnableVgwRoutePropagation</code>
-            indicates that the route was propagated by route propagation.</li> </ul>
+             <ul> <li>
+            <para>
+            <code>CreateRouteTable</code> - The route was automatically created when the route
+            table was created.
+            </para>
+            </li> <li>
+            <para>
+            <code>CreateRoute</code> - The route was manually added to the route table.
+            </para>
+            </li> <li>
+            <para>
+            <code>EnableVgwRoutePropagation</code> - The route was propagated by route propagation.
+            </para>
+            </li> </ul>
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.Route.State">
@@ -27330,7 +27669,8 @@
             You must launch a Scheduled Instance during its scheduled time period. You can't stop
             or reboot a Scheduled Instance, but you can terminate it as needed. If you terminate
             a Scheduled Instance before the current scheduled time period ends, you can launch
-            it again after a few minutes.
+            it again after a few minutes. For more information, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-scheduled-instances.html">Scheduled
+            Instances</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
             </summary>
         </member>
@@ -27423,8 +27763,9 @@
             <summary>
             Gets and sets the property UploadPolicy. 
             <para>
-            A Base64-encoded Amazon S3 upload policy that gives Amazon EC2 permission to upload
-            items into Amazon S3 on your behalf.
+            A base64-encoded Amazon S3 upload policy that gives Amazon EC2 permission to upload
+            items into Amazon S3 on your behalf. For command line tools, base64 encoding is performed
+            for you.
             </para>
             </summary>
         </member>
@@ -27842,23 +28183,23 @@
             <summary>
             Gets and sets the property Iops. 
             <para>
-            The number of I/O operations per second (IOPS) that the volume supports. For Provisioned
-            IOPS (SSD) volumes, this represents the number of IOPS that are provisioned for the
-            volume. For General Purpose (SSD) volumes, this represents the baseline performance
-            of the volume and the rate at which the volume accumulates I/O credits for bursting.
-            For more information about General Purpose (SSD) baseline performance, I/O credits,
-            and bursting, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Amazon
+            The number of I/O operations per second (IOPS) that the volume supports. For io1 volumes,
+            this represents the number of IOPS that are provisioned for the volume. For <code>gp2</code>
+            volumes, this represents the baseline performance of the volume and the rate at which
+            the volume accumulates I/O credits for bursting. For more information about <code>gp2</code>
+            baseline performance, I/O credits, and bursting, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Amazon
             EBS Volume Types</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
              
             <para>
-            Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes and 3 to 10000
-            for General Purpose (SSD) volumes.
+            Constraint: Range is 100-20000 IOPS for <code>io1</code> volumes and 100-10000 IOPS
+            for <code>gp2</code> volumes.
             </para>
              
             <para>
-            Condition: This parameter is required for requests to create <code>io1</code> volumes;
-            it is not used in requests to create <code>standard</code> or <code>gp2</code> volumes.
+            Condition: This parameter is required for requests to create <code>io1</code>volumes;
+            it is not used in requests to create <code>gp2</code>, <code>st1</code>, <code>sc1</code>,
+            or <code>standard</code> volumes.
             </para>
             </summary>
         </member>
@@ -27887,8 +28228,9 @@
             <summary>
             Gets and sets the property VolumeType. 
             <para>
-            The volume type. <code>gp2</code> for General Purpose (SSD) volumes, <code>io1</code>
-            for Provisioned IOPS (SSD) volumes, and <code>standard</code> for Magnetic volumes.
+            The volume type. <code>gp2</code> for General Purpose SSD, <code>io1</code> for Provisioned
+            IOPS SSD, Throughput Optimized HDD for <code>st1</code>, Cold HDD for <code>sc1</code>,
+            or <code>standard</code> for Magnetic.
             </para>
              
             <para>
@@ -28512,7 +28854,10 @@
         </member>
         <member name="P:Amazon.EC2.Model.SnapshotDetail.UserBucket">
             <summary>
-            Gets and sets the property UserBucket.
+            Gets and sets the property UserBucket. 
+            <para>
+            The S3 bucket for the disk image.
+            </para>
             </summary>
         </member>
         <member name="T:Amazon.EC2.Model.SnapshotDiskContainer">
@@ -28551,7 +28896,10 @@
         </member>
         <member name="P:Amazon.EC2.Model.SnapshotDiskContainer.UserBucket">
             <summary>
-            Gets and sets the property UserBucket.
+            Gets and sets the property UserBucket. 
+            <para>
+            The S3 bucket for the disk image.
+            </para>
             </summary>
         </member>
         <member name="T:Amazon.EC2.Model.SnapshotTaskDetail">
@@ -29342,7 +29690,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.StartInstancesResponse">
             <summary>
-            This is the response object from the StartInstances operation.
+            Contains the output of StartInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.StartInstancesResponse.StartingInstances">
@@ -29417,41 +29765,33 @@
         <member name="T:Amazon.EC2.Model.StopInstancesRequest">
             <summary>
             Container for the parameters to the StopInstances operation.
-            Stops an Amazon EBS-backed instance. Each time you transition an instance from stopped
-            to started, Amazon EC2 charges a full instance hour, even if transitions happen multiple
-            times within a single hour.
+            Stops an Amazon EBS-backed instance. 
             
              
             <para>
-            You can't start or stop Spot instances.
+            We don't charge hourly usage for a stopped instance, or data transfer fees; however,
+            your root partition Amazon EBS volume remains, continues to persist your data, and
+            you are charged for Amazon EBS volume usage. Each time you transition an instance
+            from stopped to started, Amazon EC2 charges a full instance hour, even if transitions
+            happen multiple times within a single hour.
             </para>
              
             <para>
-            Instances that use Amazon EBS volumes as their root devices can be quickly stopped
-            and started. When an instance is stopped, the compute resources are released and you
-            are not billed for hourly instance usage. However, your root partition Amazon EBS
-            volume remains, continues to persist your data, and you are charged for Amazon EBS
-            volume usage. You can restart your instance at any time.
+            You can't start or stop Spot instances, and you can't stop instance store-backed instances.
             </para>
              
             <para>
+            When you stop an instance, we shut it down. You can restart your instance at any time.
             Before stopping an instance, make sure it is in a state from which it can be restarted.
             Stopping an instance does not preserve data stored in RAM.
             </para>
              
             <para>
-            Performing this operation on an instance that uses an instance store as its root device
-            returns an error.
-            </para>
-             
-            <para>
-            You can stop, start, and terminate EBS-backed instances. You can only terminate instance
-            store-backed instances. What happens to an instance differs if you stop it or terminate
-            it. For example, when you stop an instance, the root device and any other devices
-            attached to the instance persist. When you terminate an instance, the root device
-            and any other devices attached during the instance launch are automatically deleted.
-            For more information about the differences between stopping and terminating instances,
-            see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html">Instance
+            Stopping an instance is different to rebooting or terminating it. For example, when
+            you stop an instance, the root device and any other devices attached to the instance
+            persist. When you terminate an instance, the root device and any other devices attached
+            during the instance launch are automatically deleted. For more information about the
+            differences between rebooting, stopping, and terminating instances, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html">Instance
             Lifecycle</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
              
@@ -29496,7 +29836,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.StopInstancesResponse">
             <summary>
-            This is the response object from the StopInstances operation.
+            Contains the output of StopInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.StopInstancesResponse.StoppingInstances">
@@ -29737,7 +30077,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.TerminateInstancesResponse">
             <summary>
-            This is the response object from the TerminateInstances operation.
+            Contains the output of TerminateInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.TerminateInstancesResponse.TerminatingInstances">
@@ -29805,7 +30145,7 @@
         </member>
         <member name="T:Amazon.EC2.Model.UnmonitorInstancesResponse">
             <summary>
-            This is the response object from the UnmonitorInstances operation.
+            Contains the output of UnmonitorInstances.
             </summary>
         </member>
         <member name="P:Amazon.EC2.Model.UnmonitorInstancesResponse.InstanceMonitorings">
@@ -29934,7 +30274,7 @@
             <para>
             The name of the security group. In a request, use this parameter for a security group
             in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use
-            <code>GroupId</code>.
+            the security group ID.
             </para>
             </summary>
         </member>
@@ -29951,6 +30291,11 @@
             Gets and sets the property UserId. 
             <para>
             The ID of an AWS account.
+            </para>
+             
+            <para>
+            [EC2-Classic] Required when adding or removing rules that reference a security group
+            in another AWS account.
             </para>
             </summary>
         </member>
@@ -30057,22 +30402,23 @@
             Gets and sets the property Iops. 
             <para>
             The number of I/O operations per second (IOPS) that the volume supports. For Provisioned
-            IOPS (SSD) volumes, this represents the number of IOPS that are provisioned for the
-            volume. For General Purpose (SSD) volumes, this represents the baseline performance
+            IOPS SSD volumes, this represents the number of IOPS that are provisioned for the
+            volume. For General Purpose SSD volumes, this represents the baseline performance
             of the volume and the rate at which the volume accumulates I/O credits for bursting.
-            For more information on General Purpose (SSD) baseline performance, I/O credits, and
+            For more information on General Purpose SSD baseline performance, I/O credits, and
             bursting, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Amazon
             EBS Volume Types</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
              
             <para>
-            Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes and 3 to 10000
-            for General Purpose (SSD) volumes.
+            Constraint: Range is 100-20000 IOPS for io1 volumes and 100-10000 IOPS for <code>gp2</code>
+            volumes.
             </para>
              
             <para>
             Condition: This parameter is required for requests to create <code>io1</code> volumes;
-            it is not used in requests to create <code>standard</code> or <code>gp2</code> volumes.
+            it is not used in requests to create <code>gp2</code>, <code>st1</code>, <code>sc1</code>,
+            or <code>standard</code> volumes.
             </para>
             </summary>
         </member>
@@ -30129,8 +30475,9 @@
             <summary>
             Gets and sets the property VolumeType. 
             <para>
-            The volume type. This can be <code>gp2</code> for General Purpose (SSD) volumes, <code>io1</code>
-            for Provisioned IOPS (SSD) volumes, or <code>standard</code> for Magnetic volumes.
+            The volume type. This can be <code>gp2</code> for General Purpose SSD, <code>io1</code>
+            for Provisioned IOPS SSD, <code>st1</code> for Throughput Optimized HDD, <code>sc1</code>
+            for Cold HDD, or <code>standard</code> for Magnetic volumes.
             </para>
             </summary>
         </member>
@@ -30551,7 +30898,9 @@
             <summary>
             Gets and sets the property AccepterVpcInfo. 
             <para>
-            The information of the peer VPC.
+            Information about the peer VPC. CIDR block information is not returned when creating
+            a VPC peering connection, or when describing a VPC peering connection that's in the
+            <code>initiating-request</code> or <code>pending-acceptance</code> state.
             </para>
             </summary>
         </member>
@@ -30567,7 +30916,7 @@
             <summary>
             Gets and sets the property RequesterVpcInfo. 
             <para>
-            The information of the requester VPC.
+            Information about the requester VPC.
             </para>
             </summary>
         </member>
@@ -30592,6 +30941,29 @@
             Gets and sets the property VpcPeeringConnectionId. 
             <para>
             The ID of the VPC peering connection.
+            </para>
+            </summary>
+        </member>
+        <member name="T:Amazon.EC2.Model.VpcPeeringConnectionOptionsDescription">
+            <summary>
+            Describes the VPC peering connection options.
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.VpcPeeringConnectionOptionsDescription.AllowEgressFromLocalClassicLinkToRemoteVpc">
+            <summary>
+            Gets and sets the property AllowEgressFromLocalClassicLinkToRemoteVpc. 
+            <para>
+            Indicates whether a local ClassicLink connection can communicate with the peer VPC
+            over the VPC peering connection.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.VpcPeeringConnectionOptionsDescription.AllowEgressFromLocalVpcToRemoteClassicLink">
+            <summary>
+            Gets and sets the property AllowEgressFromLocalVpcToRemoteClassicLink. 
+            <para>
+            Indicates whether a local VPC can communicate with a ClassicLink connection in the
+            peer VPC over the VPC peering connection.
             </para>
             </summary>
         </member>
@@ -30634,6 +31006,15 @@
             Gets and sets the property OwnerId. 
             <para>
             The AWS account ID of the VPC owner.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Amazon.EC2.Model.VpcPeeringConnectionVpcInfo.PeeringOptions">
+            <summary>
+            Gets and sets the property PeeringOptions. 
+            <para>
+            Information about the VPC peering connection options for the accepter or requester
+            VPC.
             </para>
             </summary>
         </member>
@@ -40174,6 +40555,51 @@
             Gets the singleton.
             </summary>  
         </member>
+        <member name="T:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsRequestMarshaller">
+            <summary>
+            ModifyVpcPeeringConnectionOptions Request Marshaller
+            </summary>       
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsRequestMarshaller.Marshall(Amazon.Runtime.AmazonWebServiceRequest)">
+            <summary>
+            Marshaller the request object to the HTTP request.
+            </summary>  
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsRequestMarshaller.Marshall(Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest)">
+            <summary>
+            Marshaller the request object to the HTTP request.
+            </summary>  
+            <param name="publicRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsResponseUnmarshaller">
+            <summary>
+            Response Unmarshaller for ModifyVpcPeeringConnectionOptions operation
+            </summary>  
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsResponseUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext)">
+            <summary>
+            Unmarshaller the response from the service to the response class.
+            </summary>  
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsResponseUnmarshaller.UnmarshallException(Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext,System.Exception,System.Net.HttpStatusCode)">
+            <summary>
+            Unmarshaller error response to exception.
+            </summary>  
+            <param name="context"></param>
+            <param name="innerException"></param>
+            <param name="statusCode"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Amazon.EC2.Model.Internal.MarshallTransformations.ModifyVpcPeeringConnectionOptionsResponseUnmarshaller.Instance">
+            <summary>
+            Gets the singleton.
+            </summary>  
+        </member>
         <member name="T:Amazon.EC2.Model.Internal.MarshallTransformations.MonitoringUnmarshaller">
             <summary>
             Response Unmarshaller for Monitoring Object
@@ -40524,6 +40950,30 @@
             <returns></returns>
         </member>
         <member name="P:Amazon.EC2.Model.Internal.MarshallTransformations.NetworkInterfaceUnmarshaller.Instance">
+            <summary>
+            Gets the singleton.
+            </summary>  
+        </member>
+        <member name="T:Amazon.EC2.Model.Internal.MarshallTransformations.PeeringConnectionOptionsUnmarshaller">
+            <summary>
+            Response Unmarshaller for PeeringConnectionOptions Object
+            </summary>  
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.PeeringConnectionOptionsUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext)">
+            <summary>
+            Unmarshaller the response from the service to the response class.
+            </summary>  
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.PeeringConnectionOptionsUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext)">
+            <summary>
+            Unmarshaller error response to exception.
+            </summary>  
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Amazon.EC2.Model.Internal.MarshallTransformations.PeeringConnectionOptionsUnmarshaller.Instance">
             <summary>
             Gets the singleton.
             </summary>  
@@ -43248,6 +43698,30 @@
             <returns></returns>
         </member>
         <member name="P:Amazon.EC2.Model.Internal.MarshallTransformations.VpcEndpointUnmarshaller.Instance">
+            <summary>
+            Gets the singleton.
+            </summary>  
+        </member>
+        <member name="T:Amazon.EC2.Model.Internal.MarshallTransformations.VpcPeeringConnectionOptionsDescriptionUnmarshaller">
+            <summary>
+            Response Unmarshaller for VpcPeeringConnectionOptionsDescription Object
+            </summary>  
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.VpcPeeringConnectionOptionsDescriptionUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext)">
+            <summary>
+            Unmarshaller the response from the service to the response class.
+            </summary>  
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.EC2.Model.Internal.MarshallTransformations.VpcPeeringConnectionOptionsDescriptionUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext)">
+            <summary>
+            Unmarshaller error response to exception.
+            </summary>  
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Amazon.EC2.Model.Internal.MarshallTransformations.VpcPeeringConnectionOptionsDescriptionUnmarshaller.Instance">
             <summary>
             Gets the singleton.
             </summary>  
@@ -49150,6 +49624,16 @@
             Constant Io1 for VolumeType
             </summary>
         </member>
+        <member name="F:Amazon.EC2.VolumeType.Sc1">
+            <summary>
+            Constant Sc1 for VolumeType
+            </summary>
+        </member>
+        <member name="F:Amazon.EC2.VolumeType.St1">
+            <summary>
+            Constant St1 for VolumeType
+            </summary>
+        </member>
         <member name="F:Amazon.EC2.VolumeType.Standard">
             <summary>
             Constant Standard for VolumeType
@@ -49765,11 +50249,25 @@
             <para>
             If a volume has an AWS Marketplace product code:
             </para>
-             <ul> <li>The volume can be attached only to a stopped instance.</li> <li>AWS Marketplace
-            product codes are copied from the volume to the instance.</li> <li>You must be subscribed
-            to the product.</li> <li>The instance type and operating system of the instance must
-            support the product. For example, you can't detach a volume from a Windows instance
-            and attach it to a Linux instance.</li> </ul> 
+             <ul> <li> 
+            <para>
+            The volume can be attached only to a stopped instance.
+            </para>
+             </li> <li> 
+            <para>
+            AWS Marketplace product codes are copied from the volume to the instance.
+            </para>
+             </li> <li> 
+            <para>
+            You must be subscribed to the product.
+            </para>
+             </li> <li> 
+            <para>
+            The instance type and operating system of the instance must support the product. For
+            example, you can't detach a volume from a Windows instance and attach it to a Linux
+            instance.
+            </para>
+             </li> </ul> 
             <para>
             For an overview of the AWS Marketplace, see <a href="https://aws.amazon.com/marketplace/help/200900000">Introducing
             AWS Marketplace</a>.
@@ -50254,24 +50752,41 @@
             can specify. For more information about the options, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC
             2132</a>.
             
-             <ul> <li><code>domain-name-servers</code> - The IP addresses of up to four domain
-            name servers, or <code>AmazonProvidedDNS</code>. The default DHCP option set specifies
-            <code>AmazonProvidedDNS</code>. If specifying more than one domain name server, specify
-            the IP addresses in a single parameter, separated by commas.</li> <li><code>domain-name</code>
-            - If you're using AmazonProvidedDNS in <code>us-east-1</code>, specify <code>ec2.internal</code>.
-            If you're using AmazonProvidedDNS in another region, specify <code>region.compute.internal</code>
-            (for example, <code>ap-northeast-1.compute.internal</code>). Otherwise, specify a
-            domain name (for example, <code>MyCompany.com</code>). <b>Important</b>: Some Linux
-            operating systems accept multiple domain names separated by spaces. However, Windows
-            and other Linux operating systems treat the value as a single domain, which results
-            in unexpected behavior. If your DHCP options set is associated with a VPC that has
-            instances with multiple operating systems, specify only one domain name.</li> <li><code>ntp-servers</code>
-            - The IP addresses of up to four Network Time Protocol (NTP) servers.</li> <li><code>netbios-name-servers</code>
-            - The IP addresses of up to four NetBIOS name servers.</li> <li><code>netbios-node-type</code>
-            - The NetBIOS node type (1, 2, 4, or 8). We recommend that you specify 2 (broadcast
-            and multicast are not currently supported). For more information about these node
-            types, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC 2132</a>. </li> </ul>
-            
+             <ul> <li>
+            <para>
+            <code>domain-name-servers</code> - The IP addresses of up to four domain name servers,
+            or AmazonProvidedDNS. The default DHCP option set specifies AmazonProvidedDNS. If
+            specifying more than one domain name server, specify the IP addresses in a single
+            parameter, separated by commas.
+            </para>
+            </li> <li>
+            <para>
+            <code>domain-name</code> - If you're using AmazonProvidedDNS in "us-east-1", specify
+            "ec2.internal". If you're using AmazonProvidedDNS in another region, specify "region.compute.internal"
+            (for example, "ap-northeast-1.compute.internal"). Otherwise, specify a domain name
+            (for example, "MyCompany.com"). <b>Important</b>: Some Linux operating systems accept
+            multiple domain names separated by spaces. However, Windows and other Linux operating
+            systems treat the value as a single domain, which results in unexpected behavior.
+            If your DHCP options set is associated with a VPC that has instances with multiple
+            operating systems, specify only one domain name.
+            </para>
+            </li> <li>
+            <para>
+            <code>ntp-servers</code> - The IP addresses of up to four Network Time Protocol (NTP)
+            servers.
+            </para>
+            </li> <li>
+            <para>
+            <code>netbios-name-servers</code> - The IP addresses of up to four NetBIOS name servers.
+            </para>
+            </li> <li>
+            <para>
+            <code>netbios-node-type</code> - The NetBIOS node type (1, 2, 4, or 8). We recommend
+            that you specify 2 (broadcast and multicast are not currently supported). For more
+            information about these node types, see <a href="http://www.ietf.org/rfc/rfc2132.txt">RFC
+            2132</a>.
+            </para>
+            </li> </ul> 
             <para>
             Your VPC automatically starts out with a set of DHCP options that includes only a
             DNS server that we provide (AmazonProvidedDNS). If you create a set of options, and
@@ -51016,6 +51531,12 @@
             about DHCP options, see <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html">DHCP
             Options Sets</a> in the <i>Amazon Virtual Private Cloud User Guide</i>.
             </para>
+             
+            <para>
+            You can specify the instance tenancy value for the VPC when you create it. You can't
+            change this value for the VPC after you create it. For more information, see <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/dedicated-instance.html.html">Dedicated
+            Instances</a> in the <i>Amazon Virtual Private Cloud User Guide</i>.
+            </para>
             </summary>
             <param name="request">Container for the necessary parameters to execute the CreateVpc service method.</param>
             
@@ -51113,6 +51634,11 @@
             If you decide to shut down your VPN connection for any reason and later create a new
             VPN connection, you must reconfigure your customer gateway with the new information
             returned from this call.
+            </para>
+             
+            <para>
+            This is an idempotent operation. If you perform the operation more than once, Amazon
+            EC2 doesn't return an error.
             </para>
              
             <para>
@@ -52370,8 +52896,8 @@
             
              
             <para>
-            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>.
-            
+            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>
+            | <code>snapshot</code> | <code>volume</code>. 
             </para>
              
             <para>
@@ -52624,7 +53150,8 @@
         </member>
         <member name="M:Amazon.EC2.IAmazonEC2.DescribeInstanceStatus">
             <summary>
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -52658,7 +53185,8 @@
         </member>
         <member name="M:Amazon.EC2.IAmazonEC2.DescribeInstanceStatus(Amazon.EC2.Model.DescribeInstanceStatusRequest)">
             <summary>
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -52693,7 +53221,8 @@
         </member>
         <member name="M:Amazon.EC2.IAmazonEC2.DescribeInstanceStatusAsync(System.Threading.CancellationToken)">
             <summary>
-            Describes the status of one or more instances.
+            Describes the status of one or more instances. By default, only running instances
+            are described, unless specified otherwise.
             
              
             <para>
@@ -53634,12 +54163,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -53695,12 +54235,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -53757,12 +54308,23 @@
             <para>
             The create volume permissions fall into the following categories:
             </para>
-             <ul> <li><i>public</i>: The owner of the snapshot granted create volume permissions
-            for the snapshot to the <code>all</code> group. All AWS accounts have create volume
-            permissions for these snapshots.</li> <li><i>explicit</i>: The owner of the snapshot
-            granted create volume permissions to a specific AWS account.</li> <li><i>implicit</i>:
-            An AWS account has implicit create volume permissions for all snapshots it owns.</li>
-            </ul> 
+             <ul> <li> 
+            <para>
+            <i>public</i>: The owner of the snapshot granted create volume permissions for the
+            snapshot to the <code>all</code> group. All AWS accounts have create volume permissions
+            for these snapshots.
+            </para>
+             </li> <li> 
+            <para>
+            <i>explicit</i>: The owner of the snapshot granted create volume permissions to a
+            specific AWS account.
+            </para>
+             </li> <li> 
+            <para>
+            <i>implicit</i>: An AWS account has implicit create volume permissions for all snapshots
+            it owns.
+            </para>
+             </li> </ul> 
             <para>
             The list of snapshots returned can be modified by specifying snapshot IDs, snapshot
             owners, or AWS accounts with create volume permissions. If no options are specified,
@@ -55319,7 +55881,8 @@
             <summary>
             Modifies the ID format for the specified resource on a per-region basis. You can specify
             that resources should receive longer IDs (17-character IDs) when they are created.
-            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>.
+            The following resource types support longer IDs: <code>instance</code> | <code>reservation</code>
+            | <code>snapshot</code> | <code>volume</code>.
             
              
             <para>
@@ -55669,6 +56232,46 @@
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
         </member>
+        <member name="M:Amazon.EC2.IAmazonEC2.ModifyVpcPeeringConnectionOptions(Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest)">
+            <summary>
+            Modifies the VPC peering connection options on one side of a VPC peering connection.
+            You can do the following:
+            
+             <ul> <li>
+            <para>
+            Enable/disable communication over the peering connection between an EC2-Classic instance
+            that's linked to your VPC (using ClassicLink) and instances in the peer VPC. 
+            </para>
+            </li> <li>
+            <para>
+            Enable/disable communication over the peering connection between instances in your
+            VPC and an EC2-Classic instance that's linked to the peer VPC.
+            </para>
+            </li> </ul> 
+            <para>
+            If the peered VPCs are in different accounts, each owner must initiate a separate
+            request to enable or disable communication in either direction, depending on whether
+            their VPC was the requester or accepter for the VPC peering connection. If the peered
+            VPCs are in the same account, you can modify the requester and accepter options in
+            the same request. To confirm which VPC is the accepter and requester for a VPC peering
+            connection, use the <a>DescribeVpcPeeringConnections</a> command.
+            </para>
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the ModifyVpcPeeringConnectionOptions service method.</param>
+            
+            <returns>The response from the ModifyVpcPeeringConnectionOptions service method, as returned by EC2.</returns>
+        </member>
+        <member name="M:Amazon.EC2.IAmazonEC2.ModifyVpcPeeringConnectionOptionsAsync(Amazon.EC2.Model.ModifyVpcPeeringConnectionOptionsRequest,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the ModifyVpcPeeringConnectionOptions operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the ModifyVpcPeeringConnectionOptions operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
         <member name="M:Amazon.EC2.IAmazonEC2.MonitorInstances(Amazon.EC2.Model.MonitorInstancesRequest)">
             <summary>
             Enables monitoring for a running instance. For more information about monitoring instances,
@@ -55697,9 +56300,9 @@
             it must not be associated with an instance. After the Elastic IP address is moved,
             it is no longer available for use in the EC2-Classic platform, unless you move it
             back using the <a>RestoreAddressToClassic</a> request. You cannot move an Elastic
-            IP address that's allocated for use in the EC2-VPC platform to the EC2-Classic platform.
-            You cannot migrate an Elastic IP address that's associated with a reverse DNS record.
-            Contact AWS account and billing support to remove the reverse DNS record.
+            IP address that was originally allocated for use in the EC2-VPC platform to the EC2-Classic
+            platform. You cannot migrate an Elastic IP address that's associated with a reverse
+            DNS record. Contact AWS account and billing support to remove the reverse DNS record.
             </summary>
             <param name="request">Container for the necessary parameters to execute the MoveAddressToVpc service method.</param>
             
@@ -55758,7 +56361,14 @@
             <para>
             Scheduled Instances enable you to purchase Amazon EC2 compute capacity by the hour
             for a one-year term. Before you can purchase a Scheduled Instance, you must call <a>DescribeScheduledInstanceAvailability</a>
-            to check for available schedules and obtain a purchase token.
+            to check for available schedules and obtain a purchase token. After you purchase a
+            Scheduled Instance, you must call <a>RunScheduledInstances</a> during each scheduled
+            time period.
+            </para>
+             
+            <para>
+            After you purchase a Scheduled Instance, you can't cancel, modify, or resell your
+            purchase.
             </para>
             </summary>
             <param name="request">Container for the necessary parameters to execute the PurchaseScheduledInstances service method.</param>
@@ -55785,8 +56395,8 @@
             
              
             <para>
-            If a Linux/Unix instance does not cleanly shut down within four minutes, Amazon EC2
-            performs a hard reboot.
+            If an instance does not cleanly shut down within four minutes, Amazon EC2 performs
+            a hard reboot.
             </para>
              
             <para>
@@ -56445,7 +57055,8 @@
             You must launch a Scheduled Instance during its scheduled time period. You can't stop
             or reboot a Scheduled Instance, but you can terminate it as needed. If you terminate
             a Scheduled Instance before the current scheduled time period ends, you can launch
-            it again after a few minutes.
+            it again after a few minutes. For more information, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-scheduled-instances.html">Scheduled
+            Instances</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
             </summary>
             <param name="request">Container for the necessary parameters to execute the RunScheduledInstances service method.</param>
@@ -56510,41 +57121,33 @@
         </member>
         <member name="M:Amazon.EC2.IAmazonEC2.StopInstances(Amazon.EC2.Model.StopInstancesRequest)">
             <summary>
-            Stops an Amazon EBS-backed instance. Each time you transition an instance from stopped
-            to started, Amazon EC2 charges a full instance hour, even if transitions happen multiple
-            times within a single hour.
+            Stops an Amazon EBS-backed instance. 
             
              
             <para>
-            You can't start or stop Spot instances.
+            We don't charge hourly usage for a stopped instance, or data transfer fees; however,
+            your root partition Amazon EBS volume remains, continues to persist your data, and
+            you are charged for Amazon EBS volume usage. Each time you transition an instance
+            from stopped to started, Amazon EC2 charges a full instance hour, even if transitions
+            happen multiple times within a single hour.
             </para>
              
             <para>
-            Instances that use Amazon EBS volumes as their root devices can be quickly stopped
-            and started. When an instance is stopped, the compute resources are released and you
-            are not billed for hourly instance usage. However, your root partition Amazon EBS
-            volume remains, continues to persist your data, and you are charged for Amazon EBS
-            volume usage. You can restart your instance at any time.
+            You can't start or stop Spot instances, and you can't stop instance store-backed instances.
             </para>
              
             <para>
+            When you stop an instance, we shut it down. You can restart your instance at any time.
             Before stopping an instance, make sure it is in a state from which it can be restarted.
             Stopping an instance does not preserve data stored in RAM.
             </para>
              
             <para>
-            Performing this operation on an instance that uses an instance store as its root device
-            returns an error.
-            </para>
-             
-            <para>
-            You can stop, start, and terminate EBS-backed instances. You can only terminate instance
-            store-backed instances. What happens to an instance differs if you stop it or terminate
-            it. For example, when you stop an instance, the root device and any other devices
-            attached to the instance persist. When you terminate an instance, the root device
-            and any other devices attached during the instance launch are automatically deleted.
-            For more information about the differences between stopping and terminating instances,
-            see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html">Instance
+            Stopping an instance is different to rebooting or terminating it. For example, when
+            you stop an instance, the root device and any other devices attached to the instance
+            persist. When you terminate an instance, the root device and any other devices attached
+            during the instance launch are automatically deleted. For more information about the
+            differences between rebooting, stopping, and terminating instances, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html">Instance
             Lifecycle</a> in the <i>Amazon Elastic Compute Cloud User Guide</i>.
             </para>
              

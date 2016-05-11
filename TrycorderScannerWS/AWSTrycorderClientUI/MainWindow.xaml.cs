@@ -64,7 +64,8 @@ namespace AWSTrycorderClientUI
 
 
             StartWCFService();
-
+            var teststate = host.State;
+            
             Trycorder.Initialize();
             BuildProfileMenuList();
             BuildRegionMenuList();
@@ -117,11 +118,14 @@ namespace AWSTrycorderClientUI
                     // Enable metadata exchange
                     ServiceMetadataBehavior smb = new ServiceMetadataBehavior() { HttpGetEnabled = false };
                     host.Description.Behaviors.Add(smb);
+                    
                     // Enable exeption details
                     ServiceDebugBehavior sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
                     sdb.IncludeExceptionDetailInFaults = true;
+                   
                     host.Open();
 
+                    
                 }
 
 

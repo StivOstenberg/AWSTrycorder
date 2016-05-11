@@ -4622,7 +4622,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.AddPermissionResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the AddPermission operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.AuthorizationErrorException">
@@ -4939,7 +4939,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.DeleteEndpointResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DeleteEndpoint operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.DeletePlatformApplicationRequest">
@@ -4960,7 +4960,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.DeletePlatformApplicationResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DeletePlatformApplication operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.DeleteTopicRequest">
@@ -4993,7 +4993,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.DeleteTopicResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DeleteTopic operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.Endpoint">
@@ -6003,7 +6003,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.RemovePermissionResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the RemovePermission operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetEndpointAttributesRequest">
@@ -6041,7 +6041,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetEndpointAttributesResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the SetEndpointAttributes operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetPlatformApplicationAttributesRequest">
@@ -6084,7 +6084,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetPlatformApplicationAttributesResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the SetPlatformApplicationAttributes operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetSubscriptionAttributesRequest">
@@ -6137,7 +6137,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetSubscriptionAttributesResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the SetSubscriptionAttributes operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetTopicAttributesRequest">
@@ -6190,7 +6190,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SetTopicAttributesResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the SetTopicAttributes operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.SubscribeRequest">
@@ -6466,7 +6466,7 @@
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.UnsubscribeResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the Unsubscribe operation.
             </summary>
         </member>
         <member name="T:Amazon.SimpleNotificationService.Model.Internal.MarshallTransformations.AddPermissionRequestMarshaller">

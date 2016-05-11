@@ -73,3 +73,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderCl
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Debug\AWSTrycorder.csproj.GenerateResource.Cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Debug\AWSTrycorder.exe
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Debug\AWSTrycorder.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSSDK.Core.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSSDK.Core.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSSDK.Core.xml
