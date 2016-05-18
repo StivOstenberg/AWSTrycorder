@@ -64,3 +64,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Debug\ScannerTestUI.csproj.GenerateResource.Cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Debug\ScannerTestUI.exe
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Debug\ScannerTestUI.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Core.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Core.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Core.xml

@@ -494,7 +494,7 @@
         </member>
         <member name="M:Amazon.S3.AmazonS3Client.DeleteBucketReplication(Amazon.S3.Model.DeleteBucketReplicationRequest)">
             <summary>
-            Deletes the replication configuration from the bucket.
+            Deletes the replication configuration for the given Amazon S3 bucket.
             </summary>
             <param name="request">Container for the necessary parameters to execute the DeleteBucketReplication service method.</param>
             
@@ -789,44 +789,6 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the GetACL operation.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            <returns>The task object representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfiguration(System.String)">
-            <summary>
-            Returns the accelerate configuration of a bucket.
-            </summary>
-            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
-            
-            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfiguration(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest)">
-            <summary>
-            Returns the accelerate configuration of a bucket.
-            </summary>
-            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration service method.</param>
-            
-            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfigurationAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Returns the accelerate configuration of a bucket.
-            </summary>
-            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            
-            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfigurationAsync(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
-            <summary>
-            Initiates the asynchronous execution of the GetBucketAccelerateConfiguration operation.
-            </summary>
-            
-            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -1634,28 +1596,6 @@
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
         </member>
-        <member name="M:Amazon.S3.AmazonS3Client.ListObjectsV2(Amazon.S3.Model.ListObjectsV2Request)">
-            <summary>
-            Returns some or all (up to 1000) of the objects in a bucket. You can use the request
-            parameters as selection criteria to return a subset of the objects in a bucket. Note:
-            ListObjectsV2 is the revised List Objects API and we recommend you use this revised
-            API for new application development.
-            </summary>
-            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 service method.</param>
-            
-            <returns>The response from the ListObjectsV2 service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.ListObjectsV2Async(Amazon.S3.Model.ListObjectsV2Request,System.Threading.CancellationToken)">
-            <summary>
-            Initiates the asynchronous execution of the ListObjectsV2 operation.
-            </summary>
-            
-            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 operation.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            <returns>The task object representing the asynchronous operation.</returns>
-        </member>
         <member name="M:Amazon.S3.AmazonS3Client.ListParts(System.String,System.String,System.String)">
             <summary>
             Lists the parts that have been uploaded for a specific multipart upload.
@@ -1809,25 +1749,6 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the PutBucket operation.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            <returns>The task object representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.PutBucketAccelerateConfiguration(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest)">
-            <summary>
-            Sets the accelerate configuration of an existing bucket.
-            </summary>
-            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration service method.</param>
-            
-            <returns>The response from the PutBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.PutBucketAccelerateConfigurationAsync(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
-            <summary>
-            Initiates the asynchronous execution of the PutBucketAccelerateConfiguration operation.
-            </summary>
-            
-            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -2362,23 +2283,6 @@
             When true, requests will always use path style addressing.
             </summary>
         </member>
-        <member name="P:Amazon.S3.AmazonS3Config.UseAccelerateEndpoint">
-            <summary>
-            Enables S3 accelerate by sending requests to the accelerate endpoint instead of the regular region endpoint. 
-            To use this feature, the bucket name should be DNS compliant names and should not contain periods (.). 
-            The following APIs are not supported and are sent to the regular region endpoint, even if this option is enabled:
-            <ol> 
-            <li>PutBucket</li>
-            <li>ListBuckets</li>
-            <li>DeleteBucket</li>
-            </ol>
-            </summary>
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Config.Validate">
-            <summary>
-            Validate that the config object is properly configured.
-            </summary>
-        </member>
         <member name="M:Amazon.S3.AmazonS3Config.Initialize">
             <summary>
             This method contains custom initializations for the config object.
@@ -2461,27 +2365,9 @@
             <param name="statusCode"></param>
             <param name="amazonId2"></param>
         </member>
-        <member name="M:Amazon.S3.AmazonS3Exception.#ctor(System.String,System.Exception,Amazon.Runtime.ErrorType,System.String,System.String,System.Net.HttpStatusCode,System.String,System.String)">
-            <summary>
-            Construct an instance of AmazonS3Exception
-            </summary>
-            <param name="message"></param>
-            <param name="innerException"></param>
-            <param name="errorType"></param>
-            <param name="errorCode"></param>
-            <param name="requestId"></param>
-            <param name="statusCode"></param>
-            <param name="amazonId2"></param>
-            <param name="amazonCfId"></param>
-        </member>
         <member name="P:Amazon.S3.AmazonS3Exception.AmazonId2">
             <summary>
             A special token that helps AWS troubleshoot problems.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.AmazonS3Exception.AmazonCloudFrontId">
-            <summary>
-            A special token that helps AWS troubleshoot S3 accelerate problems.
             </summary>
         </member>
         <member name="P:Amazon.S3.AmazonS3Exception.ResponseBody">
@@ -2493,41 +2379,6 @@
             <summary>
             Gets the exception message.
             </summary>
-        </member>
-        <member name="T:Amazon.S3.BucketAccelerateStatus">
-            <summary>
-            Represents the accelerate status for a bucket.
-            </summary>
-        </member>
-        <member name="F:Amazon.S3.BucketAccelerateStatus.Enabled">
-            <summary>
-            Bucket acceleration is enabled.
-            </summary>
-        </member>
-        <member name="F:Amazon.S3.BucketAccelerateStatus.Suspended">
-            <summary>
-            Bucket acceleration is suspended.
-            </summary>
-        </member>
-        <member name="M:Amazon.S3.BucketAccelerateStatus.#ctor(System.String)">
-            <summary>
-            Construct instance of BucketAccelerateStatus. It is not intended for this constructor to be called. Instead users should call the FindValue.
-            </summary>
-            <param name="value"></param>
-        </member>
-        <member name="M:Amazon.S3.BucketAccelerateStatus.FindValue(System.String)">
-            <summary>
-            Finds the constant for the unique value.
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.S3.BucketAccelerateStatus.op_Implicit(System.String)~Amazon.S3.BucketAccelerateStatus">
-            <summary>
-            Converts the string to an BucketAccelerateStatus
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
         </member>
         <member name="T:Amazon.S3.S3CannedACL">
             <summary>
@@ -3447,16 +3298,6 @@
             <summary>
             Returns information about the AbortMultipartUpload response metadata.
             The AbortMultipartUpload operation has a void result type.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.AccelerateConfiguration">
-            <summary>
-            Bucket accelerate configuration.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.AccelerateConfiguration.Status">
-            <summary>
-            The accelerate status of the bucket.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.ByteRange">
@@ -4856,26 +4697,6 @@
             Gets and sets the AccessControlList property.
             </summary>
         </member>
-        <member name="T:Amazon.S3.Model.GetBucketAccelerateConfigurationRequest">
-            <summary>
-            Container for the parameters to the GetBucketAccelerateConfiguration operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.GetBucketAccelerateConfigurationRequest.BucketName">
-            <summary>
-            The name of the bucket.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.GetBucketAccelerateConfigurationResponse">
-            <summary>
-            The response class for GetBucketAccelerateConfiguration operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.GetBucketAccelerateConfigurationResponse.Status">
-            <summary>
-            The accelerate status of the bucket.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.GetBucketLocationRequest">
             <summary>
             Container for the parameters to the GetBucketLocation operation.
@@ -6111,16 +5932,6 @@
             </summary>
             <returns>true if ServerSideEncryptionKeyManagementServiceKeyId property is set.</returns>
         </member>
-        <member name="P:Amazon.S3.Model.InitiateMultipartUploadResponse.AbortDate">
-            <summary>
-            Date when multipart upload will become eligible for abort operation by lifecycle.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.InitiateMultipartUploadResponse.AbortRuleId">
-            <summary>
-            Id of the lifecycle rule that makes a multipart upload eligible for abort operation.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.Initiator">
             <summary>
             <para>Identifies who initiated the multipart upload.</para>
@@ -6243,24 +6054,6 @@
             a different storage class.
             </summary>
         </member>
-        <member name="P:Amazon.S3.Model.LifecycleRule.AbortIncompleteMultipartUpload">
-            <summary>
-            Specifies the days since the initiation of an Incomplete Multipart Upload
-            that Lifecycle will wait before permanently removing all parts of the upload.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.LifecycleRuleAbortIncompleteMultipartUpload">
-            <summary>
-            Specifies the days since the initiation of an Incomplete Multipart Upload
-            that Lifecycle will wait before permanently removing all parts of the upload.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.LifecycleRuleAbortIncompleteMultipartUpload.DaysAfterInitiation">
-            <summary>
-            Indicates the number of days that must pass since initiation for Lifecycle
-            to abort an Incomplete Multipart Upload.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.LifecycleRuleExpiration">
             <summary>Expiration
             </summary>
@@ -6274,12 +6067,6 @@
         <member name="P:Amazon.S3.Model.LifecycleRuleExpiration.Days">
             <summary>
             Indicates the lifetime, in days, of the objects that are subject to the rule. The value must be a non-zero positive integer.
-             
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.LifecycleRuleExpiration.ExpiredObjectDeleteMarker">
-            <summary>
-            Indicates whether Amazon S3 will remove a delete marker with no noncurrent versions. If set to true, the delete marker will be expired; if set to false the policy takes no action. This cannot be specified with Days or Date in a Lifecycle Expiration Policy.
              
             </summary>
         </member>
@@ -6592,145 +6379,6 @@
             These rolled-up keys are not returned elsewhere in the response.
             </remarks>
         </member>
-        <member name="T:Amazon.S3.Model.ListObjectsV2Request">
-            <summary>
-            Container for the parameters to the ListObjects operation.
-            <para>Returns some or all (up to 1000) of the objects in a bucket. You can use the request parameters as selection criteria to return a
-            subset of the objects in a bucket.</para>
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.BucketName">
-            <summary>
-            The name of the bucket to list.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.Delimiter">
-            <summary>
-            A delimiter is a character you use to group keys.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.MaxKeys">
-            <summary>
-            Sets the maximum number of keys returned in the response. The response might contain fewer keys but will never contain more.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.Prefix">
-            <summary>
-            Limits the response to keys that begin with the specified prefix.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.Encoding">
-            <summary>
-            Requests Amazon S3 to encode the object keys in the response and specifies
-            the encoding method to use. An object key may contain any Unicode character;
-            however, XML 1.0 parser cannot parse some characters, such as characters
-            with an ASCII value from 0 to 10. For characters that are not supported in
-            XML 1.0, you can add this parameter to request that Amazon S3 encode the
-            keys in the response.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.StartAfter">
-            <summary>
-            StartAfter is where you want Amazon S3 to start listing from. Amazon S3 starts
-            listing after this specified key. StartAfter can be any key in the bucket.
-            Cannot be set at the same time as ContinuationToken.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.ContinuationToken">
-            <summary>
-            ContinuationToken indicates Amazon S3 that the list is being continued on this
-            bucket with a token. ContinuationToken is obfuscated and is not a real key.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Request.FetchOwner">
-            <summary>
-            The owner field is not present in ListObjectsV2 responses by default.
-            If you want to return owner field with each key in the result then set this field to true.
-            If not specified, the Owner field on S3Object will be null.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.ListObjectsV2Response">
-            <summary>
-            Returns information about the  ListObjects response and response metadata.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.IsTruncated">
-            <summary>
-            A flag that indicates whether or not Amazon S3 returned all of the results that satisfied 
-            the search criteria.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.S3Objects">
-            <summary>
-            Gets and sets the S3Objects property. Metadata about each object returned.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Name">
-            <summary>
-            Gets and sets the Name property. The name of the bucket that was listed.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Prefix">
-            <summary>
-            Gets and sets the Prefix property.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.MaxKeys">
-            <summary>
-            Gets and sets the MaxKeys property. This is max number of object keys returned by the list operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.CommonPrefixes">
-            <summary>
-            Gets and sets the CommonPrefixes property.
-            CommonPrefixes contains all (if there are any) keys between Prefix and the next occurrence 
-            of the string specified by delimiter
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Delimiter">
-            <summary>
-            Gets and sets the Delimiter property.
-            Causes keys that contain the same string between the prefix and the 
-            first occurrence of the delimiter to be rolled up into a single result 
-            element in the CommonPrefixes collection.
-            </summary>
-            <remarks>
-            These rolled-up keys are not returned elsewhere in the response.
-            </remarks>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Encoding">
-            <summary>
-            Encoding type used by Amazon S3 to encode object keys in the response.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.KeyCount">
-            <summary>
-            KeyCount is the number of keys returned with this request.
-            KeyCount will always be less than or equal to MaxKeys field.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.ContinuationToken">
-            <summary>
-            ContinuationToken indicates Amazon S3 that the list is being continued
-            on this bucket with a token.
-            ContinuationToken is obfuscated and is not a real key
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.NextContinuationToken">
-            <summary>
-            NextContinuationToken is sent when isTruncated is true which means there
-            are more keys in the bucket that can be listed. The next ListObjectV2 call
-            to Amazon S3 can be continued with this NextContinuationToken.
-            NextContinuationToken is obfuscated and is not a real key.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListObjectsV2Response.StartAfter">
-            <summary>
-            StartAfter is where you want Amazon S3 to start listing from.
-            Amazon S3 starts listing after this specified key.
-            StartAfter can be any key in the bucket.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.ListPartsRequest">
             <summary>
             Container for the parameters to the ListParts operation.
@@ -6847,16 +6495,6 @@
             <summary>
             The class of storage used to store the object.
              
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListPartsResponse.AbortDate">
-            <summary>
-            Date when multipart upload will become eligible for abort operation by lifecycle.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListPartsResponse.AbortRuleId">
-            <summary>
-            Id of the lifecycle rule that makes a multipart upload eligible for abort operation.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.ListVersionsRequest">
@@ -7213,27 +6851,6 @@
             <summary>
             Returns information about the PutObjectAcl response metadata.
             The PutAcl operation has a void result type.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.PutBucketAccelerateConfigurationResponse">
-            <summary>
-            The response for the PutBucketAccelerateConfiguration operation.
-            <para>Adds an object to a bucket.</para>
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.PutBucketAccelerateConfigurationRequest">
-            <summary> 
-            Container for the parameters to the PutBucketAccelerateConfiguration request.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.PutBucketAccelerateConfigurationRequest.BucketName">
-            <summary>
-            The name of the bucket to contain the object.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.PutBucketAccelerateConfigurationRequest.AccelerateConfiguration">
-            <summary>
-            Accelerate configuration for the bucket.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.PutBucketLoggingRequest">
@@ -8496,17 +8113,6 @@
             <param name="requestId"></param>
             <param name="amazonId2"></param>
         </member>
-        <member name="M:Amazon.S3.Model.StreamSizeMismatchException.#ctor(System.String,System.Int64,System.Int64,System.String,System.String,System.String)">
-            <summary>
-            Construct an instance of StreamSizeMismatchException.
-            </summary>
-            <param name="message"></param>
-            <param name="expectedSize"></param>
-            <param name="actualSize"></param>
-            <param name="requestId"></param>
-            <param name="amazonId2"></param>
-            <param name="amazonCfId"></param>
-        </member>
         <member name="M:Amazon.S3.Model.StreamSizeMismatchException.#ctor(System.String,System.Exception,System.Int64,System.Int64,System.String,System.String)">
             <summary>
             Construct an instance of StreamSizeMismatchException.
@@ -8871,11 +8477,6 @@
             The list of routing rules that can be used for configuring redirects if certain conditions are meet.
             </summary>
         </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.AbortIncompleteMultipartUploadUnmarshaller">
-            <summary>
-              AbortIncompleteMultipartUpload Unmarshaller
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.AbortMultipartUploadRequestMarshaller">
             <summary>
             Abort Multipart Upload Request Marshaller
@@ -9047,16 +8648,6 @@
             </summary>       
         </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.GetACLResponseUnmarshaller">
-            <summary>
-               Response Unmarshaller for GetACL operation
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.GetBucketAccelerateConfigurationRequestMarshaller">
-            <summary>
-            Get Object Accelerate Configuration Request Marshaller
-            </summary>       
-        </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.GetBucketAccelerateConfigurationResponseUnmarshaller">
             <summary>
                Response Unmarshaller for GetACL operation
             </summary>
@@ -9266,16 +8857,6 @@
                Response Unmarshaller for ListObjects operation
             </summary>
         </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.ListObjectsV2RequestMarshaller">
-            <summary>
-            List Objects Request Marshaller
-            </summary>       
-        </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.ListObjectsV2ResponseUnmarshaller">
-            <summary>
-               Response Unmarshaller for ListObjects operation
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.ListPartsRequestMarshaller">
             <summary>
             List Parts Request Marshaller
@@ -9324,16 +8905,6 @@
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutACLResponseUnmarshaller">
             <summary>
                Response Unmarshaller for PutObjectAcl operation
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutBucketAccelerateConfigurationRequestMarshaller">
-            <summary>
-            Put Object Acl Request Marshaller
-            </summary>       
-        </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutBucketAccelerateConfigurationResponseUnmarshaller">
-            <summary>
-               Response Unmarshaller for PutBucketAccelerate operation
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutBucketLoggingRequestMarshaller">
@@ -10556,11 +10127,6 @@
             Gets and sets the HostId property.
             </summary>
         </member>
-        <member name="P:Amazon.S3.Util.S3PostUploadResponse.AmzCfId">
-            <summary>
-            Gets and sets the CloudFront request ID.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Util.S3PostUploadSignedPolicy">
             <summary>
             Utility class for managing and exchanging HTTP POST uploads of objects to Amazon S3.
@@ -10581,15 +10147,6 @@
             <param name="credentials">Credentials to sign the policy with</param>
             <returns>A signed policy object for use with an S3PostUploadRequest.</returns>
         </member>
-        <member name="M:Amazon.S3.Util.S3PostUploadSignedPolicy.GetSignedPolicyV4(System.String,Amazon.Runtime.AWSCredentials,Amazon.RegionEndpoint)">
-            <summary>
-             Given a policy and AWS credentials, produce a S3PostUploadSignedPolicy.
-            </summary>
-            <param name="policy">JSON string representing the policy to sign</param>
-            <param name="credentials">Credentials to sign the policy with</param>
-            <param name="region">Service region endpoint.</param>
-            <returns>A signed policy object for use with an S3PostUploadRequest.</returns>
-        </member>
         <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Policy">
             <summary>
             The policy document which governs what uploads can be done.
@@ -10608,29 +10165,6 @@
         <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.SecurityToken">
             <summary>
             The security token from session or instance credentials.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.SignatureVersion">
-            <summary>
-            The signature version usedd. Either "2" or "4".
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Algorithm">
-            <summary>
-            The signing algorithm used. Required as a field in the post Amazon
-            S3 can re-calculate the signature.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Date">
-            <summary>
-            The date value in ISO8601 format. It is the same date used in
-            creating the signing key.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Credential">
-            <summary>
-            In addition to the access key ID, this provides scope information
-            used in calculating the signing key for signature calculation. 
             </summary>
         </member>
         <member name="M:Amazon.S3.Util.S3PostUploadSignedPolicy.GetReadablePolicy">
@@ -11001,7 +10535,7 @@
         </member>
         <member name="M:Amazon.S3.IAmazonS3.DeleteBucketReplication(Amazon.S3.Model.DeleteBucketReplicationRequest)">
             <summary>
-            Deletes the replication configuration from the bucket.
+            Deletes the replication configuration for the given Amazon S3 bucket.
             </summary>
             <param name="request">Container for the necessary parameters to execute the DeleteBucketReplication service method.</param>
             
@@ -11296,44 +10830,6 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the GetACL operation.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            <returns>The task object representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfiguration(System.String)">
-            <summary>
-            Returns the accelerate configuration of a bucket.
-            </summary>
-            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
-            
-            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfiguration(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest)">
-            <summary>
-            Returns the accelerate configuration of a bucket.
-            </summary>
-            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration service method.</param>
-            
-            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfigurationAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Returns the accelerate configuration of a bucket.
-            </summary>
-            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            
-            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfigurationAsync(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
-            <summary>
-            Initiates the asynchronous execution of the GetBucketAccelerateConfiguration operation.
-            </summary>
-            
-            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -12121,28 +11617,6 @@
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
         </member>
-        <member name="M:Amazon.S3.IAmazonS3.ListObjectsV2(Amazon.S3.Model.ListObjectsV2Request)">
-            <summary>
-            Returns some or all (up to 1000) of the objects in a bucket. You can use the request
-            parameters as selection criteria to return a subset of the objects in a bucket. Note:
-            ListObjectsV2 is the revised List Objects API and we recommend you use this revised
-            API for new application development.
-            </summary>
-            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 service method.</param>
-            
-            <returns>The response from the ListObjectsV2 service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.ListObjectsV2Async(Amazon.S3.Model.ListObjectsV2Request,System.Threading.CancellationToken)">
-            <summary>
-            Initiates the asynchronous execution of the ListObjectsV2 operation.
-            </summary>
-            
-            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 operation.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            <returns>The task object representing the asynchronous operation.</returns>
-        </member>
         <member name="M:Amazon.S3.IAmazonS3.ListParts(System.String,System.String,System.String)">
             <summary>
             Lists the parts that have been uploaded for a specific multipart upload.
@@ -12296,25 +11770,6 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the PutBucket operation.</param>
-            <param name="cancellationToken">
-                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-            </param>
-            <returns>The task object representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.PutBucketAccelerateConfiguration(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest)">
-            <summary>
-            Sets the accelerate configuration of an existing bucket.
-            </summary>
-            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration service method.</param>
-            
-            <returns>The response from the PutBucketAccelerateConfiguration service method, as returned by S3.</returns>
-        </member>
-        <member name="M:Amazon.S3.IAmazonS3.PutBucketAccelerateConfigurationAsync(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
-            <summary>
-            Initiates the asynchronous execution of the PutBucketAccelerateConfiguration operation.
-            </summary>
-            
-            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>

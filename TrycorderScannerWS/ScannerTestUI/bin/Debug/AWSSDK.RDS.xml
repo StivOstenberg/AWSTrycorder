@@ -294,10 +294,6 @@
             <para>
             The pending maintenance action to apply to this resource.
             </para>
-             
-            <para>
-            Valid values: <code>system-update</code>, <code>db-upgrade</code>
-            </para>
             </summary>
         </member>
         <member name="P:Amazon.RDS.Model.ApplyPendingMaintenanceActionRequest.OptInType">
@@ -491,13 +487,9 @@
             for this API are one of CIDR range, EC2SecurityGroupId for VPC, or (EC2SecurityGroupOwnerId
             and either EC2SecurityGroupName or EC2SecurityGroupId for non-VPC). 
             
-             <note> 
-            <para>
-            You cannot authorize ingress from an EC2 security group in one region to an Amazon
-            RDS DB instance in another. You cannot authorize ingress from a VPC security group
-            in one VPC to an Amazon RDS DB instance in another. 
-            </para>
-             </note> 
+             <note> You cannot authorize ingress from an EC2 security group in one region to an
+            Amazon RDS DB instance in another. You cannot authorize ingress from a VPC security
+            group in one VPC to an Amazon RDS DB instance in another. </note> 
             <para>
             For an overview of CIDR ranges, go to the <a href="http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing">Wikipedia
             Tutorial</a>. 
@@ -836,7 +828,7 @@
         <member name="T:Amazon.RDS.Model.CopyDBSnapshotRequest">
             <summary>
             Container for the parameters to the CopyDBSnapshot operation.
-            Copies the specified DB snapshot. The source DB snapshot must be in the "available"
+            Copies the specified DBSnapshot. The source DB snapshot must be in the "available"
             state. 
             
              
@@ -1195,15 +1187,6 @@
             Gets and sets the property DBSubnetGroupName. 
             <para>
             A DB subnet group to associate with this DB cluster. 
-            </para>
-             
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
             </para>
             </summary>
         </member>
@@ -1573,15 +1556,7 @@
             region that are created from the same source DB instance must either: <ul><li>Specify
             DB subnet groups from the same VPC. All these Read Replicas will be created in the
             same VPC.</li><li>Not specify a DB subnet group. All these Read Replicas will be created
-            outside of any VPC.</li></ul></li> </ul> 
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
-            </para>
+            outside of any VPC.</li></ul></li> </ul>
             </summary>
         </member>
         <member name="P:Amazon.RDS.Model.CreateDBInstanceReadReplicaRequest.Iops">
@@ -2073,23 +2048,6 @@
             </para>
             </summary>
         </member>
-        <member name="P:Amazon.RDS.Model.CreateDBInstanceRequest.Domain">
-            <summary>
-            Gets and sets the property Domain. 
-            <para>
-             Specify the Active Directory Domain to create the instance in. 
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.CreateDBInstanceRequest.DomainIAMRoleName">
-            <summary>
-            Gets and sets the property DomainIAMRoleName. 
-            <para>
-             Specify the name of the IAM role to be used when making API calls to the Directory
-            Service. 
-            </para>
-            </summary>
-        </member>
         <member name="P:Amazon.RDS.Model.CreateDBInstanceRequest.Engine">
             <summary>
             Gets and sets the property Engine. 
@@ -2131,8 +2089,7 @@
             us-west-2):</b> <code> 5.5.40 | 5.5.40a</code></li> <li><b>Version 5.5 (Available
             in all regions):</b> <code> 5.5.40b | 5.5.41 | 5.5.42</code></li> <li><b>Version 5.6
             (Available in all regions):</b> <code> 5.6.19a | 5.6.19b | 5.6.21 | 5.6.21b | 5.6.22
-            | 5.6.23 | 5.6.27</code></li> <li><b>Version 5.7 (Available in all regions):</b> <code>
-            5.7.10</code></li> </ul> 
+            | 5.6.23</code></li> </ul> 
             <para>
             <b>MariaDB</b>
             </para>
@@ -2598,25 +2555,6 @@
             </para>
             </summary>
         </member>
-        <member name="P:Amazon.RDS.Model.CreateDBInstanceRequest.PromotionTier">
-            <summary>
-            Gets and sets the property PromotionTier. 
-            <para>
-            A value that specifies the order in which an Aurora Replica is promoted to the primary
-            instance after a failure of the existing primary instance. For more information, see
-            <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Managing.html#Aurora.Managing.FaultTolerance">
-            Fault Tolerance for an Aurora DB Cluster</a>. 
-            </para>
-             
-            <para>
-            Default: 1
-            </para>
-             
-            <para>
-            Valid Values: 0 - 15
-            </para>
-            </summary>
-        </member>
         <member name="P:Amazon.RDS.Model.CreateDBInstanceRequest.PubliclyAccessible">
             <summary>
             Gets and sets the property PubliclyAccessible. 
@@ -2961,7 +2899,7 @@
              
             <para>
             Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
+            or hyphens. Must not be default.
             </para>
              
             <para>
@@ -3485,17 +3423,6 @@
             <para>
             Value that is <code>true</code> if the cluster member is the primary instance for
             the DB cluster and <code>false</code> otherwise.
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.DBClusterMember.PromotionTier">
-            <summary>
-            Gets and sets the property PromotionTier. 
-            <para>
-            A value that specifies the order in which an Aurora Replica is promoted to the primary
-            instance after a failure of the existing primary instance. For more information, see
-            <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Managing.html#Aurora.Managing.FaultTolerance">
-            Fault Tolerance for an Aurora DB Cluster</a>. 
             </para>
             </summary>
         </member>
@@ -4209,14 +4136,6 @@
             </para>
             </summary>
         </member>
-        <member name="P:Amazon.RDS.Model.DBInstance.DomainMemberships">
-            <summary>
-            Gets and sets the property DomainMemberships. 
-            <para>
-            The Active Directory Domain membership records associated with the DB instance.
-            </para>
-            </summary>
-        </member>
         <member name="P:Amazon.RDS.Model.DBInstance.Endpoint">
             <summary>
             Gets and sets the property Endpoint. 
@@ -4358,17 +4277,6 @@
             <para>
              Specifies the weekly time range during which system maintenance can occur, in Universal
             Coordinated Time (UTC). 
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.DBInstance.PromotionTier">
-            <summary>
-            Gets and sets the property PromotionTier. 
-            <para>
-            A value that specifies the order in which an Aurora Replica is promoted to the primary
-            instance after a failure of the existing primary instance. For more information, see
-            <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Managing.html#Aurora.Managing.FaultTolerance">
-            Fault Tolerance for an Aurora DB Cluster</a>. 
             </para>
             </summary>
         </member>
@@ -5540,7 +5448,7 @@
             <summary>
             Gets and sets the property DBSubnetGroupName. 
             <para>
-             The name of the DB subnet group. 
+             Specifies the name of the DB subnet group. 
             </para>
             </summary>
         </member>
@@ -6290,15 +6198,9 @@
             <para>
              Constraints: 
             </para>
-             
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
-            </para>
+             <ul> <li>Must be 1 to 255 alphanumeric characters</li> <li>First character must be
+            a letter</li> <li>Cannot end with a hyphen or contain two consecutive hyphens</li>
+            </ul>
             </summary>
         </member>
         <member name="T:Amazon.RDS.Model.DeleteDBSubnetGroupResponse">
@@ -8807,93 +8709,6 @@
             </para>
             </summary>
         </member>
-        <member name="T:Amazon.RDS.Model.DomainMembership">
-            <summary>
-            An Active Directory Domain membership record associated with the DB instance.
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.DomainMembership.Domain">
-            <summary>
-            Gets and sets the property Domain. 
-            <para>
-             The identifier of the Active Directory Domain. 
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.DomainMembership.FQDN">
-            <summary>
-            Gets and sets the property FQDN. 
-            <para>
-             The fully qualified domain name of the Active Directory Domain. 
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.DomainMembership.IAMRoleName">
-            <summary>
-            Gets and sets the property IAMRoleName. 
-            <para>
-             The name of the IAM role to be used when making API calls to the Directory Service.
-            
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.DomainMembership.Status">
-            <summary>
-            Gets and sets the property Status. 
-            <para>
-             The status of the DB instance's Active Directory Domain membership, such as joined,
-            pending-join, failed etc). 
-            </para>
-            </summary>
-        </member>
-        <member name="T:Amazon.RDS.Model.DomainNotFoundException">
-            <summary>
-             RDS exception
-             </summary>
-        </member>
-        <member name="M:Amazon.RDS.Model.DomainNotFoundException.#ctor(System.String)">
-            <summary>
-            Constructs a new DomainNotFoundException with the specified error
-            message.
-            </summary>
-            <param name="message">
-            Describes the error encountered.
-            </param>
-        </member>
-        <member name="M:Amazon.RDS.Model.DomainNotFoundException.#ctor(System.String,System.Exception)">
-            <summary>
-            Construct instance of DomainNotFoundException
-            </summary>
-            <param name="message"></param>
-            <param name="innerException"></param>
-        </member>
-        <member name="M:Amazon.RDS.Model.DomainNotFoundException.#ctor(System.Exception)">
-            <summary>
-            Construct instance of DomainNotFoundException
-            </summary>
-            <param name="innerException"></param>
-        </member>
-        <member name="M:Amazon.RDS.Model.DomainNotFoundException.#ctor(System.String,System.Exception,Amazon.Runtime.ErrorType,System.String,System.String,System.Net.HttpStatusCode)">
-            <summary>
-            Construct instance of DomainNotFoundException
-            </summary>
-            <param name="message"></param>
-            <param name="innerException"></param>
-            <param name="errorType"></param>
-            <param name="errorCode"></param>
-            <param name="requestId"></param>
-            <param name="statusCode"></param>
-        </member>
-        <member name="M:Amazon.RDS.Model.DomainNotFoundException.#ctor(System.String,Amazon.Runtime.ErrorType,System.String,System.String,System.Net.HttpStatusCode)">
-            <summary>
-            Construct instance of DomainNotFoundException
-            </summary>
-            <param name="message"></param>
-            <param name="errorType"></param>
-            <param name="errorCode"></param>
-            <param name="requestId"></param>
-            <param name="statusCode"></param>
-        </member>
         <member name="T:Amazon.RDS.Model.DownloadDBLogFilePortionRequest">
             <summary>
             Container for the parameters to the DownloadDBLogFilePortion operation.
@@ -8947,8 +8762,7 @@
             be from the beginning or the end of the log file, depending on the value of the Marker
             parameter. <ul><li>
             <para>
-            If neither Marker or NumberOfLines are specified, the entire log file is returned
-            up to a maximum of 10000 lines, starting with the most recent log entries first.
+            If neither Marker or NumberOfLines are specified, the entire log file is returned.
             </para>
             </li><li>
             <para>
@@ -10473,17 +10287,12 @@
             <para>
             A value that specifies whether the modifications in this request and any pending modifications
             are asynchronously applied as soon as possible, regardless of the <code>PreferredMaintenanceWindow</code>
-            setting for the DB cluster. If this parameter is set to <code>false</code>, changes
-            to the DB cluster are applied during the next maintenance window.
+            setting for the DB cluster. 
             </para>
              
             <para>
-            The <code>ApplyImmediately</code> parameter only affects the <code>NewDBClusterIdentifier</code>
-            and <code>MasterUserPassword</code> values. If you set the <code>ApplyImmediately</code>
-            parameter value to false, then changes to the <code>NewDBClusterIdentifier</code>
-            and <code>MasterUserPassword</code> values are applied during the next maintenance
-            window. All other changes are applied immediately, regardless of the value of the
-            <code>ApplyImmediately</code> parameter.
+            If this parameter is set to <code>false</code>, changes to the DB cluster are applied
+            during the next maintenance window.
             </para>
              
             <para>
@@ -11020,10 +10829,6 @@
             </para>
              
             <para>
-            Type: Integer 
-            </para>
-             
-            <para>
              <b>Oracle</b> 
             </para>
              
@@ -11077,28 +10882,6 @@
              <ul> <li>Must be 1 to 255 alphanumeric characters</li> <li>First character must be
             a letter</li> <li>Cannot end with a hyphen or contain two consecutive hyphens</li>
             </ul>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.ModifyDBInstanceRequest.Domain">
-            <summary>
-            Gets and sets the property Domain. 
-            <para>
-             Specify the Active Directory Domain to move the instance to. 
-            </para>
-             
-            <para>
-            The specified Active Directory Domain must be created prior to this operation. Currently
-            only a SQL Server instance can be created in a Active Directory Domain.
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.ModifyDBInstanceRequest.DomainIAMRoleName">
-            <summary>
-            Gets and sets the property DomainIAMRoleName. 
-            <para>
-             Specify the name of the IAM role to be used when making API calls to the Directory
-            Service. 
-            </para>
             </summary>
         </member>
         <member name="P:Amazon.RDS.Model.ModifyDBInstanceRequest.EngineVersion">
@@ -11341,33 +11124,13 @@
             </para>
             </summary>
         </member>
-        <member name="P:Amazon.RDS.Model.ModifyDBInstanceRequest.PromotionTier">
-            <summary>
-            Gets and sets the property PromotionTier. 
-            <para>
-            A value that specifies the order in which an Aurora Replica is promoted to the primary
-            instance after a failure of the existing primary instance. For more information, see
-            <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Managing.html#Aurora.Managing.FaultTolerance">
-            Fault Tolerance for an Aurora DB Cluster</a>. 
-            </para>
-             
-            <para>
-            Default: 1
-            </para>
-             
-            <para>
-            Valid Values: 0 - 15
-            </para>
-            </summary>
-        </member>
         <member name="P:Amazon.RDS.Model.ModifyDBInstanceRequest.PubliclyAccessible">
             <summary>
             Gets and sets the property PubliclyAccessible. 
             <para>
-            Boolean value that indicates if the DB instance has a publicly resolvable DNS name.
-            Set to <code>True</code> to make the DB instance Internet-facing with a publicly resolvable
-            DNS name, which resolves to a public IP address. Set to <code>False</code> to make
-            the DB instance internal with a DNS name that resolves to a private IP address. 
+            True to make the DB instance Internet-facing with a publicly resolvable DNS name,
+            which resolves to a public IP address. False to make the DB instance internal with
+            a DNS name that resolves to a private IP address. 
             </para>
              
             <para>
@@ -11550,7 +11313,7 @@
             <para>
             To share a manual DB snapshot with other AWS accounts, specify <code>restore</code>
             as the <code>AttributeName</code> and use the <code>ValuesToAdd</code> parameter to
-            add a list of the AWS account ids that are authorized to restore the manual DB snapshot.
+            add a list of the AWS account ids that are authorized to retore the manual DB snapshot.
             Uses the value <code>all</code> to make the manual DB snapshot public and can by copied
             or restored by all AWS accounts. Do not add the <code>all</code> value for any manual
             DB snapshots that contain private information that you do not want to be available
@@ -11654,8 +11417,8 @@
             </para>
              
             <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
+            Constraints: Must contain no more than 255 alphanumeric characters or hyphens. Must
+            not be "Default".
             </para>
              
             <para>
@@ -13900,15 +13663,6 @@
             <para>
             The name of the DB subnet group to use for the new DB cluster. 
             </para>
-             
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
-            </para>
             </summary>
         </member>
         <member name="P:Amazon.RDS.Model.RestoreDBClusterFromSnapshotRequest.Engine">
@@ -14066,15 +13820,6 @@
             Gets and sets the property DBSubnetGroupName. 
             <para>
              The DB subnet group name to use for the new DB cluster. 
-            </para>
-             
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
             </para>
             </summary>
         </member>
@@ -14365,32 +14110,6 @@
             Gets and sets the property DBSubnetGroupName. 
             <para>
              The DB subnet group name to use for the new instance. 
-            </para>
-             
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.RestoreDBInstanceFromDBSnapshotRequest.Domain">
-            <summary>
-            Gets and sets the property Domain. 
-            <para>
-             Specify the Active Directory Domain to restore the instance in. 
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.RestoreDBInstanceFromDBSnapshotRequest.DomainIAMRoleName">
-            <summary>
-            Gets and sets the property DomainIAMRoleName. 
-            <para>
-             Specify the name of the IAM role to be used when making API calls to the Directory
-            Service. 
             </para>
             </summary>
         </member>
@@ -14687,32 +14406,6 @@
             <para>
              The DB subnet group name to use for the new instance. 
             </para>
-             
-            <para>
-            Constraints: Must contain no more than 255 alphanumeric characters, periods, underscores,
-            spaces, or hyphens. Must not be default.
-            </para>
-             
-            <para>
-            Example: <code>mySubnetgroup</code>
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.RestoreDBInstanceToPointInTimeRequest.Domain">
-            <summary>
-            Gets and sets the property Domain. 
-            <para>
-             Specify the Active Directory Domain to restore the instance in. 
-            </para>
-            </summary>
-        </member>
-        <member name="P:Amazon.RDS.Model.RestoreDBInstanceToPointInTimeRequest.DomainIAMRoleName">
-            <summary>
-            Gets and sets the property DomainIAMRoleName. 
-            <para>
-             Specify the name of the IAM role to be used when making API calls to the Directory
-            Service. 
-            </para>
             </summary>
         </member>
         <member name="P:Amazon.RDS.Model.RestoreDBInstanceToPointInTimeRequest.Engine">
@@ -14733,7 +14426,7 @@
             <para>
              Valid Values: <code>MySQL</code> | <code>mariadb</code> | <code>oracle-se1</code>
             | <code>oracle-se</code> | <code>oracle-ee</code> | <code>sqlserver-ee</code> | <code>sqlserver-se</code>
-            | <code>sqlserver-ex</code> | <code>sqlserver-web</code> | <code>postgres</code> |
+            | <code>sqlserver-ex</code> | <code>sqlserver-web</code> | <code>postgres</code>|
             <code>aurora</code>
             </para>
             </summary>
@@ -18722,30 +18415,6 @@
             Gets the singleton.
             </summary>  
         </member>
-        <member name="T:Amazon.RDS.Model.Internal.MarshallTransformations.DomainMembershipUnmarshaller">
-            <summary>
-            Response Unmarshaller for DomainMembership Object
-            </summary>  
-        </member>
-        <member name="M:Amazon.RDS.Model.Internal.MarshallTransformations.DomainMembershipUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext)">
-            <summary>
-            Unmarshaller the response from the service to the response class.
-            </summary>  
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.RDS.Model.Internal.MarshallTransformations.DomainMembershipUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext)">
-            <summary>
-            Unmarshaller error response to exception.
-            </summary>  
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="P:Amazon.RDS.Model.Internal.MarshallTransformations.DomainMembershipUnmarshaller.Instance">
-            <summary>
-            Gets the singleton.
-            </summary>  
-        </member>
         <member name="T:Amazon.RDS.Model.Internal.MarshallTransformations.DownloadDBLogFilePortionRequestMarshaller">
             <summary>
             DownloadDBLogFilePortion Request Marshaller
@@ -20401,63 +20070,25 @@
               
              <para>
               Amazon RDS gives you access to the capabilities of a MySQL, MariaDB, PostgreSQL,
-             Microsoft SQL Server, Oracle, or Amazon Aurora database server. These capabilities
-             mean that the code, applications, and tools you already use today with your existing
-             databases work with Amazon RDS without modification. Amazon RDS automatically backs
-             up your database and maintains the database software that powers your DB instance.
-             Amazon RDS is flexible: you can scale your database instance's compute resources and
-             storage capacity to meet your application's demand. As with all Amazon Web Services,
-             there are no up-front investments, and you pay only for the resources you use. 
+             Microsoft SQL Server, Oracle, or Aurora database server. This means the code, applications,
+             and tools you already use today with your existing databases work with Amazon RDS
+             without modification. Amazon RDS automatically backs up your database and maintains
+             the database software that powers your DB instance. Amazon RDS is flexible: you can
+             scale your database instance's compute resources and storage capacity to meet your
+             application's demand. As with all Amazon Web Services, there are no up-front investments,
+             and you pay only for the resources you use. 
              </para>
               
              <para>
-              This interface reference for Amazon RDS contains documentation for a programming
+              This is an interface reference for Amazon RDS. It contains documentation for a programming
              or command line interface you can use to manage Amazon RDS. Note that Amazon RDS is
              asynchronous, which means that some interfaces might require techniques such as polling
              or callback functions to determine when a command has been applied. In this reference,
              the parameter descriptions indicate whether a command is applied immediately, on the
-             next instance reboot, or during the maintenance window. The reference structure is
-             as follows, and we list following some related topics from the user guide. 
+             next instance reboot, or during the maintenance window. For a summary of the Amazon
+             RDS interfaces, go to <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html#Welcome.Interfaces">Available
+             RDS Interfaces</a>. 
              </para>
-              
-             <para>
-             <b>Amazon RDS API Reference</b>
-             </para>
-              <ul> <li>
-             <para>
-             For the alphabetical list of API actions, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_Operations.html">API
-             Actions</a>.
-             </para>
-             </li> <li>
-             <para>
-             For the alphabetical list of data types, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_Types.html">Data
-             Types</a>.
-             </para>
-             </li> <li>
-             <para>
-             For a list of common query parameters, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/CommonParameters.html">Common
-             Parameters</a>.
-             </para>
-             </li> <li>
-             <para>
-             For descriptions of the error codes, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/CommonErrors.html">Common
-             Errors</a>.
-             </para>
-             </li> </ul> 
-             <para>
-             <b>Amazon RDS User Guide</b>
-             </para>
-              <ul> <li>
-             <para>
-             For a summary of the Amazon RDS interfaces, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html#Welcome.Interfaces">Available
-             RDS Interfaces</a>.
-             </para>
-             </li> <li>
-             <para>
-             For more information about how to use the Query API, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Using_the_Query_API.html">Using
-             the Query API</a>.
-             </para>
-             </li> </ul>
              </summary>
         </member>
         <member name="M:Amazon.RDS.AmazonRDSClient.#ctor">
@@ -20684,13 +20315,9 @@
             for this API are one of CIDR range, EC2SecurityGroupId for VPC, or (EC2SecurityGroupOwnerId
             and either EC2SecurityGroupName or EC2SecurityGroupId for non-VPC). 
             
-             <note> 
-            <para>
-            You cannot authorize ingress from an EC2 security group in one region to an Amazon
-            RDS DB instance in another. You cannot authorize ingress from a VPC security group
-            in one VPC to an Amazon RDS DB instance in another. 
-            </para>
-             </note> 
+             <note> You cannot authorize ingress from an EC2 security group in one region to an
+            Amazon RDS DB instance in another. You cannot authorize ingress from a VPC security
+            group in one VPC to an Amazon RDS DB instance in another. </note> 
             <para>
             For an overview of CIDR ranges, go to the <a href="http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing">Wikipedia
             Tutorial</a>. 
@@ -20784,7 +20411,7 @@
         </member>
         <member name="M:Amazon.RDS.AmazonRDSClient.CopyDBSnapshot(Amazon.RDS.Model.CopyDBSnapshotRequest)">
             <summary>
-            Copies the specified DB snapshot. The source DB snapshot must be in the "available"
+            Copies the specified DBSnapshot. The source DB snapshot must be in the "available"
             state. 
             
              
@@ -20804,9 +20431,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBSnapshotStateException">
             The state of the DB snapshot does not allow deletion.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.KMSKeyNotAccessibleException">
-            Error accessing KMS key.
             </exception>
             <exception cref="T:Amazon.RDS.Model.SnapshotQuotaExceededException">
             Request would result in user exceeding the allowed number of DB snapshots.
@@ -20862,9 +20486,6 @@
             <returns>The response from the CreateDBCluster service method, as returned by RDS.</returns>
             <exception cref="T:Amazon.RDS.Model.DBClusterAlreadyExistsException">
             User already has a DB cluster with the given identifier.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.DBClusterNotFoundException">
-            <i>DBClusterIdentifier</i> does not refer to an existing DB cluster.
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBClusterParameterGroupNotFoundException">
             <i>DBClusterParameterGroupName</i> does not refer to an existing DB Cluster parameter
@@ -20990,9 +20611,6 @@
             <exception cref="T:Amazon.RDS.Model.DBClusterSnapshotAlreadyExistsException">
             User already has a DB cluster snapshot with the given identifier.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.InvalidDBClusterSnapshotStateException">
-            The supplied value is not a valid DB cluster snapshot state.
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBClusterStateException">
             The supplied value is not a valid DB cluster state.
             </exception>
@@ -21045,9 +20663,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBSubnetGroupNotFoundException">
             <i>DBSubnetGroupName</i> does not refer to an existing DB subnet group.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
             </exception>
             <exception cref="T:Amazon.RDS.Model.InstanceQuotaExceededException">
             Request would result in user exceeding the allowed number of DB instances.
@@ -21440,17 +21055,8 @@
             <exception cref="T:Amazon.RDS.Model.DBClusterNotFoundException">
             <i>DBClusterIdentifier</i> does not refer to an existing DB cluster.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.DBClusterSnapshotAlreadyExistsException">
-            User already has a DB cluster snapshot with the given identifier.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.InvalidDBClusterSnapshotStateException">
-            The supplied value is not a valid DB cluster snapshot state.
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBClusterStateException">
             The supplied value is not a valid DB cluster state.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.SnapshotQuotaExceededException">
-            Request would result in user exceeding the allowed number of DB snapshots.
             </exception>
         </member>
         <member name="M:Amazon.RDS.AmazonRDSClient.DeleteDBClusterAsync(Amazon.RDS.Model.DeleteDBClusterRequest,System.Threading.CancellationToken)">
@@ -21559,9 +21165,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBSnapshotAlreadyExistsException">
             <i>DBSnapshotIdentifier</i> is already used by an existing snapshot.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.InvalidDBClusterStateException">
-            The supplied value is not a valid DB cluster state.
             </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBInstanceStateException">
             The specified DB instance is not in the <i>available</i> state.
@@ -22964,9 +22567,6 @@
             <exception cref="T:Amazon.RDS.Model.DBUpgradeDependencyFailureException">
             The DB upgrade failed because a resource the DB depends on could not be modified.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InsufficientDBInstanceCapacityException">
             Specified DB instance class is not available in the specified Availability Zone.
             </exception>
@@ -23062,7 +22662,7 @@
             <para>
             To share a manual DB snapshot with other AWS accounts, specify <code>restore</code>
             as the <code>AttributeName</code> and use the <code>ValuesToAdd</code> parameter to
-            add a list of the AWS account ids that are authorized to restore the manual DB snapshot.
+            add a list of the AWS account ids that are authorized to retore the manual DB snapshot.
             Uses the value <code>all</code> to make the manual DB snapshot public and can by copied
             or restored by all AWS accounts. Do not add the <code>all</code> value for any manual
             DB snapshots that contain private information that you do not want to be available
@@ -23672,9 +23272,6 @@
             <exception cref="T:Amazon.RDS.Model.DBSubnetGroupNotFoundException">
             <i>DBSubnetGroupName</i> does not refer to an existing DB subnet group.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InstanceQuotaExceededException">
             Request would result in user exceeding the allowed number of DB instances.
             </exception>
@@ -23766,9 +23363,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBSubnetGroupNotFoundException">
             <i>DBSubnetGroupName</i> does not refer to an existing DB subnet group.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
             </exception>
             <exception cref="T:Amazon.RDS.Model.InstanceQuotaExceededException">
             Request would result in user exceeding the allowed number of DB instances.
@@ -23873,63 +23467,25 @@
               
              <para>
               Amazon RDS gives you access to the capabilities of a MySQL, MariaDB, PostgreSQL,
-             Microsoft SQL Server, Oracle, or Amazon Aurora database server. These capabilities
-             mean that the code, applications, and tools you already use today with your existing
-             databases work with Amazon RDS without modification. Amazon RDS automatically backs
-             up your database and maintains the database software that powers your DB instance.
-             Amazon RDS is flexible: you can scale your database instance's compute resources and
-             storage capacity to meet your application's demand. As with all Amazon Web Services,
-             there are no up-front investments, and you pay only for the resources you use. 
+             Microsoft SQL Server, Oracle, or Aurora database server. This means the code, applications,
+             and tools you already use today with your existing databases work with Amazon RDS
+             without modification. Amazon RDS automatically backs up your database and maintains
+             the database software that powers your DB instance. Amazon RDS is flexible: you can
+             scale your database instance's compute resources and storage capacity to meet your
+             application's demand. As with all Amazon Web Services, there are no up-front investments,
+             and you pay only for the resources you use. 
              </para>
               
              <para>
-              This interface reference for Amazon RDS contains documentation for a programming
+              This is an interface reference for Amazon RDS. It contains documentation for a programming
              or command line interface you can use to manage Amazon RDS. Note that Amazon RDS is
              asynchronous, which means that some interfaces might require techniques such as polling
              or callback functions to determine when a command has been applied. In this reference,
              the parameter descriptions indicate whether a command is applied immediately, on the
-             next instance reboot, or during the maintenance window. The reference structure is
-             as follows, and we list following some related topics from the user guide. 
+             next instance reboot, or during the maintenance window. For a summary of the Amazon
+             RDS interfaces, go to <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html#Welcome.Interfaces">Available
+             RDS Interfaces</a>. 
              </para>
-              
-             <para>
-             <b>Amazon RDS API Reference</b>
-             </para>
-              <ul> <li>
-             <para>
-             For the alphabetical list of API actions, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_Operations.html">API
-             Actions</a>.
-             </para>
-             </li> <li>
-             <para>
-             For the alphabetical list of data types, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_Types.html">Data
-             Types</a>.
-             </para>
-             </li> <li>
-             <para>
-             For a list of common query parameters, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/CommonParameters.html">Common
-             Parameters</a>.
-             </para>
-             </li> <li>
-             <para>
-             For descriptions of the error codes, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/APIReference/CommonErrors.html">Common
-             Errors</a>.
-             </para>
-             </li> </ul> 
-             <para>
-             <b>Amazon RDS User Guide</b>
-             </para>
-              <ul> <li>
-             <para>
-             For a summary of the Amazon RDS interfaces, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html#Welcome.Interfaces">Available
-             RDS Interfaces</a>.
-             </para>
-             </li> <li>
-             <para>
-             For more information about how to use the Query API, see <a href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Using_the_Query_API.html">Using
-             the Query API</a>.
-             </para>
-             </li> </ul>
              </summary>
         </member>
         <member name="M:Amazon.RDS.IAmazonRDS.AddSourceIdentifierToSubscription(Amazon.RDS.Model.AddSourceIdentifierToSubscriptionRequest)">
@@ -24021,13 +23577,9 @@
             for this API are one of CIDR range, EC2SecurityGroupId for VPC, or (EC2SecurityGroupOwnerId
             and either EC2SecurityGroupName or EC2SecurityGroupId for non-VPC). 
             
-             <note> 
-            <para>
-            You cannot authorize ingress from an EC2 security group in one region to an Amazon
-            RDS DB instance in another. You cannot authorize ingress from a VPC security group
-            in one VPC to an Amazon RDS DB instance in another. 
-            </para>
-             </note> 
+             <note> You cannot authorize ingress from an EC2 security group in one region to an
+            Amazon RDS DB instance in another. You cannot authorize ingress from a VPC security
+            group in one VPC to an Amazon RDS DB instance in another. </note> 
             <para>
             For an overview of CIDR ranges, go to the <a href="http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing">Wikipedia
             Tutorial</a>. 
@@ -24121,7 +23673,7 @@
         </member>
         <member name="M:Amazon.RDS.IAmazonRDS.CopyDBSnapshot(Amazon.RDS.Model.CopyDBSnapshotRequest)">
             <summary>
-            Copies the specified DB snapshot. The source DB snapshot must be in the "available"
+            Copies the specified DBSnapshot. The source DB snapshot must be in the "available"
             state. 
             
              
@@ -24141,9 +23693,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBSnapshotStateException">
             The state of the DB snapshot does not allow deletion.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.KMSKeyNotAccessibleException">
-            Error accessing KMS key.
             </exception>
             <exception cref="T:Amazon.RDS.Model.SnapshotQuotaExceededException">
             Request would result in user exceeding the allowed number of DB snapshots.
@@ -24199,9 +23748,6 @@
             <returns>The response from the CreateDBCluster service method, as returned by RDS.</returns>
             <exception cref="T:Amazon.RDS.Model.DBClusterAlreadyExistsException">
             User already has a DB cluster with the given identifier.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.DBClusterNotFoundException">
-            <i>DBClusterIdentifier</i> does not refer to an existing DB cluster.
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBClusterParameterGroupNotFoundException">
             <i>DBClusterParameterGroupName</i> does not refer to an existing DB Cluster parameter
@@ -24327,9 +23873,6 @@
             <exception cref="T:Amazon.RDS.Model.DBClusterSnapshotAlreadyExistsException">
             User already has a DB cluster snapshot with the given identifier.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.InvalidDBClusterSnapshotStateException">
-            The supplied value is not a valid DB cluster snapshot state.
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBClusterStateException">
             The supplied value is not a valid DB cluster state.
             </exception>
@@ -24382,9 +23925,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBSubnetGroupNotFoundException">
             <i>DBSubnetGroupName</i> does not refer to an existing DB subnet group.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
             </exception>
             <exception cref="T:Amazon.RDS.Model.InstanceQuotaExceededException">
             Request would result in user exceeding the allowed number of DB instances.
@@ -24777,17 +24317,8 @@
             <exception cref="T:Amazon.RDS.Model.DBClusterNotFoundException">
             <i>DBClusterIdentifier</i> does not refer to an existing DB cluster.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.DBClusterSnapshotAlreadyExistsException">
-            User already has a DB cluster snapshot with the given identifier.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.InvalidDBClusterSnapshotStateException">
-            The supplied value is not a valid DB cluster snapshot state.
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBClusterStateException">
             The supplied value is not a valid DB cluster state.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.SnapshotQuotaExceededException">
-            Request would result in user exceeding the allowed number of DB snapshots.
             </exception>
         </member>
         <member name="M:Amazon.RDS.IAmazonRDS.DeleteDBClusterAsync(Amazon.RDS.Model.DeleteDBClusterRequest,System.Threading.CancellationToken)">
@@ -24896,9 +24427,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBSnapshotAlreadyExistsException">
             <i>DBSnapshotIdentifier</i> is already used by an existing snapshot.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.InvalidDBClusterStateException">
-            The supplied value is not a valid DB cluster state.
             </exception>
             <exception cref="T:Amazon.RDS.Model.InvalidDBInstanceStateException">
             The specified DB instance is not in the <i>available</i> state.
@@ -26301,9 +25829,6 @@
             <exception cref="T:Amazon.RDS.Model.DBUpgradeDependencyFailureException">
             The DB upgrade failed because a resource the DB depends on could not be modified.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InsufficientDBInstanceCapacityException">
             Specified DB instance class is not available in the specified Availability Zone.
             </exception>
@@ -26399,7 +25924,7 @@
             <para>
             To share a manual DB snapshot with other AWS accounts, specify <code>restore</code>
             as the <code>AttributeName</code> and use the <code>ValuesToAdd</code> parameter to
-            add a list of the AWS account ids that are authorized to restore the manual DB snapshot.
+            add a list of the AWS account ids that are authorized to retore the manual DB snapshot.
             Uses the value <code>all</code> to make the manual DB snapshot public and can by copied
             or restored by all AWS accounts. Do not add the <code>all</code> value for any manual
             DB snapshots that contain private information that you do not want to be available
@@ -27009,9 +26534,6 @@
             <exception cref="T:Amazon.RDS.Model.DBSubnetGroupNotFoundException">
             <i>DBSubnetGroupName</i> does not refer to an existing DB subnet group.
             </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
-            </exception>
             <exception cref="T:Amazon.RDS.Model.InstanceQuotaExceededException">
             Request would result in user exceeding the allowed number of DB instances.
             </exception>
@@ -27103,9 +26625,6 @@
             </exception>
             <exception cref="T:Amazon.RDS.Model.DBSubnetGroupNotFoundException">
             <i>DBSubnetGroupName</i> does not refer to an existing DB subnet group.
-            </exception>
-            <exception cref="T:Amazon.RDS.Model.DomainNotFoundException">
-            
             </exception>
             <exception cref="T:Amazon.RDS.Model.InstanceQuotaExceededException">
             Request would result in user exceeding the allowed number of DB instances.

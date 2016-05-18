@@ -27,6 +27,8 @@
                     <MenuItem x:Name="ListSNSMenuItem" Header="ListSNS" HorizontalAlignment="Left" Width="144.8" Click="ListSNSMenuItem_Click"    />
                     <MenuItem x:Name="ListEBSMenuItem" Header="ListEBS" HorizontalAlignment="Left" Width="144.8" Click="ListEBSMenuItem_Click"  />
                     <MenuItem x:Name="S3SizesMenuItem" Header="ListS3Sizes" HorizontalAlignment="Left" Width="144.8" Click="S3SizesMenuItem_Click" />
+                    <MenuItem x:Name="CreateUserRequest" Header="CreateUser" HorizontalAlignment="Left" Width="144.8" Click="CreateUserRequest_Click"  />
+
                 </MenuItem>
                 <MenuItem Header="WebService">
                     <MenuItem x:Name="initializeMenuItem" Header="Initialize" HorizontalAlignment="Left" Width="144.8" IsCheckable="True" Click="initializeMenuItem_Click"/>

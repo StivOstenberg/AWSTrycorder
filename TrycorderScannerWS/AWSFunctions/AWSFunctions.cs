@@ -1236,234 +1236,15 @@ namespace AWSFunctions
         }
 
 
-        public DataTable GetIAMUsers(string aprofile)
-        {
-            DataTable IAMTable = AWSTables.GetComponentTable("IAM"); //Blank table to fill out.
-
-            Dictionary<string, string> UserNameIdMap = new Dictionary<string, string>();//Usernames to UserIDs to fill in row later.
-            Amazon.Runtime.AWSCredentials credential;
-            try
-            {
-                string accountid = GetAccountID(aprofile);
-                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-                var iam = new AmazonIdentityManagementServiceClient(credential);
-                Dictionary<string, string> unamelookup = new Dictionary<string, string>();
-
-                var myUserList = iam.ListUsers().Users;
-
-
-                foreach (var rabbit in myUserList)
-                {
-                    unamelookup.Add(rabbit.UserId, rabbit.UserName);
-                }
-                var createcredreport = iam.GenerateCredentialReport();
-                bool notdone = true;
-                var genstart = DateTime.Now;
-                while(notdone)
-                {
-                    var status = createcredreport.State;
-                    if (status == ReportStateType.COMPLETE) notdone = false;
-                    else
-                    {
-                        if(DateTime.Now>genstart+TimeSpan.FromMinutes(2))
-                        {
-                            DataRow auserdata = IAMTable.NewRow();
-                            auserdata["AccountID"] = accountid;
-                            auserdata["Profile"] = aprofile;
-                            auserdata["UserID"] = "Credential Report";
-                            auserdata["UserName"] = "Not ready";
-                            IAMTable.Rows.Add(auserdata);
-                            return IAMTable;
-
-                        }
-                        //Sometimes reports take a LOOOOONG time.
-
-                    }
-                }
-                
-                foreach (var auser in myUserList)
-                {
-                    UserNameIdMap.Add(auser.UserName, auser.UserId);
-                }
-
-                Amazon.IdentityManagement.Model.GetCredentialReportResponse credreport = new GetCredentialReportResponse();
-                DateTime getreportstart = DateTime.Now;
-                DateTime getreportfinish = DateTime.Now;
-
-                try
-                { 
-                    credreport = iam.GetCredentialReport();
-                    //Wait for report to finish... how?
-
-                    var goombah = credreport.ResponseMetadata.Metadata;
-                    
-                    //while(credreport.ResponseMetadata.Metadata)
-
-
-                    getreportfinish = DateTime.Now;
-                    var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
-
-
-                    //Extract data from CSV Stream into DataTable
-                    var streambert = credreport.Content;
-
-                    streambert.Position = 0;
-                    StreamReader sr = new StreamReader(streambert);
-                    string myStringRow = sr.ReadLine();
-                    var headers = myStringRow.Split(",".ToCharArray()[0]);
-                    if (myStringRow != null) myStringRow = sr.ReadLine();//Dump the header line
-                    Dictionary<string, string> mydata = new Dictionary<string, string>();
-                    while (myStringRow != null)
-                    {
-                        DataRow auserdata = IAMTable.NewRow();
-                        var arow = myStringRow.Split(",".ToCharArray()[0]);
-
-                        //Letsa dumpa da data...
-                        auserdata["AccountID"] = accountid;
-                        auserdata["Profile"] = aprofile;
-
-                        string thisid = "";
-                        string username = "";
-                        try
-                        {
-                            thisid = UserNameIdMap[arow[0]];
-                            auserdata["UserID"] = thisid;
-                            auserdata["UserName"] = unamelookup[thisid];
-                            if (unamelookup[thisid] == "<root_account>")
-                            {
-                                auserdata["UserID"] = "*-" + accountid + "-* root";
-                            }
-                            username = unamelookup[thisid];
-                        }
-                        catch
-                        {
-                            auserdata["UserID"] = "*-" + accountid + "-* root";
-                            auserdata["UserName"] = "<root_account>";
-                        }
-
-
-
-                        auserdata["ARN"] = arow[1];
-                        auserdata["CreateDate"] = arow[2];
-                        auserdata["PwdEnabled"] = arow[3];
-                        auserdata["PwdLastUsed"] = arow[4];
-                        auserdata["PwdLastChanged"] = arow[5];
-                        auserdata["PwdNxtRotation"] = arow[6].ToString();
-                        auserdata["MFA Active"] = arow[7];
-
-                        auserdata["AccessKey1-Active"] = arow[8];//access_key_1_active
-                        auserdata["AccessKey1-Rotated"] = arow[9];//access_key_1_last_rotated
-                        auserdata["AccessKey1-LastUsedDate"] = arow[10];//access_key_1_last_used_date
-                        auserdata["AccessKey1-LastUsedRegion"] = arow[11];//access_key_1_last_used_region
-                        auserdata["AccessKey1-LastUsedService"] = arow[12];//access_key_1_last_used_service
-
-                        auserdata["AccessKey2-Active"] = arow[13];//access_key_2_active
-                        auserdata["AccessKey2-Rotated"] = arow[14];//access_key_2_last_rotated
-                        auserdata["AccessKey2-LastUsedDate"] = arow[15];//access_key_2_last_used_date
-                        auserdata["AccessKey2-LastUsedRegion"] = arow[16];//access_key_2_last_used_region
-                        auserdata["AccessKey2-LastUsedService"] = arow[17];//access_key_2_last_used_service
-
-                        auserdata["Cert1-Active"] = arow[18];//cert_1_active
-                        auserdata["Cert1-Rotated"] = arow[19];//cert_1_last_rotated
-                        auserdata["Cert2-Active"] = arow[20];//cert_2_active
-                        auserdata["Cert2-Rotated"] = arow[21];//cert_2_last_rotated
-
-                        var extradata = GetUserDetails(aprofile, username);
-
-                        auserdata["User-Policies"] = extradata["Policies"];
-                        auserdata["Access-Keys"] = extradata["AccessKeys"];
-                        auserdata["Groups"] = extradata["Groups"];
-
-                        IAMTable.Rows.Add(auserdata);
 
 
 
 
-                        myStringRow = sr.ReadLine();
-                    }
-                    sr.Close();
-                    sr.Dispose();
 
 
 
-                }
-                catch (Exception ex)
-                {
-                    WriteToEventLog("IAM scan of " + aprofile + " failed\n" + ex.Message.ToString(), EventLogEntryType.Error);
-                    //Deal with this later if necessary.
-                }
-
-                //Done stream, now to fill in the blanks...
 
 
-            }
-            catch//The final catch
-            {
-                string btest = "";
-                //Deal with this later if necessary.
-            }
-
-            return IAMTable;
-        }//EndIamUserScan
-
-        /// <summary>
-        /// Given a profile and user, collect additional information.
-        /// </summary>
-        /// <param name="aprofile">An AWS Profile name stored in Windows Credential Store</param>
-        /// <param name="auser">The Name of a User</param>
-        /// <returns>Dictionary containing keys for each type of data[AccessKeys], [Groups], [Policies]</returns>
-        public Dictionary<string, string> GetUserDetails(string aprofile, string username)
-        {
-            var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
-            var iam = new AmazonIdentityManagementServiceClient(credential);
-            Dictionary<string, string> ToReturn = new Dictionary<string, string>();
-            string policylist = "";
-            string aklist = "";
-            string groups = "";
-            try
-            {
-                ListAccessKeysRequest LAKREQ = new ListAccessKeysRequest();
-                LAKREQ.UserName = username;
-                var LAKRES = iam.ListAccessKeys(LAKREQ);
-                foreach (var blivet in LAKRES.AccessKeyMetadata)
-                {
-                    if (aklist.Length > 1) aklist += "\n";
-                    aklist += blivet.AccessKeyId + "  :  " + blivet.Status;
-                }
-            }
-            catch { aklist = ""; }
-
-            try
-            {
-                ListAttachedUserPoliciesRequest LAUPREQ = new ListAttachedUserPoliciesRequest();
-                LAUPREQ.UserName = username;
-                var LAUPRES = iam.ListAttachedUserPolicies(LAUPREQ);
-                foreach (var apol in LAUPRES.AttachedPolicies)
-                {
-                    if (policylist.Length > 1) policylist += "\n";
-                    policylist += apol.PolicyName;
-                }
-            }
-            catch { policylist = ""; }
-
-            try
-            {
-                var groopsreq = new ListGroupsForUserRequest();
-                groopsreq.UserName = username;
-                var LG = iam.ListGroupsForUser(groopsreq);
-                foreach (var agroup in LG.Groups)
-                {
-                    if (groups.Length > 1) groups += "\n";
-                    groups += agroup.GroupName;
-                }
-            }
-            catch { groups = ""; }
-
-            ToReturn.Add("Groups", groups);
-            ToReturn.Add("Policies", policylist);
-            ToReturn.Add("AccessKeys", aklist);
-            return ToReturn;
-        }
 
         /// <summary>
         /// Given a List, convert to string with each item on list on separate row.
@@ -1944,11 +1725,299 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public DataTable GetIAMUsers(string aprofile)
+        {
+            DataTable IAMTable = AWSTables.GetComponentTable("IAM"); //Blank table to fill out.
+
+            Dictionary<string, string> UserNameIdMap = new Dictionary<string, string>();//Usernames to UserIDs to fill in row later.
+            Amazon.Runtime.AWSCredentials credential;
+            try
+            {
+                string accountid = GetAccountID(aprofile);
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var iam = new AmazonIdentityManagementServiceClient(credential);
+                Dictionary<string, string> unamelookup = new Dictionary<string, string>();
+
+                var myUserList = iam.ListUsers().Users;
+
+
+                foreach (var rabbit in myUserList)
+                {
+                    unamelookup.Add(rabbit.UserId, rabbit.UserName);
+                }
+                var createcredreport = iam.GenerateCredentialReport();
+                bool notdone = true;
+                var genstart = DateTime.Now;
+                while (notdone)
+                {
+                    var status = createcredreport.State;
+                    if (status == ReportStateType.COMPLETE) notdone = false;
+                    else
+                    {
+                        if (DateTime.Now > genstart + TimeSpan.FromMinutes(2))
+                        {
+                            DataRow auserdata = IAMTable.NewRow();
+                            auserdata["AccountID"] = accountid;
+                            auserdata["Profile"] = aprofile;
+                            auserdata["UserID"] = "Credential Report";
+                            auserdata["UserName"] = "Not ready";
+                            IAMTable.Rows.Add(auserdata);
+                            return IAMTable;
+
+                        }
+                        //Sometimes reports take a LOOOOONG time.
+
+                    }
+                }
+
+                foreach (var auser in myUserList)
+                {
+                    UserNameIdMap.Add(auser.UserName, auser.UserId);
+                }
+
+                Amazon.IdentityManagement.Model.GetCredentialReportResponse credreport = new GetCredentialReportResponse();
+                DateTime getreportstart = DateTime.Now;
+                DateTime getreportfinish = DateTime.Now;
+
+                try
+                {
+                    credreport = iam.GetCredentialReport();
+                    //Wait for report to finish... how?
+
+                    var goombah = credreport.ResponseMetadata.Metadata;
+
+                    //while(credreport.ResponseMetadata.Metadata)
+
+
+                    getreportfinish = DateTime.Now;
+                    var dif = getreportstart - getreportfinish;  //Just a check on how long it takes.
+
+
+                    //Extract data from CSV Stream into DataTable
+                    var streambert = credreport.Content;
+
+                    streambert.Position = 0;
+                    StreamReader sr = new StreamReader(streambert);
+                    string myStringRow = sr.ReadLine();
+                    var headers = myStringRow.Split(",".ToCharArray()[0]);
+                    if (myStringRow != null) myStringRow = sr.ReadLine();//Dump the header line
+                    Dictionary<string, string> mydata = new Dictionary<string, string>();
+                    while (myStringRow != null)
+                    {
+                        DataRow auserdata = IAMTable.NewRow();
+                        var arow = myStringRow.Split(",".ToCharArray()[0]);
+
+                        //Letsa dumpa da data...
+                        auserdata["AccountID"] = accountid;
+                        auserdata["Profile"] = aprofile;
+
+                        string thisid = "";
+                        string username = "";
+                        try
+                        {
+                            thisid = UserNameIdMap[arow[0]];
+                            auserdata["UserID"] = thisid;
+                            auserdata["UserName"] = unamelookup[thisid];
+                            if (unamelookup[thisid] == "<root_account>")
+                            {
+                                auserdata["UserID"] = "*-" + accountid + "-* root";
+                            }
+                            username = unamelookup[thisid];
+                        }
+                        catch
+                        {
+                            auserdata["UserID"] = "*-" + accountid + "-* root";
+                            auserdata["UserName"] = "<root_account>";
+                        }
+
+
+
+                        auserdata["ARN"] = arow[1];
+                        auserdata["CreateDate"] = arow[2];
+                        auserdata["PwdEnabled"] = arow[3];
+                        auserdata["PwdLastUsed"] = arow[4];
+                        auserdata["PwdLastChanged"] = arow[5];
+                        auserdata["PwdNxtRotation"] = arow[6].ToString();
+                        auserdata["MFA Active"] = arow[7];
+
+                        auserdata["AccessKey1-Active"] = arow[8];//access_key_1_active
+                        auserdata["AccessKey1-Rotated"] = arow[9];//access_key_1_last_rotated
+                        auserdata["AccessKey1-LastUsedDate"] = arow[10];//access_key_1_last_used_date
+                        auserdata["AccessKey1-LastUsedRegion"] = arow[11];//access_key_1_last_used_region
+                        auserdata["AccessKey1-LastUsedService"] = arow[12];//access_key_1_last_used_service
+
+                        auserdata["AccessKey2-Active"] = arow[13];//access_key_2_active
+                        auserdata["AccessKey2-Rotated"] = arow[14];//access_key_2_last_rotated
+                        auserdata["AccessKey2-LastUsedDate"] = arow[15];//access_key_2_last_used_date
+                        auserdata["AccessKey2-LastUsedRegion"] = arow[16];//access_key_2_last_used_region
+                        auserdata["AccessKey2-LastUsedService"] = arow[17];//access_key_2_last_used_service
+
+                        auserdata["Cert1-Active"] = arow[18];//cert_1_active
+                        auserdata["Cert1-Rotated"] = arow[19];//cert_1_last_rotated
+                        auserdata["Cert2-Active"] = arow[20];//cert_2_active
+                        auserdata["Cert2-Rotated"] = arow[21];//cert_2_last_rotated
+
+                        var extradata = GetUserDetails(aprofile, username);
+
+                        auserdata["User-Policies"] = extradata["Policies"];
+                        auserdata["Access-Keys"] = extradata["AccessKeys"];
+                        auserdata["Groups"] = extradata["Groups"];
+
+                        IAMTable.Rows.Add(auserdata);
+
+
+
+
+                        myStringRow = sr.ReadLine();
+                    }
+                    sr.Close();
+                    sr.Dispose();
+
+
+
+                }
+                catch (Exception ex)
+                {
+                    WriteToEventLog("IAM scan of " + aprofile + " failed\n" + ex.Message.ToString(), EventLogEntryType.Error);
+                    //Deal with this later if necessary.
+                }
+
+                //Done stream, now to fill in the blanks...
+
+
+            }
+            catch//The final catch
+            {
+                string btest = "";
+                //Deal with this later if necessary.
+            }
+
+            return IAMTable;
+        }//EndIamUserScan
 
         /// <summary>
-        /// Given a List of Profiles, return IAM user data for each.
+        /// Given a profile and user, collect additional information.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="aprofile">An AWS Profile name stored in Windows Credential Store</param>
+        /// <param name="auser">The Name of a User</param>
+        /// <returns>Dictionary containing keys for each type of data[AccessKeys], [Groups], [Policies]</returns>
+        public Dictionary<string, string> GetUserDetails(string aprofile, string username)
+        {
+            var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+            var iam = new AmazonIdentityManagementServiceClient(credential);
+            Dictionary<string, string> ToReturn = new Dictionary<string, string>();
+            string policylist = "";
+            string aklist = "";
+            string groups = "";
+            try
+            {
+                ListAccessKeysRequest LAKREQ = new ListAccessKeysRequest();
+                LAKREQ.UserName = username;
+                var LAKRES = iam.ListAccessKeys(LAKREQ);
+                foreach (var blivet in LAKRES.AccessKeyMetadata)
+                {
+                    if (aklist.Length > 1) aklist += "\n";
+                    aklist += blivet.AccessKeyId + "  :  " + blivet.Status;
+                }
+            }
+            catch { aklist = ""; }
+
+            try
+            {
+                ListAttachedUserPoliciesRequest LAUPREQ = new ListAttachedUserPoliciesRequest();
+                LAUPREQ.UserName = username;
+                var LAUPRES = iam.ListAttachedUserPolicies(LAUPREQ);
+                foreach (var apol in LAUPRES.AttachedPolicies)
+                {
+                    if (policylist.Length > 1) policylist += "\n";
+                    policylist += apol.PolicyName;
+                }
+            }
+            catch { policylist = ""; }
+
+            try
+            {
+                var groopsreq = new ListGroupsForUserRequest();
+                groopsreq.UserName = username;
+                var LG = iam.ListGroupsForUser(groopsreq);
+                foreach (var agroup in LG.Groups)
+                {
+                    if (groups.Length > 1) groups += "\n";
+                    groups += agroup.GroupName;
+                }
+            }
+            catch { groups = ""; }
+
+            ToReturn.Add("Groups", groups);
+            ToReturn.Add("Policies", policylist);
+            ToReturn.Add("AccessKeys", aklist);
+            return ToReturn;
+        }
+
+
+        public DataTable CreateUserRequestTable(IEnumerable<string> Profiles2Scan)
+        {
+            var ToReturn = AWSTables.CreateUsersRequestTable();
+
+            //Need to get a list of the Groups in each account to build der menu.
+
+
+
+
+            return ToReturn;
+
+        }
+
+        public List<string> GetGroups(string aprofile)
+        {
+            List<string> ToReturn = new List<string>();
+            Amazon.Runtime.AWSCredentials credential;
+            try
+            {
+                string accountid = GetAccountID(aprofile);
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var iam = new AmazonIdentityManagementServiceClient(credential);
+                ListGroupsRequest req = new ListGroupsRequest();
+                req.MaxItems = 100;
+                
+                var GROOPLIST = iam.ListGroups(req).Groups;
+                foreach(var agroup in GROOPLIST)
+                {
+                    ToReturn.Add(agroup.GroupName);
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+
+
+                return ToReturn;
+
+        }
+
+        public string CreateIAMAccount(string aprofile, string username, string password)
+        {
+            string IRReturning = "Yop";
+            var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+            var iam = new AmazonIdentityManagementServiceClient(credential);
+
+            CreateUserRequest request = new CreateUserRequest();
+            request.UserName = username;
+
+            var repo = iam.CreateUser(request);
+            var det = repo.ResponseMetadata;
+
+            CreateAccessKeyRequest KeyRequest = new CreateAccessKeyRequest();
+            KeyRequest.UserName = username;
+
+
+
+
+            return IRReturning;
+        }
+
         public DataTable ScanCerts(IEnumerable<string> Profiles2Scan)
         {
 
@@ -2691,6 +2760,45 @@ namespace AWSFunctions
             table.TableName = "IAMTable";
             return table;
         }
+
+
+        public static DataTable CreateUsersRequestTable()
+        {
+
+            // Here we create a DataTable .
+            DataTable ToReturn = new DataTable();
+            ToReturn.Columns.Add("Profile", typeof(string));
+            ToReturn.Columns.Add("Username", typeof(string));
+
+            //Add, update, or remove password for user.
+            ToReturn.Columns.Add("EnablePassword", typeof(Boolean));
+            ToReturn.Columns.Add("Password", typeof(string));
+            ToReturn.Columns.Add("RemoveExistingPassword", typeof(Boolean));//Would Overwrite first Key
+
+            
+            ToReturn.Columns.Add("CreateKey", typeof(Boolean));
+            ToReturn.Columns.Add("CreateNewKeyifONEExists", typeof(Boolean));//Would create a second Key
+            ToReturn.Columns.Add("OverwriteKeyifONEExists", typeof(Boolean));//Would Overwrite first Key
+            ToReturn.Columns.Add("ClearAllExisting", typeof(Boolean));//Remove all keys first.
+            //If Two already exist,  return an error. Dont want this causing clutter.
+
+            ToReturn.Columns.Add("Policy", typeof(List<string>));
+            ToReturn.Columns.Add("RemoveAllPolicies", typeof(Boolean));//Remove Existing Policies.
+            //ReadOnlyAccess
+            //AdministratorAccess
+            //Nun
+
+            ToReturn.Columns.Add("Group", typeof(List<string>));
+            ToReturn.Columns.Add("RemoveAllGroups", typeof(Boolean));//Remove Existing Groups.
+            //Get list of Groups on account.
+
+
+
+
+            return ToReturn;
+        }
+
+
         public static DataTable GetS3DetailsTable()
         {
             DataTable table = new DataTable();

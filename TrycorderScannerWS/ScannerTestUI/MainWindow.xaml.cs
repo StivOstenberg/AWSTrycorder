@@ -143,5 +143,12 @@ namespace ScannerTestUI
 
             DasGrid.ItemsSource = datable.DefaultView;
         }
+
+        private void CreateUserRequest_Click(object sender, RoutedEventArgs e)
+        {
+            IEnumerable<string> myprofile = new string[] { ProfilesComboBox.SelectedItem.ToString() };
+
+            var datable = Scanner.CreateUserRequestTable(myprofile);
+        }
     }
 }
