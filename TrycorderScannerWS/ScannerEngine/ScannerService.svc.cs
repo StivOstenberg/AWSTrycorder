@@ -35,12 +35,16 @@ namespace ScannerEngine
     //[ServiceBehavior(UseSynchronizationContext = false)]// This causes each request to process on a different thread,  not use the UI thread.
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]// 
 
+
+    
+
+
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class ScannerClass : ScannerInterfaceDefinition 
     {
         DataSet DaWorks = new DataSet();
-
+         
         static DataTable EC2Table = AWSFunctions.AWSTables.GetComponentTable("EC2");
         static DataTable S3Table = AWSFunctions.AWSTables.GetComponentTable("S3");
         static DataTable IAMTable = AWSFunctions.AWSTables.GetComponentTable("IAM");

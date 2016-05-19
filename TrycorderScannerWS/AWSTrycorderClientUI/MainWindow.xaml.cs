@@ -297,7 +297,7 @@ namespace AWSTrycorderClientUI
                     mi.StaysOpenOnClick = true;
                     Proot.Items.Add(mi);
                     var defvis = vizlist[acol.Header.ToString()];
-                    ShowHideColumn(acol.Header.ToString(), vizlist[acol.Header.ToString()]);
+                    SetColumnVisabiltyinTable(acol.Header.ToString(), vizlist[acol.Header.ToString()]);
                 }
                 catch
                 {
@@ -439,10 +439,14 @@ namespace AWSTrycorderClientUI
             bool state = gopher.IsChecked;
             string thecolumn = gopher.Header.ToString();
             Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), thecolumn, state);
-            ShowHideColumn(thecolumn, state);
+            SetColumnVisabiltyinTable(thecolumn, state);
         }
-
-        private void ShowHideColumn(string thecolumn, bool isvisable)
+        /// <summary>
+        /// Sets a column to visible or hidden in the Datagrid table.
+        /// </summary>
+        /// <param name="thecolumn">Column Name</param>
+        /// <param name="isvisable">Visable=True, Hidden=false</param>
+        private void SetColumnVisabiltyinTable(string thecolumn, bool isvisable)
         {
 
             foreach (var acol in DasGrid.Columns)
@@ -454,6 +458,11 @@ namespace AWSTrycorderClientUI
                 }
             }
         }
+
+        
+
+
+
         private void CKAllCMP_Click(object sender, RoutedEventArgs e)
         {
 
@@ -496,6 +505,7 @@ namespace AWSTrycorderClientUI
                 if (anitem.IsCheckable)
                 {
                     anitem.IsChecked = true;
+                    Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), anitem.Header.ToString(), true);
                 }
                 foreach (var acol in DasGrid.Columns) acol.Visibility = Visibility.Visible;
             }
@@ -509,6 +519,9 @@ namespace AWSTrycorderClientUI
                 if (anitem.IsCheckable)
                 {
                     anitem.IsChecked = false;
+                    
+                    Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), anitem.Header.ToString(), false);
+
                 }
                 foreach (var acol in DasGrid.Columns) acol.Visibility = Visibility.Hidden;
             }
@@ -516,17 +529,20 @@ namespace AWSTrycorderClientUI
 
         private void UCKMostCol_Click(object sender, RoutedEventArgs e)
         {
-            //Checks all Profilemenu items
+            //Sets Column visablity to my defaults.
             setdefcols();
 
         }
-
+        /// <summary>
+        /// Think this sets column visibility based on default settings in Trycorder Settings....    
+        /// </summary>
         private void setdefcols()
         {
             foreach (System.Windows.Controls.MenuItem anitem in ColumnsMenuItem.Items)
             {
                 if (anitem.IsCheckable) { anitem.IsChecked = false; }
             }
+            
             switch (SelectedComponentComboBox.SelectedItem.ToString())
             {
                 default:
@@ -561,6 +577,7 @@ namespace AWSTrycorderClientUI
                 SelectColumncomboBox.SelectedIndex = 0;
             }
             BuildColumnMenuList();
+            HideColumns();
         }
 
         private void ScanMenuItem_Click(object sender, RoutedEventArgs e)
@@ -596,6 +613,27 @@ namespace AWSTrycorderClientUI
         {
 
             DoScan();
+            HideColumns();
+        }
+
+
+        private void HideColumns()
+        {
+            var vizlist = Trycorder.GetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString());
+
+            foreach (var acol in DasGrid.Columns)
+            {
+                try
+                {
+                    var defvis = vizlist[acol.Header.ToString()];
+                    SetColumnVisabiltyinTable(acol.Header.ToString(), defvis);
+                }
+                catch
+                {
+
+                }
+
+            }
         }
 
         private string GetDefaultAWSCredFile()
@@ -651,6 +689,7 @@ namespace AWSTrycorderClientUI
                 bool casesense = (bool)CaseCheckbox.IsChecked;
                 var filttab = Trycorder.FilterDataTablebyCol(Table2Scan, column2filter, filterstring, casesense);
                 DasGrid.ItemsSource = filttab.DefaultView;
+
 
             }
             catch (Exception ex)
