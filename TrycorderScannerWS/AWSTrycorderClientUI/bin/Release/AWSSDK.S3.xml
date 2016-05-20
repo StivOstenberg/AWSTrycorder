@@ -494,7 +494,7 @@
         </member>
         <member name="M:Amazon.S3.AmazonS3Client.DeleteBucketReplication(Amazon.S3.Model.DeleteBucketReplicationRequest)">
             <summary>
-            Deletes the replication configuration from the bucket.
+            Deletes the replication configuration for the given Amazon S3 bucket.
             </summary>
             <param name="request">Container for the necessary parameters to execute the DeleteBucketReplication service method.</param>
             
@@ -5932,16 +5932,6 @@
             </summary>
             <returns>true if ServerSideEncryptionKeyManagementServiceKeyId property is set.</returns>
         </member>
-        <member name="P:Amazon.S3.Model.InitiateMultipartUploadResponse.AbortDate">
-            <summary>
-            Date when multipart upload will become eligible for abort operation by lifecycle.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.InitiateMultipartUploadResponse.AbortRuleId">
-            <summary>
-            Id of the lifecycle rule that makes a multipart upload eligible for abort operation.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.Initiator">
             <summary>
             <para>Identifies who initiated the multipart upload.</para>
@@ -6064,24 +6054,6 @@
             a different storage class.
             </summary>
         </member>
-        <member name="P:Amazon.S3.Model.LifecycleRule.AbortIncompleteMultipartUpload">
-            <summary>
-            Specifies the days since the initiation of an Incomplete Multipart Upload
-            that Lifecycle will wait before permanently removing all parts of the upload.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.LifecycleRuleAbortIncompleteMultipartUpload">
-            <summary>
-            Specifies the days since the initiation of an Incomplete Multipart Upload
-            that Lifecycle will wait before permanently removing all parts of the upload.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.LifecycleRuleAbortIncompleteMultipartUpload.DaysAfterInitiation">
-            <summary>
-            Indicates the number of days that must pass since initiation for Lifecycle
-            to abort an Incomplete Multipart Upload.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Model.LifecycleRuleExpiration">
             <summary>Expiration
             </summary>
@@ -6095,12 +6067,6 @@
         <member name="P:Amazon.S3.Model.LifecycleRuleExpiration.Days">
             <summary>
             Indicates the lifetime, in days, of the objects that are subject to the rule. The value must be a non-zero positive integer.
-             
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.LifecycleRuleExpiration.ExpiredObjectDeleteMarker">
-            <summary>
-            Indicates whether Amazon S3 will remove a delete marker with no noncurrent versions. If set to true, the delete marker will be expired; if set to false the policy takes no action. This cannot be specified with Days or Date in a Lifecycle Expiration Policy.
              
             </summary>
         </member>
@@ -6529,16 +6495,6 @@
             <summary>
             The class of storage used to store the object.
              
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListPartsResponse.AbortDate">
-            <summary>
-            Date when multipart upload will become eligible for abort operation by lifecycle.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Model.ListPartsResponse.AbortRuleId">
-            <summary>
-            Id of the lifecycle rule that makes a multipart upload eligible for abort operation.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.ListVersionsRequest">
@@ -8519,11 +8475,6 @@
         <member name="P:Amazon.S3.Model.WebsiteConfiguration.RoutingRules">
             <summary>
             The list of routing rules that can be used for configuring redirects if certain conditions are meet.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.AbortIncompleteMultipartUploadUnmarshaller">
-            <summary>
-              AbortIncompleteMultipartUpload Unmarshaller
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.AbortMultipartUploadRequestMarshaller">
@@ -10584,7 +10535,7 @@
         </member>
         <member name="M:Amazon.S3.IAmazonS3.DeleteBucketReplication(Amazon.S3.Model.DeleteBucketReplicationRequest)">
             <summary>
-            Deletes the replication configuration from the bucket.
+            Deletes the replication configuration for the given Amazon S3 bucket.
             </summary>
             <param name="request">Container for the necessary parameters to execute the DeleteBucketReplication service method.</param>
             

@@ -354,6 +354,12 @@ namespace AWSTrycorderClientUI
             }
             // if (DaGrid.Items.Count > 0) DoEC2Filter();
         }
+
+        /// <summary>
+        /// When Uncheck all Profiles clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UCKAllPMI_Click(object sender, RoutedEventArgs e)
         {
             //UnChecks all Profilemenu items
@@ -370,6 +376,11 @@ namespace AWSTrycorderClientUI
 
             #endregion
         }
+        /// <summary>
+        /// When Check All Regions menu item clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CkAllRMI_Click(object sender, RoutedEventArgs e)
         {
             foreach (System.Windows.Controls.MenuItem anitem in RegionsMenuItem.Items)
@@ -382,6 +393,11 @@ namespace AWSTrycorderClientUI
             }
             //if (DaGrid.Items.Count > 0) DoEC2Filter();
         }
+        /// <summary>
+        /// Uncheck all Regions Menu Item clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UCkAllRMI_Click(object sender, RoutedEventArgs e)
         {
             foreach (System.Windows.Controls.MenuItem anitem in RegionsMenuItem.Items)
@@ -394,6 +410,11 @@ namespace AWSTrycorderClientUI
             }
             // if (DaGrid.Items.Count > 0) DoEC2Filter();
         }
+        /// <summary>
+        /// When a profile menu item is checked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ProfileChecked(object sender, RoutedEventArgs e)
         {
             var gopher = sender as MenuItem;
@@ -403,6 +424,7 @@ namespace AWSTrycorderClientUI
 
 
         }
+        //When a region menu item be checked.
         private void RegionChecked(object sender, RoutedEventArgs e)
         {
             var gopher = sender as MenuItem;
@@ -414,17 +436,34 @@ namespace AWSTrycorderClientUI
         {
             MessageBox.Show(Trycorder.GetDetailedStatus(), "Trycorder Status");
         }
+
+        /// <summary>
+        /// When a component menu item check is smitten.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ComponentChecked(object sender, RoutedEventArgs e)
         {
             var gopher = sender as MenuItem;
             bool state = gopher.IsChecked;
             string thecomponent = gopher.Header.ToString();
             Trycorder.SetComponentScanBit(thecomponent, state);
-            var currentitem = SelectedComponentComboBox.SelectedValue;
+            var currentitem = SelectedComponentComboBox.SelectedValue.ToString();
             ConfigureComponentSelectComboBox();
+            if(!state)
+            {
+                if (currentitem == thecomponent) currentitem = null;
+            }
             try
             {
-                SelectedComponentComboBox.SelectedValue = currentitem;
+                if (currentitem == null)
+                {
+                    SelectedComponentComboBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    SelectedComponentComboBox.SelectedValue = currentitem;
+                }
             }
             catch
             {
@@ -462,12 +501,13 @@ namespace AWSTrycorderClientUI
         
 
 
-
+        /// <summary>
+        /// CHeck all components menu item be hit.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CKAllCMP_Click(object sender, RoutedEventArgs e)
         {
-
-
-            //Checks all Profilemenu items
             foreach (System.Windows.Controls.MenuItem anitem in ComponentsMenuItem.Items)
             {
                 if (anitem.IsCheckable)
@@ -481,10 +521,13 @@ namespace AWSTrycorderClientUI
 
             
         }
-
+        /// <summary>
+        /// Uncheck All Components Menu Item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UCKAllCMP_Click(object sender, RoutedEventArgs e)
         {
-            //UnChecks all Profilemenu items
             foreach (System.Windows.Controls.MenuItem anitem in ComponentsMenuItem.Items)
             {
                 if (anitem.IsCheckable)
@@ -619,7 +662,14 @@ namespace AWSTrycorderClientUI
 
         private void HideColumns()
         {
-            var vizlist = Trycorder.GetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString());
+
+            if(!SelectedComponentComboBox.HasItems)
+            {
+                ConfigureComponentSelectComboBox();
+                if (!SelectedComponentComboBox.HasItems) return;
+            }
+            var vizlist = Trycorder.GetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString()) ;
+            
 
             foreach (var acol in DasGrid.Columns)
             {

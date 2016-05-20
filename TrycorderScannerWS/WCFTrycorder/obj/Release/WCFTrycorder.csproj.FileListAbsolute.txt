@@ -1,8 +1,9 @@
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\WCFTrycorder.dll.config
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\WCFTrycorder.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\WCFTrycorder.pdb
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\ScannerEngine.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSFunctions.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\ScannerEngine.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.Core.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.CloudWatch.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.S3.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.SimpleNotificationService.dll
@@ -11,8 +12,10 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\b
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\System.Net.IPNetwork.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.RDS.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.SQS.dll
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\ScannerEngine.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSFunctions.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\ScannerEngine.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.Core.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.Core.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.CloudWatch.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.CloudWatch.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.S3.pdb
@@ -30,6 +33,3 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\b
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\obj\Release\WCFTrycorder.csprojResolveAssemblyReference.cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\obj\Release\WCFTrycorder.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\obj\Release\WCFTrycorder.pdb
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.Core.dll
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.Core.pdb
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\WCFTrycorder\bin\AWSSDK.Core.xml

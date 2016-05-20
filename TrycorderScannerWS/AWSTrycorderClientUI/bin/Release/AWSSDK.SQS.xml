@@ -323,7 +323,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.AddPermissionResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the AddPermission operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.BatchEntryIdsNotDistinctException">
@@ -687,7 +687,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.ChangeMessageVisibilityResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the ChangeMessageVisibility operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.CreateQueueRequest">
@@ -980,7 +980,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.DeleteMessageResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DeleteMessage operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.DeleteQueueRequest">
@@ -1032,7 +1032,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.DeleteQueueResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the DeleteQueue operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.EmptyBatchRequestException">
@@ -1781,7 +1781,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.PurgeQueueResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the PurgeQueue operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.QueueDeletedRecentlyException">
@@ -2189,7 +2189,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.RemovePermissionResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the RemovePermission operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.SendMessageBatchRequest">
@@ -2554,7 +2554,7 @@
         </member>
         <member name="T:Amazon.SQS.Model.SetQueueAttributesResponse">
             <summary>
-            Empty class reserved for future use.
+            This is the response object from the SetQueueAttributes operation.
             </summary>
         </member>
         <member name="T:Amazon.SQS.Model.TooManyEntriesInBatchRequestException">
