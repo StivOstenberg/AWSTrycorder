@@ -99,3 +99,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\b
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\StivAWSLib.csprojResolveAssemblyReference.cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\AWSFunctions.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\AWSFunctions.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticLoadBalancing.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticLoadBalancing.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticLoadBalancing.xml

@@ -54,3 +54,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Debug\ScannerEngine.csprojResolveAssemblyReference.cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Debug\ScannerEngine.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Debug\ScannerEngine.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSSDK.ElasticLoadBalancing.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSSDK.ElasticLoadBalancing.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSSDK.ElasticLoadBalancing.xml

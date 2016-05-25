@@ -54,7 +54,8 @@ namespace ScannerEngine
         static DataTable EBSTable = AWSFunctions.AWSTables.GetComponentTable("EBS");
         static DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
         static DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
-        
+        static DataTable ELBTable = AWSFunctions.AWSTables.GetComponentTable("ELB");
+
         static AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
         static Action ScanCompletedEvent = delegate { };//I dont know what I am doing here....
@@ -116,6 +117,8 @@ namespace ScannerEngine
                     return SubnetsTable;
                 case "vpc":
                     return VPCTable;
+                case "elb":
+                    return ELBTable;
                 default:
                     return EC2Table;
 
@@ -143,6 +146,7 @@ namespace ScannerEngine
             ToReturn += "RDS :" + Settings.RDSStatus["Status"] + "  " + Settings.RDSStatus["EndTime"] + "  " + Settings.RDSStatus["Instances"] + " RDSs\n";
             ToReturn += "Snapshots :" + Settings.SnapshotsStatus["Status"] + "  " + Settings.SnapshotsStatus["EndTime"] + "  " + Settings.SnapshotsStatus["Instances"] + " Snapshots\n";
             ToReturn += "SNS Subscriptions :" + Settings.SNSSubs["Status"] + "  " + Settings.SNSSubs["EndTime"] + "  " + Settings.SNSSubs["Instances"] + " Subscriptions\n";
+            ToReturn += "Load Balancers:" + Settings.ELBStatus["Status"] + "  " + Settings.SNSSubs["EndTime"] + "  " + Settings.SNSSubs["Instances"] + " Subscriptions\n";
 
             if (Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
             return ToReturn;
@@ -194,7 +198,8 @@ namespace ScannerEngine
             var R = String.Equals("Idle", Settings.RDSStatus["Status"]);
             var A = String.Equals("Idle", Settings.EBSStatus["Status"]);
             var T = String.Equals("Idle", Settings.SnapshotsStatus["Status"]);
-            if (E & S & I & N & R & A & T)
+            var B = String.Equals("Idle", Settings.ELBStatus["Status"]);
+            if (E & S & I & N & R & A & T & B)
             {
                 Settings.State = "Idle";
                 Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
@@ -426,6 +431,29 @@ namespace ScannerEngine
             }
             else RDSTable.Clear();
 
+            //ELB Background Worker
+            if (Settings.Components["ELB"])
+            {
+                Settings.ELBStatus["Status"] = "Scanning...";
+                Settings.ELBStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanELB(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    ELBTable.Clear();
+                    ELBTable.Merge(e.Result as DataTable);
+                    Settings.ELBStatus["Status"] = "Idle";
+                    Settings.ELBStatus["EndTime"] = Settings.GetTime();
+                    Settings.ELBStatus["Instances"] = ELBTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else ELBTable.Clear();
 
 
             //VPC Background worker

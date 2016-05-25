@@ -42,6 +42,10 @@
       <HintPath>..\packages\AWSSDK.EC2.3.2.3.1-beta\lib\net45\AWSSDK.EC2.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="AWSSDK.ElasticLoadBalancing, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.ElasticLoadBalancing.3.2.3.1-beta\lib\net45\AWSSDK.ElasticLoadBalancing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="AWSSDK.IdentityManagement, Version=3.2.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.IdentityManagement.3.2.3.1-beta\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
       <Private>True</Private>
@@ -99,6 +103,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.CloudWatch.3.2.3.1-beta\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.EC2.3.2.3.1-beta\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.ElasticLoadBalancing.3.2.3.1-beta\analyzers\dotnet\cs\AWSSDK.ElasticLoadBalancing.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.IdentityManagement.3.2.3.1-beta\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.RDS.3.2.3.1-beta\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.S3.3.2.3.1-beta\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />

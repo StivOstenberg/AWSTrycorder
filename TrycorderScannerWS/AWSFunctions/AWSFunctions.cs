@@ -34,10 +34,15 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.IO;
 using System.Linq;
-
+using System.Net;
+using System.Security;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Diagnostics;
-
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
 
 namespace AWSFunctions
 {
@@ -2313,8 +2318,151 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public DataTable ScanELB(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("ELB");
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 64;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetELBs(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+        public DataTable GetELBs(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSTables.GetELBsDetailTable();
+            string accountid = GetAccountID(aprofile);
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ELBClient = new Amazon.ElasticLoadBalancing.AmazonElasticLoadBalancingClient(credential, Endpoint2scan);
+                var ELBs = ELBClient.DescribeLoadBalancers().LoadBalancerDescriptions;
 
 
+                foreach (var anELB in ELBs)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    //Handle the List Breakdowns
+
+                    var AZs = List2String( anELB.AvailabilityZones);
+                    var sgs = List2String(anELB.SecurityGroups);
+
+                    //The tricky part.  Trying to figure out ELB listeners with Certificates associated.
+                    List<string> Listeners = new List<string>();
+                    List<string> CertListen = new List<string>();
+                    Dictionary<string, string> CertDetails = new Dictionary<string, string>();
+                    foreach (var alistener in anELB.ListenerDescriptions)
+                    {
+                        var protocol = alistener.Listener.Protocol;
+                        var external = alistener.Listener.LoadBalancerPort;
+                        var host = anELB.DNSName;
+                        var health = anELB.HealthCheck.Target;
+                        
+                        string connection = protocol + @":\\" + host + ":" + external;
+                        Listeners.Add(connection);
+                        if (!String.IsNullOrEmpty(alistener.Listener.SSLCertificateId))//If it has a certificate.
+                        {
+                            CertListen.Add(connection);
+                            try
+                            {
+                                CertDetails = GetCertificate(connection);
+
+                            }
+                            catch(Exception ex)
+                            {
+                                var humph = "";
+                            }
+                        }
+                        
+                    }
+
+
+                    List<string> instances = new List<string>();
+                    foreach(var aninstance in anELB.Instances)
+                    {
+                        instances.Add(aninstance.InstanceId);
+                    }
+
+
+
+
+                    //StraightMappings + Mappings of breakdowns.
+
+                    disone["AccountID"] = GetAccountID(aprofile);
+                    disone["Profile"] = aprofile;
+                    disone["AvailabilityZone"] = AZs;
+                    disone["Name"] = anELB.LoadBalancerName;
+
+                    disone["DNSName"] = anELB.DNSName;
+
+                    disone["Scheme"] = anELB.Scheme;
+                    disone["InstanceCount"] = anELB.Instances.Count;
+                    disone["Instances"] = List2String(instances);
+
+                    disone["Listeners"] = List2String(Listeners);
+                    disone["CertListeners"] = List2String(CertListen);
+
+                    disone["HealthCheck"] = anELB.HealthCheck.Target;
+                    disone["SecurityGroups"] = sgs;
+
+                    if (CertDetails.Count>1 ) {
+                        disone["NotBefore"] = CertDetails["NotBefore"];
+                        disone["NotAfter"] = CertDetails["NotAfter"];
+                        disone["IssuerName"] = CertDetails["IssuerName"];
+                        disone["Issuer"] = CertDetails["Issuer"];
+                        disone["Subject"] = CertDetails["Subject"];
+                        disone["Thumbprint"] = CertDetails["Thumbprint"];
+
+                    }
+
+                    ToReturn.Rows.Add(disone);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                string rabbit = "";
+            }
+
+
+
+
+
+
+            return ToReturn;
+        }
 
         public DataTable ScanEC2(List<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
@@ -2363,10 +2511,6 @@ namespace AWSFunctions
             string dur = duration.TotalSeconds.ToString();
             return ToReturn;
         }
-
-
-
-
         public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
         {
             if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
@@ -2588,6 +2732,81 @@ namespace AWSFunctions
             }
         }
 
+        /// <summary>
+        /// Given a URL, check the URL for a certificate, and return certificate details.
+        /// </summary>
+        /// <param name="urltocheck"></param>
+        /// <returns></returns>
+        public X509Certificate2 GetCertificate(string urltocheck)
+        {
+            X509Certificate2 ToReturn = new X509Certificate2();
+            var gimme = ServicePointManager.ServerCertificateValidationCallback =
+(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+{
+    ToReturn = new X509Certificate2(certificate);
+    return true;
+};
+            try
+            {
+                WebRequest request = WebRequest.Create(new Uri(urltocheck));
+
+
+                ServicePoint svcPoint = ServicePointManager.FindServicePoint(new Uri(urltocheck));
+                
+                return ToReturn;
+            }
+            catch (Exception ex) { }
+            
+
+            return ToReturn;
+        }
+
+        public X509Certificate2 GetSSLCertificate2(string DNSName)
+        {
+
+            X509Certificate2 cert = null;
+            using (TcpClient client = new TcpClient())
+            {
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;           
+                client.Connect(DNSName, 443);
+
+                SslStream ssl = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                try
+                {
+                    ssl.AuthenticateAsClient(DNSName);
+                }
+                catch (AuthenticationException e)
+                {
+                    //log.Debug(e.Message);
+                    ssl.Close();
+                    client.Close();
+                    return cert;
+                }
+                catch (Exception e)
+                {
+                    //log.Debug(e.Message);
+                    ssl.Close();
+                    client.Close();
+                    return cert;
+                }
+                cert = new X509Certificate2(ssl.RemoteCertificate);
+                ssl.Close();
+                client.Close();
+                return cert;
+            }
+        }
+
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+
+            // Do not allow this client to communicate with unauthenticated servers. 
+            return false;
+        }
+
         public void PayPalDonate(string youremail, string description, string country, string currency)
         {
             string PayPalURL = "";
@@ -2632,9 +2851,45 @@ namespace AWSFunctions
                     return GetSubnetDetailsTable();
                 case "vpc":
                     return GetVPCDetailsTable();
+                case "elb":
+                    return GetELBsDetailTable();
                 default:
                     return GetEC2DetailsTable();
             }
+        }
+
+        public static DataTable GetELBsDetailTable()
+        {
+            DataTable table = new DataTable();
+            table.TableName = "LoadBalancerTable";
+            // Here we create a DataTable .
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("AvailabilityZone", typeof(string));
+            table.Columns.Add("Name", typeof(string));
+            table.Columns.Add("Scheme", typeof(string));
+            table.Columns.Add("DNSName", typeof(string));
+
+            table.Columns.Add("PortConf", typeof(string));
+            table.Columns.Add("InstanceCount", typeof(int));
+            table.Columns.Add("Instances", typeof(string));
+            table.Columns.Add("Listeners", typeof(string));
+            table.Columns.Add("CertListeners", typeof(string));
+            table.Columns.Add("HealthCheck", typeof(string));
+            table.Columns.Add("Status", typeof(string));
+            table.Columns.Add("SecurityGroups", typeof(string));
+
+            table.Columns.Add("Issuer", typeof(string));
+            table.Columns.Add("IssuerName", typeof(string));
+            table.Columns.Add("Subject", typeof(string));
+            table.Columns.Add("NotBefore", typeof(string));
+            table.Columns.Add("NotAfter", typeof(string));
+            table.Columns.Add("Thumbprint", typeof(string));
+
+            //Can we set the view on this table to expand IEnumerables?
+            DataView mydataview = table.DefaultView;
+
+            return table;
         }
 
         public static DataTable GetRDSDetailsTable()
@@ -3040,7 +3295,7 @@ namespace AWSFunctions
             return ToReturn;
         }
 
-        
+
 
         public static string Shrug = "¯\\_(ツ)_/¯";
     }
@@ -3118,6 +3373,7 @@ namespace AWSFunctions
             DefaultColumns["Snapshots"] = new List<string>() { "Profile", "Region", "SnapshotID", "Description", "VolumeID", "VolumeSize-GB", "Encrypted", "OwnerID", "Progress", "StartTime", "State", "Tags" };
             DefaultColumns["Subnets"] = new List<string>() {  "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };
             DefaultColumns["SNSSubs"] = new List<string>() {  "Profile", "Endpoint", "Protocol","TopicName", "TopicARN" , "CrossAccount" };
+            DefaultColumns["ELB"] = new List<string>() { "Profile", "Name", "Region" , "Instances" , "Listeners", "HealthCheck", "Status"};
         }
     
         /// <summary>
@@ -3133,7 +3389,8 @@ namespace AWSFunctions
             {"VPC",true },
             {"Snapshots",true },
             {"SNSSubs",true },
-            {"Subnets",true}
+            {"Subnets",true},
+            {"ELB",true}
         };
 
         public DateTime ScanStart = DateTime.Now;
@@ -3169,6 +3426,15 @@ namespace AWSFunctions
             { "EndTime","" },
             { "Result","" },
             { "Instances","" }
+        };
+
+        public Dictionary<string, string> ELBStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "ELBs","" }
         };
 
         public Dictionary<string, string> EBSStatus = new Dictionary<string, string>

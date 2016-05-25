@@ -67,3 +67,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Core.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Core.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Core.xml
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.ElasticLoadBalancing.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.ElasticLoadBalancing.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.ElasticLoadBalancing.xml

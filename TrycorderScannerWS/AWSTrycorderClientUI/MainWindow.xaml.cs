@@ -448,7 +448,15 @@ namespace AWSTrycorderClientUI
             bool state = gopher.IsChecked;
             string thecomponent = gopher.Header.ToString();
             Trycorder.SetComponentScanBit(thecomponent, state);
-            var currentitem = SelectedComponentComboBox.SelectedValue.ToString();
+            string currentitem="";
+            if (!(SelectedComponentComboBox.SelectedValue==null))
+            {
+                currentitem = SelectedComponentComboBox.SelectedValue.ToString();
+            }
+            else
+            {
+
+            }
             ConfigureComponentSelectComboBox();
             if(!state)
             {

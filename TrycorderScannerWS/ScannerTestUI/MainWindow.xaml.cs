@@ -150,5 +150,11 @@ namespace ScannerTestUI
 
             var datable = Scanner.CreateUserRequestTable(myprofile);
         }
+
+        private void ELBsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.GetELBs(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
     }
 }
