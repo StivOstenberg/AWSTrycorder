@@ -2381,26 +2381,67 @@ namespace AWSFunctions
                     //The tricky part.  Trying to figure out ELB listeners with Certificates associated.
                     List<string> Listeners = new List<string>();
                     List<string> CertListen = new List<string>();
-                    Dictionary<string, string> CertDetails = new Dictionary<string, string>();
+                    var SiteCert = new X509Certificate2();
+                    string whyforfail = "";
+                    string CheckDaHealth = "";
                     foreach (var alistener in anELB.ListenerDescriptions)
                     {
+
                         var protocol = alistener.Listener.Protocol;
-                        var external = alistener.Listener.LoadBalancerPort;
+                        var externalport = alistener.Listener.LoadBalancerPort;
                         var host = anELB.DNSName;
                         var health = anELB.HealthCheck.Target;
                         
-                        string connection = protocol + @":\\" + host + ":" + external;
+
+                        //Try to convert the health check string to an actual URL to test.
+                        string[] banana = health.Split(':');
+                        string urlpath = banana[1];
+
+                        int index = urlpath.IndexOf('/');
+                        if (index >= 0)
+                        {
+                            urlpath= urlpath.Substring(index + 1);
+                        }
+                        string chekkit= protocol + @"://" + host + ":"+externalport +  @"/" + urlpath;
+
+                        //Try a test
+                        
+                        try
+                        {
+
+                            WebRequest request = WebRequest.Create(chekkit);
+                            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                            if (response == null )
+                            {
+                                CheckDaHealth += "Null Response";
+                            }
+                            if(response.StatusCode != HttpStatusCode.OK)
+                            { CheckDaHealth += response.StatusDescription; }
+                            CheckDaHealth += "Ok ";
+                        }
+                        catch(Exception ex)
+                        {
+                            CheckDaHealth += chekkit +": "+ex.Message;
+                        }
+
+
+                            string connection = protocol + @":\\" + host + ":" + externalport;
+
+
                         Listeners.Add(connection);
                         if (!String.IsNullOrEmpty(alistener.Listener.SSLCertificateId))//If it has a certificate.
                         {
                             CertListen.Add(connection);
                             try
                             {
-                                CertDetails = GetCertificate(connection);
+                                //SiteCert = GetCertificate(connection);
+
+                                SiteCert = GetSSLCertificate2(host,externalport);
 
                             }
                             catch(Exception ex)
                             {
+                                whyforfail = ex.Message;
                                 var humph = "";
                             }
                         }
@@ -2434,16 +2475,26 @@ namespace AWSFunctions
                     disone["CertListeners"] = List2String(CertListen);
 
                     disone["HealthCheck"] = anELB.HealthCheck.Target;
+                    disone["Status"] = CheckDaHealth;
                     disone["SecurityGroups"] = sgs;
 
-                    if (CertDetails.Count>1 ) {
-                        disone["NotBefore"] = CertDetails["NotBefore"];
-                        disone["NotAfter"] = CertDetails["NotAfter"];
-                        disone["IssuerName"] = CertDetails["IssuerName"];
-                        disone["Issuer"] = CertDetails["Issuer"];
-                        disone["Subject"] = CertDetails["Subject"];
-                        disone["Thumbprint"] = CertDetails["Thumbprint"];
 
+                    //Disabling for now.
+                    try
+                    {
+                        if (!(SiteCert == null))
+                        {
+                            disone["NotBefore"] = SiteCert.NotBefore;
+                            disone["NotAfter"] = SiteCert.NotAfter;
+                            disone["Issuer"] = SiteCert.Issuer;
+                            disone["Subject"] = SiteCert.Subject;
+                            disone["Thumbprint"] = SiteCert.Thumbprint;
+                        }
+                        else { disone["Subject"] = whyforfail; }
+                    }
+                    catch(Exception ex)
+                    {
+                        var e = 1;
                     }
 
                     ToReturn.Rows.Add(disone);
@@ -2732,43 +2783,15 @@ namespace AWSFunctions
             }
         }
 
-        /// <summary>
-        /// Given a URL, check the URL for a certificate, and return certificate details.
-        /// </summary>
-        /// <param name="urltocheck"></param>
-        /// <returns></returns>
-        public X509Certificate2 GetCertificate(string urltocheck)
-        {
-            X509Certificate2 ToReturn = new X509Certificate2();
-            var gimme = ServicePointManager.ServerCertificateValidationCallback =
-(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
-{
-    ToReturn = new X509Certificate2(certificate);
-    return true;
-};
-            try
-            {
-                WebRequest request = WebRequest.Create(new Uri(urltocheck));
 
-
-                ServicePoint svcPoint = ServicePointManager.FindServicePoint(new Uri(urltocheck));
-                
-                return ToReturn;
-            }
-            catch (Exception ex) { }
-            
-
-            return ToReturn;
-        }
-
-        public X509Certificate2 GetSSLCertificate2(string DNSName)
+        public X509Certificate2 GetSSLCertificate2(string DNSName, int port)
         {
 
             X509Certificate2 cert = null;
             using (TcpClient client = new TcpClient())
             {
                 //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;           
-                client.Connect(DNSName, 443);
+                client.Connect(DNSName, port);
 
                 SslStream ssl = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
                 try
@@ -2803,8 +2826,8 @@ namespace AWSFunctions
 
             Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
 
-            // Do not allow this client to communicate with unauthenticated servers. 
-            return false;
+            // Do not /// Do allow this client to communicate with unauthenticated servers. 
+            return true;
         }
 
         public void PayPalDonate(string youremail, string description, string country, string currency)
@@ -2880,7 +2903,6 @@ namespace AWSFunctions
             table.Columns.Add("SecurityGroups", typeof(string));
 
             table.Columns.Add("Issuer", typeof(string));
-            table.Columns.Add("IssuerName", typeof(string));
             table.Columns.Add("Subject", typeof(string));
             table.Columns.Add("NotBefore", typeof(string));
             table.Columns.Add("NotAfter", typeof(string));
