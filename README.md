@@ -1,5 +1,10 @@
 # AWSTrycorder
-
+ The AWS Trycorder uses the credentials defined for AWS on your system to scan all listed profiles and regions and collect information from all of them (or the ones you select) and put all that data into a single datatable for each component.  Allows you to list ALL your EC2 instances, for example, and search for any that have reboots scheduled.  Lets you identify which machine is using an IP Address.  Lets you list all your RDS instances, along with their endpoints. List all users on all your accounts and see when they last accessed the system, and which component they accessed.  Find out which IAM users have MFA set up...  List S3 buckets and their sizes.
+ 
+    AWS Trycorder will output to Excel.
+    
+Current components scanned: EBS, EC2, IAM, S3, RDS, VPC, Snapshots, SNS Subscriptions, Subnets, and ELB.
+    
 Requires .NET Framework 4 or later.
 
 Going to "release" this version as it seems to work pretty reliably.  It has some issues where sometimes after a scan, the tables are returned empty.
