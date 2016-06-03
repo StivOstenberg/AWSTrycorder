@@ -222,6 +222,7 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(EBSTable.Copy());
                     DaWorks.Tables.Add(SnapshotsTable.Copy());
                     DaWorks.Tables.Add(SNSSubscriptionTable.Copy());
+                    DaWorks.Tables.Add(ELBTable.Copy());
                 }
                 catch(Exception ex)
                 {

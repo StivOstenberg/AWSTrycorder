@@ -367,17 +367,12 @@ namespace AWSFunctions
             {
                 var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
                 AmazonCloudWatchClient CWClient = new AmazonCloudWatchClient(credential, Endpoint2scan);
-
-
                 Amazon.CloudWatch.Model.ListMetricsRequest LMReq = new Amazon.CloudWatch.Model.ListMetricsRequest();               
-
 
                 //Using to explore the metrics
                 LMReq.Namespace = "AWS/S3";
                 LMReq.MetricName = "BucketSizeBytes";
                 var getmetrics = CWClient.ListMetrics(LMReq).Metrics;
-
-
 
                 //This is just stuff I used to view data from the List
                 metlist.Columns.Add("MetricName");
@@ -2001,7 +1996,13 @@ namespace AWSFunctions
                 return ToReturn;
 
         }
-
+        /// <summary>
+        /// Just playing with this for now.
+        /// </summary>
+        /// <param name="aprofile"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public string CreateIAMAccount(string aprofile, string username, string password)
         {
             string IRReturning = "Yop";
@@ -2842,6 +2843,162 @@ namespace AWSFunctions
                 "&bn=" + "PP%2dDonationsBF";
             System.Diagnostics.Process.Start(PayPalURL);
         }
+
+
+
+        /// <summary>
+        /// Try to pull some other misc cloudwatch daters.
+        /// </summary>
+        /// <param name="aprofile"></param>
+        /// <param name="Region2Scan"></param>
+        /// <returns></returns>
+        public DataTable GenericCloudWatch(string aprofile, string Region2Scan, string leNamespace, string leMEtricName)
+        {
+            DataTable ToReturn = AWSTables.GetS3SizesTable();
+
+            string accountid = GetAccountID(aprofile);
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+
+            DataTable metlist = new DataTable();
+            try
+            {
+                var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                AmazonCloudWatchClient CWClient = new AmazonCloudWatchClient(credential, Endpoint2scan);
+                Amazon.CloudWatch.Model.ListMetricsRequest LMReq = new Amazon.CloudWatch.Model.ListMetricsRequest();
+                
+
+                //Using to explore the metrics
+                LMReq.Namespace = leNamespace;
+                LMReq.MetricName = leMEtricName;
+                var getmetrics = CWClient.ListMetrics(LMReq).Metrics;
+
+                //This is just stuff I used to view data from the List
+                metlist.Columns.Add("MetricName");
+                metlist.Columns.Add("NameSpace");
+
+                //These are the dimensions for S3.
+                metlist.Columns.Add("Bucketname");
+                metlist.Columns.Add("StorageType");
+
+                foreach (var ametric in getmetrics)
+                {
+                 //What are we doing???
+                }
+
+                // Okay, collect the daters for these here buckets
+
+
+
+
+                foreach (var abucket in metlist.AsEnumerable())
+                {
+                    Amazon.CloudWatch.Model.GetMetricStatisticsRequest GMReq = new Amazon.CloudWatch.Model.GetMetricStatisticsRequest();
+                    string bucketname = abucket[2].ToString();
+                    string storagetype = abucket[3].ToString();
+
+                    try
+                    {
+                        Amazon.CloudWatch.Model.Dimension dimbo = new Amazon.CloudWatch.Model.Dimension();
+                        dimbo.Name = "BucketName";
+                        dimbo.Value = bucketname;
+                        GMReq.Dimensions.Add(dimbo);
+                        Amazon.CloudWatch.Model.Dimension dimbo2 = new Amazon.CloudWatch.Model.Dimension();
+                        dimbo2.Name = "StorageType";
+                        dimbo2.Value = storagetype;
+                        GMReq.Dimensions.Add(dimbo2);
+
+                        //Build the request:
+                        GMReq.Namespace = "AWS/S3";
+                        GMReq.EndTime = DateTime.Now;
+                        GMReq.StartTime = DateTime.Now - TimeSpan.FromDays(21);
+                        GMReq.Period = (60 * 60 * 24 * 7);//Seconds in a week.
+                        GMReq.Statistics.Add("Minimum");
+                        GMReq.Statistics.Add("Maximum");
+                        GMReq.Statistics.Add("Average");
+                        GMReq.MetricName = "BucketSizeBytes";
+
+                        //Execute request:
+                        var metricresponse = CWClient.GetMetricStatistics(GMReq);
+
+                        //Process Return
+                        var dp = metricresponse.Datapoints;
+                        if (dp.Count == 0)
+                        {
+                            //none
+                        }
+
+
+                        var arow = ToReturn.NewRow();
+
+                        Dictionary<DateTime, Amazon.CloudWatch.Model.Datapoint> sortem = new Dictionary<DateTime, Amazon.CloudWatch.Model.Datapoint>();
+                        foreach (var ap in dp)
+                        {
+                            sortem.Add(ap.Timestamp, ap);
+                        }
+                        var sorteddates = sortem.Keys.ToList();
+                        sorteddates.Sort();
+                        var firstpass = true;
+                        foreach (var key in sorteddates)
+                        {
+                            var ap = sortem[key];
+                            var min = ap.Minimum;
+                            var max = ap.Maximum;
+                            var av = ap.Average;
+                            var ts = ap.Timestamp;
+
+                            if (firstpass)
+                            {
+                                firstpass = false;
+                                arow["AccountID"] = accountid;
+                                arow["Profile"] = aprofile;
+                                arow["Bucket"] = bucketname;
+                                arow["Region"] = Region2Scan;
+                                arow["StartDate"] = ts.ToShortDateString();
+                                arow["EndDate"] = ts.ToShortDateString();
+                                arow["StartSizeMin"] = GetFileSize(min);
+                                arow["StartSizeMax"] = GetFileSize(max);
+                                arow["StartSizeAVG"] = GetFileSize(av);
+                            }
+                            else
+                            {
+                                arow["EndDate"] = ts.ToShortDateString();
+                                arow["EndSizeMin"] = GetFileSize(min);
+                                arow["EndSizeAVG"] = GetFileSize(av);
+                                arow["EndSizeMax"] = GetFileSize(max);
+                                arow["EndSizeMaxBytes"] = Math.Round(av);
+
+                            }
+                        }
+                        ToReturn.Rows.Add(arow.ItemArray);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            int buckets = metlist.Rows.Count;
+
+            int returning = ToReturn.Rows.Count;
+            return ToReturn;
+        }
+
+
 
     }//EndScanAWS
 
