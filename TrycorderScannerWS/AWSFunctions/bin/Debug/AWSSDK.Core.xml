@@ -200,7 +200,7 @@
         <member name="F:Amazon.AWSConfigs.EndpointDefinitionKey">
             <summary>
             Key for the EndpointDefinition property.
-            <seealso cref="P:Amazon.AWSConfigs.LogMetrics"/>
+            <seealso cref="P:Amazon.AWSConfigs.EndpointDefinition"/>
             </summary>
         </member>
         <member name="P:Amazon.AWSConfigs.EndpointDefinition">
@@ -210,7 +210,7 @@
             &lt;configSections&gt;
               &lt;section name="aws" type="Amazon.AWSSection, AWSSDK"/&gt;
             &lt;/configSections&gt;
-            &lt;aws endpointDefinition="c:\config\endpoints.xml" /&gt;
+            &lt;aws endpointDefinition="c:\config\endpoints.json" /&gt;
             </code>
             </summary>
         </member>
@@ -258,7 +258,7 @@
               &lt;section name="aws" type="Amazon.AWSSection, AWSSDK"/&gt;
             &lt;/configSections&gt;
             &lt;aws&gt;
-              &lt;proxy host="localhost" port="8888" username="1" password="1" /&gt;
+              &lt;proxy host="localhost" port="8888" username="1" password="1" bypassList="addressexpr1;addressexpr2;..." bypassOnLocal="true" /&gt;
             &lt;/aws&gt;
             </code>
             </summary>
@@ -313,7 +313,7 @@
         </member>
         <member name="M:Amazon.AWSConfigs.GenerateConfigTemplate">
             <summary>
-            Generates a sample XML representation of the SDK condiguration section.
+            Generates a sample XML representation of the SDK configuration section.
             </summary>
             <remarks>
             The XML returned has an example of every tag in the SDK configuration
@@ -382,130 +382,6 @@
         <member name="F:Amazon.LogMetricsFormatOption.JSON">
             <summary>
             Emit metrics as JSON data
-            </summary>
-        </member>
-        <member name="T:Amazon.RegionEndpoint">
-            <summary>
-            This class contains the endpoints available to the AWS clients.  The static constants representing the 
-            regions can be used while constructing the AWS client instead of looking up the exact endpoint URL.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.USEast1">
-            <summary>
-            The US East (Virginia) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.USWest1">
-            <summary>
-            The US West (N. California) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.USWest2">
-            <summary>
-            The US West (Oregon) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.EUWest1">
-            <summary>
-            The EU West (Ireland) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.EUCentral1">
-            <summary>
-            The EU Central (Frankfurt) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.APNortheast1">
-            <summary>
-            The Asia Pacific (Tokyo) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.APNortheast2">
-            <summary>
-            The Asia Pacific (Seoul) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.APSoutheast1">
-            <summary>
-            The Asia Pacific (Singapore) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.APSoutheast2">
-            <summary>
-            The Asia Pacific (Sydney) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.SAEast1">
-            <summary>
-            The South America (Sao Paulo) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.USGovCloudWest1">
-            <summary>
-            The US GovCloud West (Oregon) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.CNNorth1">
-            <summary>
-            The China (Beijing) endpoint.
-            </summary>
-        </member>
-        <member name="M:Amazon.RegionEndpoint.GetEndpointForService(System.String)">
-            <summary>
-            Gets the endpoint for a service in a region.
-            </summary>
-            <param name="serviceName">The services system name.</param>
-            <exception cref="T:System.ArgumentException">Thrown when the request service does not have a valid endpoint in the region.</exception>
-            <returns></returns>
-        </member>
-        <member name="P:Amazon.RegionEndpoint.EnumerableAllRegions">
-            <summary>
-            Enumerate through all the regions.
-            </summary>
-        </member>
-        <member name="M:Amazon.RegionEndpoint.GetBySystemName(System.String)">
-            <summary>
-            Gets the region based on its system name like "us-west-1"
-            </summary>
-            <param name="systemName">The system name of the service like "us-west-1"</param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.RegionEndpoint.UnloadEndpointDefinitions">
-            <summary>
-            This is a testing method and should not be called by production applications.
-            </summary>
-        </member>
-        <member name="P:Amazon.RegionEndpoint.SystemName">
-            <summary>
-            Gets the system name of a region.
-            </summary>
-        </member>
-        <member name="P:Amazon.RegionEndpoint.DisplayName">
-            <summary>
-            Gets the display name of a region.
-            </summary>
-        </member>
-        <member name="T:Amazon.RegionEndpoint.Endpoint">
-            <summary>
-            This class defines an endpoints hostname and which protocols it supports.
-            </summary>
-        </member>
-        <member name="P:Amazon.RegionEndpoint.Endpoint.Hostname">
-            <summary>
-            Gets the hostname for the service.
-            </summary>
-        </member>
-        <member name="P:Amazon.RegionEndpoint.Endpoint.AuthRegion">
-            <summary>
-            The authentication region to be used in request signing.
-            </summary>
-        </member>
-        <member name="P:Amazon.RegionEndpoint.Endpoint.SignatureVersionOverride">
-            <summary>
-            Overrides the default signing protocol for an
-            endpoint. Typically used to force Signature V4
-            for services that can support multiple signing
-            protocols.
             </summary>
         </member>
         <member name="T:Amazon.Auth.AccessControlPolicy.ActionIdentifier">
@@ -1265,6 +1141,15 @@
             <param name="provider">The provider of the principal</param>
             <param name="id">The unique ID of the Principal within the provider</param>
         </member>
+        <member name="M:Amazon.Auth.AccessControlPolicy.Principal.#ctor(System.String,System.String,System.Boolean)">
+            <summary>
+            Constructs a new principal with the specified provider and id 
+            and optionally strips hyphens from the id
+            </summary>
+            <param name="provider">The provider of the principal</param>
+            <param name="id">The unique ID of the Principal within the provider</param>
+            <param name="stripHyphen">Strip hyphen</param>
+        </member>
         <member name="P:Amazon.Auth.AccessControlPolicy.Principal.Provider">
             <summary>
             Gets and sets the provider for this principal, which indicates in what group of
@@ -1868,6 +1753,15 @@
             Exception thrown by the SDK for errors that occur within the SDK.
             </summary>
         </member>
+        <member name="M:Amazon.Runtime.AmazonClientException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the AmazonClientException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
         <member name="T:Amazon.Runtime.AmazonDateTimeUnmarshallingException">
             <summary>
             This exception is thrown when there is a parse error on the response back from AWS.
@@ -1877,6 +1771,23 @@
             <summary>
             The string value which could not be converted into a valid DateTime instance.
             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.AmazonDateTimeUnmarshallingException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the AmazonDateTimeUnmarshallingException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.Runtime.AmazonDateTimeUnmarshallingException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
         </member>
         <member name="E:Amazon.Runtime.AmazonServiceClient.BeforeMarshallingEvent">
             <summary>
@@ -1951,6 +1862,23 @@
             The HTTP status code from the service response
             </summary>
         </member>
+        <member name="M:Amazon.Runtime.AmazonServiceException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the AmazonServiceException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.Runtime.AmazonServiceException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
+        </member>
         <member name="T:Amazon.Runtime.AmazonUnmarshallingException">
             <summary>
             This exception is thrown when there is a parse error on the response back from AWS.
@@ -1965,6 +1893,23 @@
             <summary>
             The entire response body that caused this exception, if available.
             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.AmazonUnmarshallingException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the AmazonSimpleDBException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.Runtime.AmazonUnmarshallingException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
         </member>
         <member name="T:Amazon.Runtime.AmazonWebServiceRequest">
             <summary>
@@ -2078,6 +2023,54 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Amazon.Runtime.SAMLImmutableCredentials">
+            <summary>
+            Immutable representation of AWS credentials obtained as a result of
+            authenticating against a SAML-supporting federated identity provider.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.SAMLImmutableCredentials.Expires">
+            <summary>
+            The expiry time of the credentials, obtained from the AssumeRoleWithSAML response.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.SAMLImmutableCredentials.Subject">
+            <summary>
+            The value of the NameID element in the Subject element of the SAML assertion, as returned in the
+            AssumeRoleWithSAML response from the Security Token Service.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.SAMLImmutableCredentials.#ctor(System.String,System.String,System.String,System.DateTime,System.String)">
+            <summary>
+            Constructs an instance with supplied keys and SAML assertion data.
+            </summary>
+            <param name="awsAccessKeyId"></param>
+            <param name="awsSecretAccessKey"></param>
+            <param name="token"></param>
+            <param name="expires"></param>
+            <param name="subject"></param>
+        </member>
+        <member name="M:Amazon.Runtime.SAMLImmutableCredentials.#ctor(Amazon.Runtime.ImmutableCredentials,System.DateTime,System.String)">
+            <summary>
+            Constructs an instance with supplied keys and SAML assertion data.
+            </summary>
+            <param name="credentials"></param>
+            <param name="subject"></param>
+            <param name="expires"></param>
+        </member>
+        <member name="M:Amazon.Runtime.SAMLImmutableCredentials.ToJson">
+            <summary>
+            Serializes the instance to a json-format string for external storage
+            </summary>
+            <returns>The serialized object in json</returns>
+        </member>
+        <member name="M:Amazon.Runtime.SAMLImmutableCredentials.FromJson(System.String)">
+            <summary>
+            Instantiates an instance from persisted json data
+            </summary>
+            <param name="json">The serialized data</param>
+            <returns>Deserialized instance corresponding to the json data</returns>
+        </member>
         <member name="T:Amazon.Runtime.AWSCredentials">
             <summary>
             Abstract class that represents a credentials object for AWS services.
@@ -2132,40 +2125,102 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Amazon.Runtime.StoredProfileCredentials">
+            <summary>
+            Helper routiners for AWS and Federated credential profiles. Probes the
+            profile type for the supplied profile name and returns the appropriate profile 
+            instance.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileCredentials.GetProfile(System.String)">
+            <summary>
+            Determines the type of the requested profile and returns the
+            appropriate profile instance.
+            </summary>
+            <param name="profileName">The name of the profile (AWS or federated) to be loaded.</param>
+            <returns>Instantiated profile type.</returns>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileCredentials.GetProfile(System.String,System.String)">
+            <summary>
+            Determines the type of the requested profile and returns the
+            appropriate profile instance.
+            </summary>
+            <param name="profileName">The name of the profile (AWS or federated) to be loaded.</param>
+            <param name="profileLocation">
+            The location of the shared credentials (.ini) file, for profiles that are not stored in the
+            SDK credential store.
+            </param>
+            <returns>Instantiated profile type.</returns>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileCredentials.ResolveSharedCredentialFileLocation(System.String)">
+            <summary>
+            Probes for and returns the fully qualified name of the shared ini-format credentials
+            file. 
+            </summary>
+            <param name="profileLocation">
+            Contains the file or folder name of the credential file. If not specified, the 
+            routine will first check the application configuration file for a setting indicating
+            the file location or filename. If the configuration file does not yield a credential
+            file location then an environment variable is examined. Finally the routine will 
+            inspect the fallback default location beneath the user's home folder location.
+            </param>
+            <returns>
+            The fully qualified name to the credential file that was located, or null
+            if no credential file could be found.
+            </returns>
+        </member>
         <member name="T:Amazon.Runtime.StoredProfileAWSCredentials">
             <summary>
-            Credentials that are retrieved using the stored profile. The SDK Store is searched which is the credentials store shared with the SDK, PowerShell CLI and Toolkit. 
-            To manage the SDK Store with the SDK use Amazon.Util.ProfileManager. If the profile is not found in the SDK Store then credentials file shared with other AWS SDKs 
-            is searched. The credentials file is stored in the .aws directory in the current user's home directory.
             <para>
-            The profile name can be specified in the App.config using the AWSProfileName setting.
+            Credentials that are retrieved using a stored profile. 
             </para>
             <para>
-            The location to search for credentials can be overridden in the App.config using the AWSProfilesLocation setting.
+            Unless otherwise specified priority is given to loading credentials from the SDK credential store 
+            file which is shared between the SDK, PowerShell CLI and Toolkit. Credentials in profiles in this 
+            file are encrypted and can only be used by the user account on the current machine that stored the 
+            profile. Credentials can also be loaded from the plain-text ini-format credential file which is 
+            shared with other AWS SDKs. This file is expected to exist in a '.aws' folder in the user's home 
+            directory but alternate locations can be specified using either the AWSProfilesLocation setting in 
+            the application configuration file, or by using the AWS_SHARED_CREDENTIALS_FILE environment variable.
+            </para>
+            <para>
+            The profile name can be specified in the App.config using the AWSProfileName setting.
             </para>
             </summary>
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.#ctor">
             <summary>
-            Constructs an instance of StoredProfileAWSCredentials. This constructor searches for credentials using the 
-            account name specified in the App.config. If no account is specified then the default credentials are used.
+            Constructs an instance for credentials stored in a profile. This constructor searches for credentials 
+            using the account name specified using the AWSProfileName setting, if set, in the application configuration 
+            file. If the configuration file setting is not set the SDK will attempt to locate a profile with the name 
+            'default'.
             </summary>
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.#ctor(System.String)">
             <summary>
-            Constructs an instance of StoredProfileAWSCredentials. Credentials will be searched for using the profileName parameter.
+            Constructs an instance for credentials stored in a profile with the specified name. The SDK will
+            check the SDK credential store file first before looking for the shared ini-format credentials
+            file unless the application configuration file contains a setting for the 'AWSProfilesLocation' 
+            indicating the search should be constrained to the shared credentials file at the specified
+            location.
             </summary>
-            <param name="profileName">The profile name to search for credentials for</param>
+            <param name="profileName">The name of the profile in which the credentials were stored.</param>
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.#ctor(System.String,System.String)">
             <summary>
-            Constructs an instance of StoredProfileAWSCredentials. Credentials will be searched for using the profileName parameter.
+            Constructs an instance for credentials stored in a profile with the specified name.
             </summary>
             <param name="profileName">The profile name to search for credentials for</param>
-            <param name="profilesLocation">Overrides the location to search for credentials</param>
+            <param name="profilesLocation">
+            Optional; instructs the SDK to check for the profile in the shared credentials file at the 
+            specified location. If not set, the SDK will inspect its own credential store file first before
+            attempting to locate a shared credential file using either the default location beneath the user's
+            home profile folder or the location specified in the AWS_SHARED_CREDENTIALS_FILE environment 
+            variable.
+            </param>
             <remarks>
-            If credential materials cannot be read or are invalid due to missing data 
-            an InvalidDataException is thrown. If no credentials can be located, an ArgumentException
+            If credential materials cannot be read or are invalid due to missing data an InvalidDataException 
+            is thrown. If no credentials can be located with the specified profile name, an ArgumentException 
             is thrown.
             </remarks>
         </member>
@@ -2181,15 +2236,16 @@
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.IsProfileKnown(System.String,System.String)">
             <summary>
-            Tests if a profile has been registered in either the SDK store or the
-            specified credential file. If profilesLocation is null/empty, the SDK 
-            store is searched for the profile data first before testing the default 
-            location of the ini-format credential file.
+            Tests if a profile has been registered in either the SDK store or the specified credential 
+            file.
             </summary>
             <param name="profileName">The name of the profile to test</param>
             <param name="profilesLocation">
-            If null/empty, the SDK store is searched for the named profile otherwise
-            the ini-format credential file at the specified location is inspected.
+            Optional; instructs the SDK to check for the profile in the shared credentials file at the 
+            specified location. If not set, the SDK will inspect its own credential store file first before
+            attempting to locate a shared credential file using either the default location beneath the user's
+            home profile folder or the location specified in the AWS_SHARED_CREDENTIALS_FILE environment 
+            variable.
             </param>
             <returns>True if a profile with the specified name has been registered.</returns>
         </member>
@@ -2197,7 +2253,7 @@
             <summary>
             Tests if an instance can be created from the persisted profile data.
             If profilesLocation is null/empty, the SDK store is searched for the
-            profile data first before testing the default location of the ini-format
+            profile data before probing for the profile in the shared the ini-format
             credential file.
             </summary>
             <param name="profileName">The name of the profile to test</param>
@@ -2206,13 +2262,6 @@
             the ini-format credential file at the specified location is inspected.
             </param>
             <returns>True if the persisted data would yield a valid credentials instance.</returns>
-        </member>
-        <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.DetermineCredentialsFilePath(System.String)">
-            <summary>
-            Determine the location of the shared credentials file.
-            </summary>
-            <param name="profilesLocation">If accountsLocation is null then the shared credentials file stored .aws directory under the home directory.</param>
-            <returns>The file path to the credentials file to be used.</returns>
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.GetCredentials">
             <summary>
@@ -2223,14 +2272,20 @@
         <member name="T:Amazon.Runtime.EnvironmentVariablesAWSCredentials">
             <summary>
             Uses aws credentials stored in environment variables to construct the credentials object.
-            AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used for the access key id and secret key. If the variable AWS_SESSION_TOKEN exists
-            then it will be used to create temporary session credentials.
+            AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used for the access key id and secret key. 
+            If the variable AWS_SESSION_TOKEN exists then it will be used to create temporary session 
+            credentials.
             </summary>
+            <remarks>
+            For backwards compatibility the class will also attempt to discover the secret key from
+            the AWS_SECRET_KEY variable, if a value cannot be obtained using the standard 
+            AWS_SECRET_ACCESS_KEY variable.
+            </remarks>
         </member>
         <member name="M:Amazon.Runtime.EnvironmentVariablesAWSCredentials.#ctor">
             <summary>
-            Constructs an instance of EnvironmentVariablesAWSCredentials. If no credentials are found in the environment variables 
-            then an InvalidOperationException.
+            Constructs an instance of EnvironmentVariablesAWSCredentials. If no credentials are found in 
+            the environment variables then an InvalidOperationException is thrown.
             </summary>
         </member>
         <member name="M:Amazon.Runtime.EnvironmentVariablesAWSCredentials.GetCredentials">
@@ -2251,6 +2306,18 @@
             </summary>
         </member>
         <member name="M:Amazon.Runtime.EnvironmentAWSCredentials.GetCredentials">
+            <summary>
+            Returns an instance of ImmutableCredentials for this instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Amazon.Runtime.AppConfigAWSCredentials">
+            <summary>
+            Obtains credentials from access key/secret key or AWSProfileName settings
+            in the application's app.config or web.config file.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.AppConfigAWSCredentials.GetCredentials">
             <summary>
             Returns an instance of ImmutableCredentials for this instance
             </summary>
@@ -2327,6 +2394,318 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Amazon.Runtime.ECSTaskCredentials">
+            <summary>
+            When running in an ECS container and AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is set,
+            use the given end point to retrieve the credentials.
+            </summary>
+        </member>
+        <member name="F:Amazon.Runtime.ECSTaskCredentials.ContainerCredentialsURIEnvVariable">
+            <summary>
+            These constants should not be consumed by client code.  They are only relevant
+            in the context of ECS container and, especially, AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+            environment variable should not be overriden by the client code.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.StoredProfileFederatedCredentials">
+            <summary>
+            Temporary credentials that are created following successful authentication with
+            a federated endpoint supporting SAML.
+            </summary>
+            <remarks>
+            1. Currently only the SDK store supports profiles that contain the necessary data to support
+            authentication and role-based credential generation. The ini-format files used by the AWS CLI
+            and some other SDKs are not supported at this time.
+            <br/>
+            2. In order to use the StoredProfileFederatedCredentials class the AWSSDK.SecurityToken assembly
+            must be available to your application at runtime.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Runtime.StoredProfileFederatedCredentials.CustomCallbackState">
+            <summary>
+            Custom state to return to the registered callback to handle credential requests.
+            The data will be contained in the CredentialRequestCallbackArgs instance supplied 
+            to the callback.
+            </summary>
+        </member>
+        <member name="F:Amazon.Runtime.StoredProfileFederatedCredentials.MinimumCredentialTimespan">
+            <summary>
+            The minimum allowed timespan for generated credentials, per STS documentation.
+            </summary>
+        </member>
+        <member name="F:Amazon.Runtime.StoredProfileFederatedCredentials.MaximumCredentialTimespan">
+            <summary>
+            The maximum allowed timespan for generated credentials, per STS documentation.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.StoredProfileFederatedCredentials.ProfileName">
+            <summary>
+            Name of the profile being used.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.StoredProfileFederatedCredentials.ProfilesLocation">
+            <summary>
+            Location of the profiles, if used.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.StoredProfileFederatedCredentials.ProfileData">
+            <summary>
+            The data about the SAML endpoint and any required user credentials parsed from the
+            profile.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.StoredProfileFederatedCredentials.RequestUserCredential">
+            <summary>
+            Callback signature for obtaining user credentials that may be needed for authentication.
+            </summary>
+            <param name="args">
+            Data about the credential demand including any custom state data that was supplied
+            when the callback was registered.
+            </param>
+            <returns>
+            The network credential to use in user authentication. Return null to signal the user
+            declined to provide credentials and authentication should not proceed.
+            </returns>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.#ctor">
+            <summary>
+            Constructs an instance of StoredProfileFederatedCredentials using the profile name specified
+            in the App.config. If no profile name is specified then the default credentials are used.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.#ctor(System.String)">
+            <summary>
+            Constructs an instance of StoredProfileFederatedCredentials. Credentials will be searched
+            for using the profileName parameter.
+            </summary>
+            <param name="profileName">The profile name to search for credentials for</param>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.#ctor(System.String,System.String)">
+            <summary>
+            <para>
+            Constructs an instance of StoredProfileFederatedCredentials. After construction call one of the Authenticate
+            methods to authenticate the user/process and obtain temporary AWS credentials.
+            </para>
+            <para>
+            For users who are domain joined (the role profile does not contain user identity information) the temporary
+            credentials will be refreshed automatically as needed. Non domain-joined users (those with user identity
+            data in the profile) are required to re-authenticate when credential refresh is required. An exception is
+            thrown when attempt is made to refresh credentials in this scenario. The consuming code of this class
+            should catch the exception and prompt the user for credentials, then call Authenticate to re-initialize
+            with a new set of temporary AWS credentials.
+            </para>
+            </summary>
+            <param name="profileName">
+            The name of the profile holding the necessary role data to enable authentication and credential generation.
+            </param>
+            <param name="profilesLocation">Reserved for future use.</param>
+            <remarks>
+            The ini-format credentials file is not currently supported for SAML role profiles.
+            </remarks>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.#ctor(System.String,System.String,System.Net.WebProxy)">
+            <summary>
+            <para>
+            Constructs an instance of StoredProfileFederatedCredentials. After construction call one of the Authenticate
+            methods to authenticate the user/process and obtain temporary AWS credentials.
+            </para>
+            <para>
+            For users who are domain joined (the role profile does not contain user identity information) the temporary
+            credentials will be refreshed automatically as needed. Non domain-joined users (those with user identity
+            data in the profile) are required to re-authenticate when credential refresh is required. An exception is
+            thrown when attempt is made to refresh credentials in this scenario. The consuming code of this class
+            should catch the exception and prompt the user for credentials, then call Authenticate to re-initialize
+            with a new set of temporary AWS credentials.
+            </para>
+            </summary>
+            <param name="profileName">
+            The name of the profile holding the necessary role data to enable authentication and credential generation.
+            </param>
+            <param name="profilesLocation">Reserved for future use.</param>
+            <param name="proxySettings">
+            Null or proxy settings to be used during the HHTPS authentication calls when generating credentials.
+            /// </param>
+            <remarks>The ini-format credentials file is not currently supported for SAML role profiles.</remarks>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.SetCredentialCallbackData(Amazon.Runtime.StoredProfileFederatedCredentials.RequestUserCredential,System.Object)">
+            <summary>
+            <para>
+            Registers a callback handler for scenarios where credentials need to be supplied
+            during user authentication (primarily the non-domain-joined use case). Custom data,
+            which will be supplied in the CredentialRequestCallbackArgs instance passed to the
+            callback, can also be supplied.
+            </para>
+            <para>
+            The callback will only be invoked if the underlying SAML role profile indicates it
+            was set up for use with a specific identity. For profiles that do not contain any user
+            identity the SDK will default to using the identity of the current process during
+            authentication. Additionally, if the profile contain user identity information but no
+            callback has been registered, the SDK will also attempt to use the current process
+            identity during authentication.
+            </para>
+            </summary>
+            <param name="callback">The handler to be called</param>
+            <param name="customData">
+            Custom state data to be supplied in the arguments to the callback.
+            </param>
+            <remarks>
+            Only one callback handler can be registered. The call to the handler will be made on
+            whatever thread is executing at the time a demand to provide AWS credentials is made.
+            If the handler code requires that UI need to be displayed, the handler should 
+            transition to the UI thread as appropriate.
+            </remarks>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.CanCreateFrom(System.String,System.String)">
+            <summary>
+            Tests if an instance can be created from the persisted profile data.
+            </summary>
+            <param name="profileName">The name of the profile to test.</param>
+            <param name="profilesLocation">The location of the shared ini-format credential file.</param>
+            <returns>True if the persisted data would yield a valid credentials instance.</returns>
+            <remarks>
+            This profile type is currently only supported in the SDK credential store file.
+            The shared ini-format file is not currently supported; any value supplied
+            for the profilesLocation value is ignored.
+            </remarks>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.Validate">
+            <summary>
+            Performs any additional validation we may require on the profile content.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.StoredProfileFederatedCredentials.GenerateNewCredentials">
+            <summary>
+            Refresh credentials after expiry. If the role profile is configured with user identity
+            information and a callback has been registered to obtain the user credential the callback
+            will be invoked ahead of authentication. For role profiles configured with user identity
+            but no callback registration, the SDK will fall back to attempting to use the default
+            user identity of the current process.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Amazon.Runtime.CredentialRequestCallbackArgs">
+            <summary>
+            State class passed on callback to demand user credentials when authentication
+            needs to be performed using a non-default identity.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.CredentialRequestCallbackArgs.ProfileName">
+            <summary>
+            Contains the name of the credential profile we are authenticating
+            for. Use in display prompts to give the user some context as to
+            why their credentials are being requested.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.CredentialRequestCallbackArgs.UserIdentity">
+            <summary>
+            Contains the user identity that the user should supply a password
+            for. The user can ignore if they choose and return credentials for
+            an alternate account.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.CredentialRequestCallbackArgs.CustomState">
+            <summary>
+            Any custom state that was registered with the callback.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.CredentialRequestCallbackArgs.PreviousAuthenticationFailed">
+            <summary>
+            Set if the callback was due to a failed authentication attempt.
+            If false we are beginning to obtain or refresh credentials.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.CredentialRequestCallbackRequiredException">
+            <summary>
+            Exception thrown on validation of a StoredProfileFederatedCredentials instance if the role profile
+            is configured to use a non-default user identity and the QueryUserCredentialCallback on the
+            instance has not been set.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.CredentialRequestCallbackRequiredException.#ctor(System.String)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:Amazon.Runtime.CredentialRequestCallbackRequiredException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="msg"></param>
+            <param name="innerException"></param>
+        </member>
+        <member name="M:Amazon.Runtime.CredentialRequestCallbackRequiredException.#ctor(System.Exception)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="innerException"></param>
+        </member>
+        <member name="M:Amazon.Runtime.CredentialRequestCallbackRequiredException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the CredentialRequestCallbackRequiredException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="T:Amazon.Runtime.FederatedAuthenticationFailureException">
+            <summary>
+            Custom exception type thrown when authentication for a user fails due to
+            invalid credentials.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.FederatedAuthenticationFailureException.#ctor(System.String)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:Amazon.Runtime.FederatedAuthenticationFailureException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="msg"></param>
+            <param name="inner"></param>
+        </member>
+        <member name="M:Amazon.Runtime.FederatedAuthenticationFailureException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the FederatedAuthenticationFailureException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="T:Amazon.Runtime.FederatedAuthenticationCancelledException">
+            <summary>
+            Custom exception type thrown when a role profile with user identity is used
+            in conjunction with a credential request callback. This exception is thrown
+            if the callback returns null, indicating the user declined to supply credentials.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.FederatedAuthenticationCancelledException.#ctor(System.String)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:Amazon.Runtime.FederatedAuthenticationCancelledException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new exception instance.
+            </summary>
+            <param name="msg"></param>
+            <param name="inner"></param>
+        </member>
+        <member name="M:Amazon.Runtime.FederatedAuthenticationCancelledException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the FederatedAuthenticationCancelledException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
         <member name="T:Amazon.Runtime.AnonymousAWSCredentials">
             <summary>
             Anonymous credentials.
@@ -2338,6 +2717,63 @@
             Returns an instance of ImmutableCredentials for this instance
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.FallbackCredentialsFactory.ECSEC2CredentialsWrapper">
+            If AWS_CONTAINER_CREDENTIALS_RELATIVE_URI environment variable is set, we want to attempt to retrieve credentials
+            using ECS endpoint instead of referring to instance profile credentials.
+        </member>
+        <member name="T:Amazon.Runtime.AWSRegion">
+            <summary>
+            Base class for determining region based on inspection.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.AWSRegion.SetRegionFromName(System.String)">
+            <summary>
+            Sets the Region property by looking up the corresponding RegionEndpoint
+            from the supplied region system name (us-east-1, us-west-2 etc).
+            </summary>
+            <param name="regionSystemName">The system name of the region.</param>
+        </member>
+        <member name="T:Amazon.Runtime.AppConfigAWSRegion">
+            <summary>
+            Determines region based on application configuration settings. If the configuration does not contain
+            the region setting key an InvalidOperationException is thrown.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.AppConfigAWSRegion.#ctor">
+            <summary>
+            Attempts to construct an instance of ApplicationConfigAWSRegion. If no region is found in the
+            application configuration file then an InvalidOperationException is thrown.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.EnvironmentVariableAWSRegion">
+            <summary>
+            Determines region based on an environment variable. If the environment does not contain
+            the region setting key an InvalidOperationException is thrown.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.EnvironmentVariableAWSRegion.#ctor">
+            <summary>
+            Attempts to construct an instance of EnvironmentVariableAWSRegion. If no region is found in the
+            environment then an InvalidOperationException is thrown.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.InstanceProfileAWSRegion">
+            <summary>
+            Determines region based on inspection of the instance metadata if running on an EC2 instance.
+            If instance metadata cannot be read or does not contain region information an InvalidOperationException is thrown.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.InstanceProfileAWSRegion.#ctor">
+            <summary>
+            Attempts to construct an instance of InstanceProfileAWSRegion. If no region is found in the
+            metadata or we are not running on an EC2 instance an InvalidOperationException is thrown.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.FallbackRegionFactory">
+            <summary>
+            Probing mechanism to determine region from various sources.
+            </summary>
         </member>
         <member name="T:Amazon.Runtime.ClientConfig">
             <summary>
@@ -2372,9 +2808,10 @@
         <member name="P:Amazon.Runtime.ClientConfig.RegionEndpoint">
             <summary>
             Gets and sets the RegionEndpoint property.  The region constant to use that 
-            determines the endpoint to use.  If this is not set
-            then the client will fallback to the value of ServiceURL.
+            determines the endpoint to use.  If this is not set then the client will fallback 
+            to the value of ServiceURL.
             </summary>
+            
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.RegionEndpointServiceName">
             <summary>
@@ -2419,16 +2856,17 @@
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.LogResponse">
             <summary>
-            Gets and sets the LogResponse.
-            If this property is set to true, the service response
-            is read in its entirety and logged.
+            Gets and sets the LogResponse property.
+            If this property is set to true, the service response is logged.
+            The size of response being logged is controlled by the AWSConfigs.LoggingConfig.LogResponsesSizeLimit property.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.ReadEntireResponse">
             <summary>
-            Gets and sets the ReadEntireResponse.
-            If this property is set to true, the service response
-            is read in its entirety before being processed.
+            Gets and sets the ReadEntireResponse property.
+            NOTE: This property does not effect response processing and is deprecated.
+            To enable response logging, the ClientConfig.LogResponse and AWSConfigs.LoggingConfig
+            properties can be used.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.BufferSize">
@@ -2506,6 +2944,17 @@
             <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
             <seealso cref="P:System.Net.Http.HttpClient.Timeout"/>
         </member>
+        <member name="P:Amazon.Runtime.ClientConfig.UseDualstackEndpoint">
+            <summary>
+            Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint
+            for the configured region.
+            </summary>
+            <remarks>
+            Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check 
+            that the service actually supports a dualstack endpoint in the configured region before enabling 
+            this option for a service.
+            </remarks>
+        </member>
         <member name="M:Amazon.Runtime.ClientConfig.SetUseNagleIfAvailable(System.Boolean)">
             <summary>
             Enable or disable the Nagle algorithm on the underlying http
@@ -2534,7 +2983,25 @@
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.ProxyPort">
             <summary>
-            Gets and sets of the ProxyPort property.
+            Gets and sets the ProxyPort property.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.ClientConfig.ProxyBypassList">
+            <summary>
+            Gets and sets the ProxyBypassList property; a collection
+            of regular expressions denoting the set of endpoints for
+            which the configured proxy host will be bypassed.
+            </summary>
+            <remarks>
+             For more information on bypass lists 
+             see https://msdn.microsoft.com/en-us/library/system.net.webproxy.bypasslist%28v=vs.110%29.aspx.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Runtime.ClientConfig.ProxyBypassOnLocal">
+            <summary>
+            Gets and sets the ProxyBypassOnLocal property.
+            If set true requests to local addresses bypass the configured
+            proxy.
             </summary>
         </member>
         <member name="M:Amazon.Runtime.ClientConfig.GetWebProxy">
@@ -2542,6 +3009,13 @@
             Returns a WebProxy instance configured to match the proxy settings
             in the client configuration.
             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.ClientConfig.SetWebProxy(System.Net.WebProxy)">
+            <summary>
+            Unpacks the host, port and any credentials info into the instance's
+            proxy-related fields.
+            </summary>
+            <param name="proxy">The proxy details</param>
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.MaxIdleTime">
             <summary>
@@ -3463,6 +3937,78 @@
             This exception is thrown if there are problems signing the request.
             </summary>
         </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SignatureException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the SignatureException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Auth.SharedCredentialsFile">
+             <summary>
+             Provides access to read and write to the shared credentials INI file.
+             The file is read, parsed, and validated at construction time.
+             Changes can be made using the AddOrUpdateSection() and
+             DeleteSection() methods.
+             Those changes can be persisted to disk using the Persist() method.
+            
+             This class is not threadsafe.
+             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.#ctor(System.String)">
+            <summary>
+            Construct a new SharedCredentialsFile.
+            </summary>
+            <param name="filePath">path of the shared credentials file</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.GetCredentials(System.String)">
+            <summary>
+            Get credentials for the given profile.
+            </summary>
+            <param name="profileName">name of profile to find credentials for</param>
+            <returns>true if the profile exists and has valid credentials, false otherwise</returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.TryGetCredentials(System.String,Amazon.Runtime.ImmutableCredentials@)">
+            <summary>
+            Return the credentials for the profile if valid credentials can be found.
+            </summary>
+            <param name="profileName">name of profile to find credentials for</param>
+            <param name="credentials">the credentials for the profile</param>
+            <returns>true if the profile was found and it contained valid credentials, false otherwise</returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.AddOrUpdateCredentials(System.String,System.String,System.String)">
+            <summary>
+            Add credentials for the profile given.  If credentials for the profile already exist, update them.
+            Changes are not written to disk until the Persist() method is called.
+            </summary>
+            <param name="profileName">name of profile</param>
+            <param name="accessKey">access key for the credentials</param>
+            <param name="secretAccessKey">secret access key for the credentials</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.AddOrUpdateCredentials(System.String,System.String,System.String,System.String)">
+            <summary>
+            Add credentials for the profile given.  If credentials for the profile already exist, update them.
+            Changes are not written to disk until the Persist() method is called.
+            </summary>
+            <param name="profileName">name of profile</param>
+            <param name="accessKey">access key for the credentials</param>
+            <param name="secretAccessKey">secret access key for the credentials</param>
+            <param name="token">token for the credentials</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.DeleteProfile(System.String)">
+            <summary>
+            Deletes the section with the given ProfileName from the SharedCredentialsFile, if one exists.
+            Changes are not written to disk until the Persist() method is called.
+            </summary>
+            <param name="profileName">ProfileName of section to delete</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Auth.SharedCredentialsFile.Persist">
+            <summary>
+            Persist any changes to disk.
+            </summary>
+        </member>
         <member name="T:Amazon.Runtime.Internal.Transform.ErrorResponseUnmarshaller">
             <summary>
                Response Unmarshaller for all Errors
@@ -3908,6 +4454,23 @@
             <returns>
             True if a node was read, false if there are no more elements to read./
             </returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Transform.HttpWebRequestResponseData.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the HttpWebRequestResponseData class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Transform.HttpWebRequestResponseData.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
         </member>
         <member name="T:Amazon.Runtime.Internal.Util.CachingWrapperStream">
             <summary>
@@ -4514,6 +5077,69 @@
             Log message format.
             </summary>
         </member>
+        <member name="T:Amazon.Runtime.Internal.Util.LruCache`2">
+             <summary>
+             a size-limited cache of key value pairs
+            
+             Once the maximum size has been reached, the least recently
+             used pairs will be evicted to make room for any new items.
+             </summary>
+             <typeparam name="TKey"></typeparam>
+             <typeparam name="TValue"></typeparam>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.LruCache`2.MaxEntries">
+            <summary>
+            the maximum number of entries this LruCache will hold
+            before items begin getting evicted
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.LruCache`2.Count">
+            <summary>
+            the number of items in the cache
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.LruCache`2.#ctor(System.Int32)">
+            <summary>
+            Construct a new LruCache.
+            </summary>
+            <param name="maxEntries">maximum number of entries before items are evicted</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.LruCache`2.AddOrUpdate(`0,`1)">
+             <summary>
+             Add the key/value pair to the cache, or update
+             the value if the key already exists.
+            
+             If the cache is full, evicts the least recently used item.
+             </summary>
+             <param name="key"></param>
+             <param name="value"></param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.LruCache`2.TryGetValue(`0,`1@)">
+            <summary>
+            Try to get the value associated with the key.
+            </summary>
+            <param name="key">the key to look up</param>
+            <param name="value">the value, if the key exists</param>
+            <returns>true if there is a value associated with the key, or false if no value is associated with the key</returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.LruCache`2.Clear">
+            <summary>
+            Clear the LruCache of all entries.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Util.LruList`2">
+            <summary>
+            Helper class to support LruCache.
+            Does not implement the error checking and synchronization that
+            would be necessary for it to stand alone.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Util.LruListItem`2">
+            <summary>
+            Item to be stored in the LruList
+            linked list structure.
+            </summary>
+        </member>
         <member name="P:Amazon.Runtime.Internal.Util.RequestMetrics.Properties">
             <summary>
             Collection of properties being tracked
@@ -5032,6 +5658,39 @@
             </param>
             <param name="count">The number of bytes to be written to the current stream.</param>
         </member>
+        <member name="T:Amazon.Runtime.Internal.Util.InternalSystemDiagnosticsLogger">
+            <summary>
+            Logger wrapper for System.Diagnostics.TraceSource logger.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Util.TraceSourceUtil">
+            <summary>
+            Creates TraceRoute for a given Type or the closest "parent" that has a listener configured.
+            Example: if type is Amazon.DynamoDB.AmazonDynamoDBClient, listeners can be configured for:
+            -Amazon.DynamoDB.AmazonDynamoDBClient
+            -Amazon.DynamoDB
+            -Amazon
+            The first matching TraceSource with listeners will be used.
+            If no listeners are configured for type or one of its "parents", will return null.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.TraceSourceUtil.GetTraceSource(System.Type)">
+            <summary>
+            Gets a TraceSource for given Type with SourceLevels.All.
+            If there are no listeners configured for targetType or one of its "parents", returns null.
+            </summary>
+            <param name="targetType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.TraceSourceUtil.GetTraceSource(System.Type,System.Diagnostics.SourceLevels)">
+            <summary>
+            Gets a TraceSource for given Type and SourceLevels.
+            If there are no listeners configured for targetType or one of its "parents", returns null.
+            </summary>
+            <param name="targetType"></param>
+            <param name="sourceLevels"></param>
+            <returns></returns>
+        </member>
         <member name="T:Amazon.Runtime.Internal.Util.DecryptStream">
             <summary>
             A wrapper stream that decrypts the base stream as it
@@ -5311,38 +5970,134 @@
             <param name="key">Symmetric key to perform encryption</param>
             <param name="IV">Initialization vector to perform encryption</param>
         </member>
-        <member name="T:Amazon.Runtime.Internal.Util.InternalSystemDiagnosticsLogger">
+        <member name="T:Amazon.Runtime.Internal.Util.IniFile">
+             <summary>
+             Provides read/write access to a file in the INI format.
+            
+             This class is not threadsafe.
+             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.#ctor(System.String)">
             <summary>
-            Logger wrapper for System.Diagnostics.TraceSource logger.
+            Construct a new IniFile.
+            </summary>
+            <param name="filePath">path of the IniFile</param>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.IniFile.FilePath">
+            <summary>
+            the path of the file
             </summary>
         </member>
-        <member name="T:Amazon.Runtime.Internal.Util.TraceSourceUtil">
+        <member name="P:Amazon.Runtime.Internal.Util.IniFile.Lines">
             <summary>
-            Creates TraceRoute for a given Type or the closest "parent" that has a listener configured.
-            Example: if type is Amazon.DynamoDB.AmazonDynamoDBClient, listeners can be configured for:
-            -Amazon.DynamoDB.AmazonDynamoDBClient
-            -Amazon.DynamoDB
-            -Amazon
-            The first matching TraceSource with listeners will be used.
-            If no listeners are configured for type or one of its "parents", will return null.
+            helper to access the lines of the file
             </summary>
         </member>
-        <member name="M:Amazon.Runtime.Internal.Util.TraceSourceUtil.GetTraceSource(System.Type)">
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.Persist">
             <summary>
-            Gets a TraceSource for given Type with SourceLevels.All.
-            If there are no listeners configured for targetType or one of its "parents", returns null.
+            Persist the changes to this INI file to disk.
             </summary>
-            <param name="targetType"></param>
-            <returns></returns>
         </member>
-        <member name="M:Amazon.Runtime.Internal.Util.TraceSourceUtil.GetTraceSource(System.Type,System.Diagnostics.SourceLevels)">
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.EditSection(System.String,System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+             <summary>
+             Update the section with the properties given.
+             If the section doesn't exist, it will be appended to the file.
+            
+             -Any properties that do exist in the section will be updated.
+             -A null value for a property denotes that it should be deleted from the section
+             -If any properties don't exist they will be appended to the end of the section
+             in the same order they appear in the list.
+             </summary>
+             <param name="sectionName">name of the section to operate on</param>
+             <param name="properties">ordered list of properties to add/update/delete</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.EnsureSectionExists(System.String)">
             <summary>
-            Gets a TraceSource for given Type and SourceLevels.
-            If there are no listeners configured for targetType or one of its "parents", returns null.
+            Check if the section exists.  If not, append it to the end of the file.
             </summary>
-            <param name="targetType"></param>
-            <param name="sourceLevels"></param>
-            <returns></returns>
+            <param name="sectionName">section to ensure exists</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.DeleteSection(System.String)">
+            <summary>
+            If the section exists, delete it from the INI file.
+            </summary>
+            <param name="sectionName">section to delete</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.SectionExists(System.String)">
+            <summary>
+            Determine if a section exists in the INI file.
+            </summary>
+            <param name="sectionName">name of section to look for</param>
+            <returns>true if the section exists, false otherwise</returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.IniFile.TryGetSection(System.String,System.Collections.Generic.Dictionary{System.String,System.String}@)">
+            <summary>
+            Return the properties for the section if it exists.
+            </summary>
+            <param name="sectionName">name of section to get</param>
+            <param name="properties">properties contained in the section</param>
+            <returns>True if the section was found, false otherwise</returns>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Util.OptimisticLockedTextFile">
+             <summary>
+             Provides line-based read/write access to a file.
+             The file can be read into memory, changed, then written back to disk.
+             When the file is persisted back to disk, an optimistic concurrency
+             check is performed to make sure the file hasn't changed since it was
+             originally read.
+            
+             This class is not threadsafe.
+             </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.OptimisticLockedTextFile.OriginalContents">
+            <summary>
+            a full copy of the original file
+            This is used for optimistic concurrency.
+            Note that this assumes a small file and does not scale large files.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.OptimisticLockedTextFile.FilePath">
+            <summary>
+            path of the file
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.OptimisticLockedTextFile.Lines">
+             <summary>
+             Read/write access to the lines that make up the file.
+             Any changes to this List are persisted back to disk when Persist() is called.
+            
+             NOTE:
+             The lines have the original line endings on them to preserve the
+             original text as much as possible.
+             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.OptimisticLockedTextFile.#ctor(System.String)">
+            <summary>
+            Construct a new OptimisticLockedTextFile.
+            </summary>
+            <param name="filePath">path of the file</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.OptimisticLockedTextFile.Persist">
+            <summary>
+            Persist changes to disk after an optimistic concurrency check is completed.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.HttpErrorResponseException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the HttpErrorResponseException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.HttpErrorResponseException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
         </member>
         <member name="T:Amazon.Runtime.Internal.PipelineHandler">
             <summary>
@@ -6101,11 +6856,20 @@
             <summary>
             The default implementation of the retry policy.
             </summary>
+            <summary>
+            The default implementation of the retry policy.
+            </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.DefaultRetryPolicy.MaxBackoffInMilliseconds">
             <summary>
             The maximum value of exponential backoff in milliseconds, which will be used to wait
             before retrying a request.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.DefaultRetryPolicy.HttpStatusCodesToRetryOn">
+            <summary>
+            List of HTTP Status codes codes which are returned as part of the error response.
+            These status codes will be retried.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.DefaultRetryPolicy.ErrorCodesToRetryOn">
@@ -6141,6 +6905,14 @@
             <param name="exception">The exception thrown by the previous request.</param>
             <returns>Return true if the request should be retried.</returns>
         </member>
+        <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.RetryForExceptionSync(System.Exception)">
+            <summary>
+            Perform the processor-bound portion of the RetryForException logic.
+            This is shared by the sync, async, and APM versions of the RetryForException method.
+            </summary>
+            <param name="exception">The exception thrown by the previous request.</param>
+            <returns>Return true if the request should be retried.</returns>
+        </member>
         <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.RetryLimitReached(Amazon.Runtime.IExecutionContext)">
             <summary>
             Checks if the retry limit is reached.
@@ -6153,6 +6925,21 @@
             Waits before retrying a request. The default policy implements a exponential backoff.
             </summary>
             <param name="executionContext">Request context containing the state of the request.</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.RetryForExceptionAsync(Amazon.Runtime.IExecutionContext,System.Exception)">
+            <summary>
+            Return true if the request should be retried.
+            </summary>
+            <param name="executionContext">Request context containing the state of the request.</param>
+            <param name="exception">The exception thrown by the previous request.</param>
+            <returns>Return true if the request should be retried.</returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.WaitBeforeRetryAsync(Amazon.Runtime.IExecutionContext)">
+            <summary>
+            Waits before retrying a request.
+            </summary>
+            <param name="executionContext">The execution context which contains both the
+            requests and response context.</param>
         </member>
         <member name="T:Amazon.Runtime.Internal.RetryHandler">
             <summary>
@@ -6319,6 +7106,17 @@
             An unrecognized error type was returned.
             </summary>
         </member>
+        <member name="T:Amazon.Runtime.IAmazonService">
+            <summary>
+            All Amazon service interfaces like IAmazonS3 extend from this interface. This allows all the 
+            Amazon service interfaces be identified by this base interface and helps with generic constraints.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.IAmazonService.Config">
+            <summary>
+            A readonly view of the configuration for the service client.
+            </summary>
+        </member>
         <member name="T:Amazon.Runtime.IClientConfig">
             <summary>
             This interface is the read only access to the ClientConfig object used when setting up service clients. Once service clients
@@ -6469,6 +7267,17 @@
             Please specify a timeout value only if the operation will not complete within the default intervals
             specified for an HttpWebRequest/HttpClient.
             </para>
+            </remarks>
+        </member>
+        <member name="P:Amazon.Runtime.IClientConfig.UseDualstackEndpoint">
+            <summary>
+            Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint
+            for the configured region.
+            </summary>
+            <remarks>
+            Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check 
+            that the service actually supports a dualstack endpoint in the configured region before enabling 
+            this option for a service.
             </remarks>
         </member>
         <member name="M:Amazon.Runtime.IClientConfig.DetermineServiceURL">
@@ -6642,6 +7451,15 @@
             <summary>
             This exception is thrown if there are problems signing the request.
             </summary>
+        </member>
+        <member name="M:Amazon.Runtime.SignatureException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the SignatureException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
         </member>
         <member name="M:Amazon.Runtime.StreamTransferProgressArgs.#ctor(System.Int64,System.Int64,System.Int64)">
             <summary>
@@ -6860,6 +7678,10 @@
             A retry policy specifies all aspects of retry behavior. This includes conditions when the request should be retried,
             checks of retry limit, preparing the request before retry and introducing delay (backoff) before retries.
             </summary>
+            <summary>
+            A retry policy specifies all aspects of retry behavior. This includes conditions when the request should be retried,
+            checks of retry limit, preparing the request before retry and introducing delay (backoff) before retries.
+            </summary>
         </member>
         <member name="P:Amazon.Runtime.RetryPolicy.MaxRetries">
             <summary>
@@ -6913,7 +7735,51 @@
             <param name="executionContext">The execution context which contains both the
             requests and response context.</param>
         </member>
+        <member name="M:Amazon.Runtime.RetryPolicy.RetrySync(Amazon.Runtime.IExecutionContext,System.Exception)">
+            <summary>
+            Perform the processor-bound portion of the Retry logic.
+            This is shared by the sync, async, and APM versions of the Retry method.
+            </summary>
+            <param name="executionContext"></param>
+            <param name="exception"></param>
+            <returns>a value if it can be determined, or null if the IO-bound calculations need to be done</returns>
+        </member>
+        <member name="M:Amazon.Runtime.RetryPolicy.RetryAsync(Amazon.Runtime.IExecutionContext,System.Exception)">
+            <summary>
+            Checks if a retry should be performed with the given execution context and exception.
+            </summary>
+            <param name="executionContext">The execution context which contains both the
+            requests and response context.</param>
+            <param name="exception">The exception throw after issuing the request.</param>
+            <returns>Returns true if the request should be retried, else false.</returns>
+        </member>
+        <member name="M:Amazon.Runtime.RetryPolicy.RetryForExceptionAsync(Amazon.Runtime.IExecutionContext,System.Exception)">
+            <summary>
+            Return true if the request should be retried for the given exception.
+            </summary>
+            <param name="executionContext">The execution context which contains both the
+            requests and response context.</param>
+            <param name="exception">The exception thrown by the previous request.</param>
+            <returns>Return true if the request should be retried.</returns>
+        </member>
+        <member name="M:Amazon.Runtime.RetryPolicy.WaitBeforeRetryAsync(Amazon.Runtime.IExecutionContext)">
+            <summary>
+            Waits before retrying a request.
+            </summary>
+            <param name="executionContext">The execution context which contains both the
+            requests and response context.</param>
+        </member>
         <member name="T:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3">
+            <summary>
+            ICoreAmazonS3 is not meant to use directly. It defines S3 with basic .NET types
+            and allows other services to be able to use S3 as a runtime dependency. This interface
+            is implemented by the AmazonS3Client defined in the S3 assembly.
+            </summary>
+            <summary>
+            ICoreAmazonS3 is not meant to use directly. It defines S3 with basic .NET types
+            and allows other services to be able to use S3 as a runtime dependency. This interface
+            is implemented by the AmazonS3Client defined in the S3 assembly.
+            </summary>
             <summary>
             ICoreAmazonS3 is not meant to use directly. It defines S3 with basic .NET types
             and allows other services to be able to use S3 as a runtime dependency. This interface
@@ -6928,6 +7794,99 @@
             <param name="objectKey"></param>
             <param name="expiration"></param>
             <param name="additionalProperties"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.GetAllObjectKeysAsync(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Get all the object keys for the particular bucket and key prefix.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="prefix"></param>
+            <param name="additionalProperties"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.UploadObjectFromStreamAsync(System.String,System.String,System.IO.Stream,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            Upload an object from a stream.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKey"></param>
+            <param name="stream"></param>
+            <param name="additionalProperties"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.DeleteAsync(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            Delete an object.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKey"></param>
+            <param name="additionalProperties"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.DeletesAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            Delete an object.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKeys"></param>
+            <param name="additionalProperties"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.GetObjectStreamAsync(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            Open a stream to an object in S3.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKey"></param>
+            <param name="additionalProperties"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.UploadObjectFromFilePathAsync(System.String,System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            Upload an object from a file path.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKey"></param>
+            <param name="filepath"></param>
+            <param name="additionalProperties"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.DownloadToFilePathAsync(System.String,System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            Download an object in S3 to a file path.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKey"></param>
+            <param name="filepath"></param>
+            <param name="additionalProperties"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.MakeObjectPublicAsync(System.String,System.String,System.Boolean)">
+            <summary>
+            Set the ACL on the object to public readable.
+            </summary>
+            <param name="bucketName"></param>
+            <param name="objectKey"></param>
+            <param name="enable"></param>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.EnsureBucketExistsAsync(System.String)">
+            <summary>
+            Check to see if the bucket exists and if it doesn't create the bucket.
+            </summary>
+            <param name="bucketName"></param>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.DoesS3BucketExistAsync(System.String)">
+            <summary>
+            Check to see if the bucket exists.
+            </summary>
+            <param name="bucketName"></param>
             <returns></returns>
         </member>
         <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.GetAllObjectKeys(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object})">
@@ -7012,59 +7971,6 @@
             <param name="bucketName"></param>
             <returns></returns>
         </member>
-        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.UploadObjectFromStreamAsync(System.String,System.String,System.IO.Stream,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
-            <summary>
-            Upload an object from a stream.
-            </summary>
-            <param name="bucketName"></param>
-            <param name="objectKey"></param>
-            <param name="stream"></param>
-            <param name="additionalProperties"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.DeleteAsync(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
-            <summary>
-            Delete an object.
-            </summary>
-            <param name="bucketName"></param>
-            <param name="objectKey"></param>
-            <param name="additionalProperties"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.GetObjectStreamAsync(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
-            <summary>
-            Open a stream to an object in S3.
-            </summary>
-            <param name="bucketName"></param>
-            <param name="objectKey"></param>
-            <param name="additionalProperties"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.UploadObjectFromFilePathAsync(System.String,System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
-            <summary>
-            Upload an object from a file path.
-            </summary>
-            <param name="bucketName"></param>
-            <param name="objectKey"></param>
-            <param name="filepath"></param>
-            <param name="additionalProperties"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonS3.DownloadToFilePathAsync(System.String,System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Threading.CancellationToken)">
-            <summary>
-            Download an object in S3 to a file path.
-            </summary>
-            <param name="bucketName"></param>
-            <param name="objectKey"></param>
-            <param name="filepath"></param>
-            <param name="additionalProperties"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
-        </member>
         <member name="T:Amazon.Runtime.SharedInterfaces.ICoreAmazonSQS">
             <summary>
             ICoreAmazonSQS is not meant to use directly. It defines SQS with basic .NET types
@@ -7074,17 +7980,74 @@
         </member>
         <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonSQS.GetAttributes(System.String)">
             <summary>
+            <para>
+            This method is used internally to access the Amazon SQS service within other service assemblies.
+            Please use AmazonSQSClient to access Amazon SQS instead.
+            </para>
             Get the attributes for the queue identified by the queue URL.
             </summary>
             <param name="queueUrl">The queue URL to get attributes for.</param>
             <returns>The attributes for the queue.</returns>
         </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonSQS.GetAttributesAsync(System.String)">
+            <summary>
+            Get the attributes for the queue identified by the queue URL asynchronously.
+            </summary>
+            <param name="queueUrl">The queue URL to get attributes for.</param>
+            <returns>A Task containing the result of a dictionary of attributes for the queue.</returns>
+        </member>
         <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonSQS.SetAttributes(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
+            <para>
+            This method is used internally to access the Amazon SQS service within other service assemblies.
+            Please use AmazonSQSClient to access Amazon SQS instead.
+            </para>
             Set the attributes on the queue identified by the queue URL.
             </summary>
             <param name="queueUrl">The queue URL to set the attributues.</param>
             <param name="attributes">The attributes to set.</param>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonSQS.SetAttributesAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Set the attributes on the queue identified by the queue URL asynchronously.
+            </summary>
+            <param name="queueUrl">The queue URL to set the attributues.</param>
+            <param name="attributes">The attributes to set.</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="T:Amazon.Runtime.SharedInterfaces.ICoreAmazonSTS">
+            <summary>
+            ICoreAmazonSTS is not meant to use directly. It defines Security Token
+            service with basic .NET types and allows other services to be able to use the service as 
+            a runtime dependency. This interface is implemented by the AmazonSecurityTokenServiceClient 
+            defined in the AWSSDK.SecurityToken assembly.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.SharedInterfaces.ICoreAmazonSTS.CredentialsFromSAMLAuthentication(System.String,System.String,System.String,System.TimeSpan,System.Net.ICredentials)">
+            <summary>
+            <para>
+            This method is used internally to access the Amazon Security Token
+            service within other service assemblies.
+            Please use AmazonSecurityTokenServiceClient to access the Amazon Security Token
+            service instead.
+            </para>
+            Authenticates against a federated identity endpoint supporting SAML and returns 
+            temporary AWS credentials for the supplied role. 
+            </summary>
+            <param name="endpoint">The endpoint for the federated identity provider</param>
+            <param name="authenticationType">The authentication type to use (NTLM, Kerberos etc)</param>
+            <param name="roleARN">The ARN of the role the user is to assume following authentication</param>
+            <param name="credentialDuration">TTL duration for the generated credentials.</param>
+            <param name="userCredential">
+            Optional; alternate user credential for authentication. If null the identity of the
+            current process is used.
+            </param>
+            <returns>Generated credential data, including SAML-related information such as subject.</returns>
+            <remarks>
+            Proxy settings that are required for the HTTPS and STS calls made during the authentication/credential
+            generation process are supported and should have been configured on the STS ClientConfig instance 
+            associated with the STS client instance exposing this interface.
+            </remarks>
         </member>
         <member name="T:Amazon.AWSSection">
             <summary>
@@ -7119,6 +8082,18 @@
         <member name="P:Amazon.ProxySection.Password">
             <summary>
             Gets and sets the password to authenticate with the proxy server.
+            </summary>
+        </member>
+        <member name="P:Amazon.ProxySection.BypassList">
+            <summary>
+            Gets and set the proxy bypass list. A set of semi-colon
+            delimited regular expressions denoting the addresses that
+            should bypass the proxy.
+            </summary>
+        </member>
+        <member name="P:Amazon.ProxySection.BypassOnLocal">
+            <summary>
+            Gets and sets the proxy option to bypass local addresses.
             </summary>
         </member>
         <member name="T:Amazon.LoggingSection">
@@ -7168,6 +8143,22 @@
         <member name="P:Amazon.Util.ProxyConfig.Password">
             <summary>
             The password to authenticate with the proxy server.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.ProxyConfig.BypassList">
+            <summary>
+            Collection of one or more regular expressions denoting addresses
+            for which the proxy will not be used.
+            </summary>
+            <remarks>
+             For more information on bypass lists 
+             see https://msdn.microsoft.com/en-us/library/system.net.webproxy.bypasslist%28v=vs.110%29.aspx.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Util.ProxyConfig.BypassOnLocal">
+            <summary>
+            If true requests to local addresses bypass the configured
+            proxy.
             </summary>
         </member>
         <member name="T:Amazon.Util.LoggingConfig">
@@ -7260,7 +8251,12 @@
         </member>
         <member name="P:Amazon.Util.AWSPublicIpAddressRange.IpPrefix">
             <summary>
-            The public IP address range, in CIDR notation.
+            The public IPv4 or Ipv6 address range, in CIDR notation.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.AWSPublicIpAddressRange.IpAddressFormat">
+            <summary>
+            Indicates ipv4 or v6 format of the address
             </summary>
         </member>
         <member name="P:Amazon.Util.AWSPublicIpAddressRange.Region">
@@ -7596,6 +8592,377 @@
             Root AWS config
             </summary>
         </member>
+        <member name="T:Amazon.Util.EC2InstanceMetadata">
+            <summary>
+            Provides access to EC2 instance metadata when running on an EC2 instance.
+            </summary>
+            <remarks>
+            <para>
+            Amazon EC2 instances can access instance-specific metadata, as well as data supplied when launching the instances, using a specific URI.
+            </para>
+            <para>
+            You can use this data to build more generic AMIs that can be modified by configuration files supplied at launch time. 
+            For example, if you run web servers for various small businesses, they can all use the same AMI and retrieve their content from the 
+            Amazon S3 bucket you specify at launch. To add a new customer at any time, simply create a bucket for the customer, add their content, 
+            and launch your AMI.
+            </para>
+            <para>
+            More information about EC2 Metadata <see href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html"/>
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.AmiId">
+            <summary>
+            The AMI ID used to launch the instance.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.AmiLaunchIndex">
+            <summary>
+            The index of this instance in the reservation.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.AmiManifestPath">
+            <summary>
+            The manifest path of the AMI with which the instance was launched.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.AncestorAmiIds">
+            <summary>
+            The AMI IDs of any instances that were rebundled to create this AMI. 
+            Will only exist if the AMI manifest file contained an ancestor-amis key.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.Hostname">
+            <summary>
+            The private hostname of the instance.
+            In cases where multiple network interfaces are present,
+            this refers to the eth0 device (the device for which the device number is 0).
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceAction">
+            <summary>
+            Notifies the instance that it should reboot in preparation for bundling. 
+            Valid values: none | shutdown | bundle-pending.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceId">
+            <summary>
+            The ID of this instance.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceType">
+            <summary>
+            The type of instance. 
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.KernelId">
+            <summary>
+            The ID of the kernel launched with this instance, if applicable.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.LocalHostname">
+            <summary>
+            The local hostname of the instance. In cases where multiple network interfaces are present, 
+            this refers to the eth0 device (the device for which device-number is 0).
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.MacAddress">
+            <summary>
+            The instance's MAC address. In cases where multiple network interfaces are present, 
+            this refers to the eth0 device (the device for which device-number is 0).
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.PrivateIpAddress">
+            <summary>
+             The private IP address of the instance. In cases where multiple network interfaces are present, 
+             this refers to the eth0 device (the device for which device-number is 0).
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.AvailabilityZone">
+            <summary>
+            The Availability Zone in which the instance launched.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.ProductCodes">
+            <summary>
+            Product codes associated with the instance, if any. 
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.PublicKey">
+            <summary>
+            Public key. Only available if supplied at instance launch time.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.RamdiskId">
+            <summary>
+            The ID of the RAM disk specified at launch time, if applicable.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.Region">
+            <summary>
+            The region in which the instance is running, extracted from the identity
+            document data.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.ReservationId">
+            <summary>
+            ID of the reservation.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.SecurityGroups">
+            <summary>
+            The names of the security groups applied to the instance. 
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.IAMInstanceProfileInfo">
+            <summary>
+            Returns information about the last time the instance profile was updated, 
+            including the instance's LastUpdated date, InstanceProfileArn, and InstanceProfileId.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.IAMSecurityCredentials">
+            <summary>
+            Returns the temporary security credentials (AccessKeyId, SecretAccessKey, SessionToken, and Expiration) 
+            associated with the IAM roles on the instance.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.BlockDeviceMapping">
+            <summary>
+            The virtual devices associated with the ami, root, ebs, and swap.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.NetworkInterfaces">
+            <summary>
+            The network interfaces on the instance.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.UserData">
+            <summary>
+            The metadata sent to the instance.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceMonitoring">
+            <summary>
+            Value showing whether the customer has enabled detailed 
+            one-minute monitoring in CloudWatch.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.IdentityDocument">
+            <summary>
+            JSON containing instance attributes, such as instance-id, private IP 
+            address, etc
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.IdentitySignature">
+            <summary>
+            Data that can be used by other parties to verify its origin and authenticity.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.EC2InstanceMetadata.IdentityPkcs7">
+            <summary>
+            Used to verify the document's authenticity and content against the signature.
+            </summary>
+        </member>
+        <member name="M:Amazon.Util.EC2InstanceMetadata.GetItems(System.String)">
+            <summary>
+            Return the list of items in the metadata at path.
+            </summary>
+            <param name="path">Path at which to query the metadata; may be relative or absolute.</param>
+            <returns>List of items returned by the metadata service</returns>
+        </member>
+        <member name="M:Amazon.Util.EC2InstanceMetadata.GetData(System.String)">
+            <summary>
+            Return the metadata at the path
+            </summary>
+            <param name="path">Path at which to query the metadata; may be relative or absolute.</param>
+            <returns>Data returned by the metadata service</returns>
+        </member>
+        <member name="M:Amazon.Util.EC2InstanceMetadata.GetData(System.String,System.Int32)">
+            <summary>
+            Return the metadata at the path
+            </summary>
+            <param name="path">Path at which to query the metadata; may be relative or absolute.</param>
+            <param name="tries">Number of attempts to make</param>
+            <returns>Data returned by the metadata service</returns>
+        </member>
+        <member name="M:Amazon.Util.EC2InstanceMetadata.GetItems(System.String,System.Int32)">
+            <summary>
+            Return the list of items in the metadata at path.
+            </summary>
+            <param name="path">Path at which to query the metadata; may be relative or absolute.</param>
+            <param name="tries">Number of attempts to make</param>
+            <returns>List of items returned by the metadata service</returns>
+        </member>
+        <member name="T:Amazon.Util.IAMInstanceProfileMetadata">
+            <summary>
+            Returns information about the last time the instance profile was updated, 
+            including the instance's LastUpdated date, InstanceProfileArn, and InstanceProfileId.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMInstanceProfileMetadata.Code">
+            <summary>
+            The status of the instance profile
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMInstanceProfileMetadata.Message">
+            <summary>
+            Further information about the status of the instance profile
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMInstanceProfileMetadata.LastUpdated">
+            <summary>
+            The date and time the instance profile was updated
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMInstanceProfileMetadata.InstanceProfileArn">
+            <summary>
+            The Amazon Resource Name (ARN) of the instance profile
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMInstanceProfileMetadata.InstanceProfileId">
+            <summary>
+            The Id of the instance profile
+            </summary>
+        </member>
+        <member name="T:Amazon.Util.IAMSecurityCredentialMetadata">
+            <summary>
+            The temporary security credentials (AccessKeyId, SecretAccessKey, SessionToken, and Expiration) associated with the IAM role.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.Code">
+            <summary>
+            The status of the security credential
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.Message">
+            <summary>
+            Further information about the status of the instance profile
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.LastUpdated">
+            <summary>
+            The date and time the security credential was last updated
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.Type">
+            <summary>
+            The type of the security credential
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.AccessKeyId">
+            <summary>
+            The uniqe id of the security credential
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.SecretAccessKey">
+            <summary>
+            The secret key used to sign requests
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.Token">
+            <summary>
+            The security token
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.IAMSecurityCredentialMetadata.Expiration">
+            <summary>
+            The date and time when these credentials expire
+            </summary>
+        </member>
+        <member name="T:Amazon.Util.NetworkInterfaceMetadata">
+            <summary>
+            All of the metadata associated with a network interface on the instance.
+            </summary>
+        </member>
+        <member name="M:Amazon.Util.NetworkInterfaceMetadata.#ctor(System.String)">
+            <summary>
+            Construct an instance of NetworkInterface
+            </summary>
+            <param name="macAddress"></param>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.MacAddress">
+            <summary>
+            The interface's Media Access Control (mac) address. 
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.OwnerId">
+            <summary>
+            The ID of the owner of the network interface. 
+            </summary>
+            <remarks>
+            In multiple-interface environments, an interface can be attached by a third party, such as Elastic Load Balancing. 
+            Traffic on an interface is always billed to the interface owner.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.Profile">
+            <summary>
+            The interface's profile
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.LocalHostname">
+            <summary>
+            The interface's local hostname.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.LocalIPv4s">
+            <summary>
+            The private IP addresses associated with the interface.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.PublicHostname">
+            <summary>
+            The interface's public hostname. 
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.PublicIPv4s">
+            <summary>
+            The elastic IP addresses associated with the interface. 
+            </summary>
+            <remarks>
+            There may be multiple IP addresses on an instance. 
+            </remarks>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.SecurityGroups">
+            <summary>
+            Security groups to which the network interface belongs.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.SecurityGroupIds">
+            <summary>
+            IDs of the security groups to which the network interface belongs. Returned only for Amazon EC2 instances launched into a VPC.
+            </summary>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.SubnetId">
+            <summary>
+            The ID of the Amazon EC2-VPC subnet in which the interface resides.
+            </summary>
+            <remarks>
+            Returned only for Amazon EC2 instances launched into a VPC. 
+            </remarks>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.SubnetIPv4CidrBlock">
+            <summary>
+            The CIDR block of the Amazon EC2-VPC subnet in which the interface resides.  
+            </summary>
+            <remarks>
+            Returned only for Amazon EC2 instances launched into a VPC.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Util.NetworkInterfaceMetadata.VpcId">
+            <summary>
+            The CIDR block of the Amazon EC2-VPC subnet in which the interface resides.
+            </summary>
+            <remarks>
+            Returned only for Amazon EC2 instances launched into a VPC.
+            </remarks>
+        </member>
+        <member name="M:Amazon.Util.NetworkInterfaceMetadata.GetIpV4Association(System.String)">
+            <summary>
+            Get the private IPv4 address(es) that are associated with the public-ip address and assigned to that interface.
+            </summary>
+            <param name="publicIp">The public IP address</param>
+            <returns>Private IPv4 address(es) associated with the public IP address</returns>
+        </member>
         <member name="T:Amazon.Util.ProfileManager">
             <summary>
             This class allows profiles supporting AWS credentials and SAML-based authentication to be registered with 
@@ -7811,7 +9178,7 @@
             Tests if an AWSCredentialsProfile instance could be instantiated from
             the persisted settings data.
             </summary>
-            <param name="profileName">The name given to the persisted settings.</param>
+            <param name="profileName">The name given to the persisted settings (previously verified as existing).</param>
             <returns>True if the settings are compatible with an AWSCredentialsProfile type.</returns>
         </member>
         <member name="M:Amazon.Util.AWSCredentialsProfile.CanCreateFrom(Amazon.Runtime.Internal.Settings.SettingsCollection.ObjectSettings)">
@@ -7998,6 +9365,45 @@
             prompted.
             </summary>
         </member>
+        <member name="M:Amazon.Util.SAMLRoleProfile.GetCurrentSession">
+            <summary>
+            Retrieves the active credential session, if any, associated with the
+            role profile.
+            </summary>
+            <returns>
+            The current credentials valid for the role specified in the profile. Returns
+            null if no active session is available, or the active session has expired.
+            </returns>
+            <remarks>
+            When a user successfully authenticates and receives temporary AWS
+            credentials for a role, the profile is updated with details of the
+            session. When the profile is loaded by other processes or tools, if
+            session data is present and still valid it can be retrieved using this
+            method avoiding the need to re-authenticate and get additional temporary
+            credentials.
+            </remarks>
+        </member>
+        <member name="M:Amazon.Util.SAMLRoleProfile.PersistSession(Amazon.Runtime.SAMLImmutableCredentials)">
+            <summary>
+            Persists the current credentials to a 'session' key in the RoleSessions.json file. 
+            This enables external applications and tools using the same profile to obtain credentials 
+            without needing to separately re-authenticate the user prior to expiry of the current 
+            credentials. After persisting the session data it can be retrieved using GetCurrentSession().
+            </summary>
+            <remarks>
+            Although the credentials are temporary we still encrypt the stored data when at rest in
+            the sdk credential store.
+            </remarks>
+            <param name="credentials">
+            The current credentials valid for the role specified in the profile.
+            </param>
+        </member>
+        <member name="M:Amazon.Util.SAMLRoleProfile.UpdateProfileSessionData(Amazon.Runtime.SAMLImmutableCredentials)">
+            <summary>
+            Stores or clears the persisted session data.
+            </summary>
+            <param name="credentials"></param>
+        </member>
         <member name="P:Amazon.Util.SAMLRoleProfile.EndpointSettings">
             <summary>
             The endpoint settings from which the actual endpoint to use in authentication
@@ -8029,7 +9435,10 @@
         </member>
         <member name="M:Amazon.Util.SAMLRoleProfile.LoadFrom(Amazon.Runtime.Internal.Settings.SettingsCollection.ObjectSettings)">
             <summary>
-            Instantiates an instance from the supplied settings.
+            Instantiates an instance from the supplied settings. In addition to the profile settings
+            the SDK will inspect for a RoleSessions.json file containing active session data and if
+            an entry for the profile is present, will add the session data to the returned profile
+            object.
             </summary>
             <param name="os">The persisted settings.</param>
             <returns>Profile instance or an exception if the profile data is invalid.</returns>
@@ -8054,7 +9463,7 @@
             Stores the data in the role profile to the backing store file.
             </summary>
         </member>
-        <member name="M:Amazon.Util.SAMLRoleProfile.Persist(System.String,System.String,System.String,System.String)">
+        <member name="M:Amazon.Util.SAMLRoleProfile.Persist(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             <para>
             Registers a role-based profile to be used with SAML authentication. The profile contains
@@ -8082,9 +9491,30 @@
             Optional, can be used to prompt the user for a password for the account when authentication 
             is performed from a system that is not domain-joined.
             </param>
+            <param name="session">
+            Optional, details of the currently active credentials for the role that we want to
+            persist into the profile for other tools or processes to pick up, avoiding the need
+            to continually re-authenticate the user as they switch between tools. The active session,
+            if any, is stored separately from the profile using the file RoleSessions.json.
+            </param>
             <returns>The unique id assigned to the profile.</returns>
         </member>
-        <member name="M:Amazon.Util.SAMLRoleProfile.#ctor(System.String,Amazon.Util.SAMLEndpointSettings,System.String,System.String)">
+        <member name="M:Amazon.Util.SAMLRoleProfile.LoadActiveSessionCredentials(System.String)">
+            <summary>
+            Tests for and loads any active session credentials for the specified profile. The session data
+            exists in a separate file from the profile, RoleSessions.json.
+            </summary>
+            <param name="profileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Util.SAMLRoleProfile.PersistActiveSessionCredentials(System.String,System.String)">
+            <summary>
+            Stores the supplied session data into the RoleSessions.json backing file.
+            </summary>
+            <param name="profileName"></param>
+            <param name="session"></param>
+        </member>
+        <member name="M:Amazon.Util.SAMLRoleProfile.#ctor(System.String,Amazon.Util.SAMLEndpointSettings,System.String,System.String,Amazon.Runtime.SAMLImmutableCredentials)">
             <summary>
             Constructs a profile data instance that will use the specified network identity 
             during authentication with configured endpoint.
@@ -8093,6 +9523,188 @@
             <param name="endpointSettings">The settings for the authentication endpoint.</param>
             <param name="roleArn">The role that should be assumed on successful authentication.</param>
             <param name="userIdentity">The credentials to supply in authentication, in domain\user format.</param>
+            <param name="currentSession">
+            Deserialized credential data from the profile, if still valid. Null if the profile does not
+            contain any active credentials, or the credentials it did hold are now invalid.
+            </param>
+        </member>
+        <member name="T:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint">
+            <summary>
+            This class contains the endpoints available to the AWS clients.  The static constants representing the 
+            regions can be used while constructing the AWS client instead of looking up the exact endpoint URL.
+            </summary>
+        </member>
+        <member name="M:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint.GetEndpointForService(System.String,System.Boolean)">
+            <summary>
+            Gets the endpoint for a service in a region.
+            </summary>
+            <param name="serviceName">The services system name.</param>
+            <param name="dualStack">If true returns the endpoint for dualstack</param>
+            <exception cref="T:System.ArgumentException">Thrown when the request service does not have a valid endpoint in the region.</exception>
+            <returns></returns>
+        </member>
+        <member name="P:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint.EnumerableAllRegions">
+            <summary>
+            Enumerate through all the regions.
+            </summary>
+        </member>
+        <member name="M:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint.GetBySystemName(System.String)">
+            <summary>
+            Gets the region based on its system name like "us-west-1"
+            </summary>
+            <param name="systemName">The system name of the service like "us-west-1"</param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint.UnloadEndpointDefinitions">
+            <summary>
+            This is a testing method and should not be called by production applications.
+            </summary>
+        </member>
+        <member name="P:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint.SystemName">
+            <summary>
+            Gets the system name of a region.
+            </summary>
+        </member>
+        <member name="P:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint.DisplayName">
+            <summary>
+            Gets the display name of a region.
+            </summary>
+        </member>
+        <member name="T:Amazon.RegionEndpoint">
+            <summary>
+            This class contains region information used to lazily compute the service endpoints. The static constants representing the 
+            regions can be used while constructing the AWS client instead of looking up the exact endpoint URL.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.USEast1">
+            <summary>
+            The US East (Virginia) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.USWest1">
+            <summary>
+            The US West (N. California) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.USWest2">
+            <summary>
+            The US West (Oregon) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.EUWest1">
+            <summary>
+            The EU West (Ireland) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.EUCentral1">
+            <summary>
+            The EU Central (Frankfurt) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.APNortheast1">
+            <summary>
+            The Asia Pacific (Tokyo) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.APNortheast2">
+            <summary>
+            The Asia Pacific (Seoul) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.APSouth1">
+            <summary>
+            The Asia Pacific (Mumbai) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.APSoutheast1">
+            <summary>
+            The Asia Pacific (Singapore) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.APSoutheast2">
+            <summary>
+            The Asia Pacific (Sydney) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.SAEast1">
+            <summary>
+            The South America (Sao Paulo) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.USGovCloudWest1">
+            <summary>
+            The US GovCloud West (Oregon) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.CNNorth1">
+            <summary>
+            The China (Beijing) endpoint.
+            </summary>
+        </member>
+        <member name="P:Amazon.RegionEndpoint.EnumerableAllRegions">
+            <summary>
+            Enumerate through all the regions.
+            </summary>
+        </member>
+        <member name="M:Amazon.RegionEndpoint.GetBySystemName(System.String)">
+            <summary>
+            Gets the region based on its system name like "us-west-1"
+            </summary>
+            <param name="systemName">The system name of the service like "us-west-1"</param>
+            <returns></returns>
+        </member>
+        <member name="P:Amazon.RegionEndpoint.SystemName">
+            <summary>
+            Gets the system name of a region.
+            </summary>
+        </member>
+        <member name="P:Amazon.RegionEndpoint.DisplayName">
+            <summary>
+            Gets the display name of a region.
+            </summary>
+        </member>
+        <member name="M:Amazon.RegionEndpoint.GetEndpointForService(System.String)">
+            <summary>
+            Gets the endpoint for a service in a region.
+            </summary>
+            <param name="serviceName">The services system name.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the request service does not have a valid endpoint in the region.</exception>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.RegionEndpoint.GetEndpointForService(System.String,System.Boolean)">
+            <summary>
+            Gets the endpoint for a service in a region, optionally selecting a dualstack compatible endpoint.
+            </summary>
+            <param name="serviceName">The services system name.</param>
+            <param name="dualStack">
+            If true a dualstack endpoint is returned. It is the user's responsibility to verify that the given service 
+            supports a dualstack endpoint for the region.
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when the request service does not have a valid endpoint in the region.</exception>
+            <returns></returns>
+        </member>
+        <member name="T:Amazon.RegionEndpoint.Endpoint">
+            <summary>
+            This class defines an endpoints hostname and which protocols it supports.
+            </summary>
+        </member>
+        <member name="P:Amazon.RegionEndpoint.Endpoint.Hostname">
+            <summary>
+            Gets the hostname for the service.
+            </summary>
+        </member>
+        <member name="P:Amazon.RegionEndpoint.Endpoint.AuthRegion">
+            <summary>
+            The authentication region to be used in request signing.
+            </summary>
+        </member>
+        <member name="P:Amazon.RegionEndpoint.Endpoint.SignatureVersionOverride">
+            <summary>
+            Overrides the default signing protocol for an
+            endpoint. Typically used to force Signature V4
+            for services that can support multiple signing
+            protocols.
+            </summary>
         </member>
         <member name="T:ThirdParty.Ionic.Zlib.CRC32">
             <summary>
@@ -8298,16 +9910,6 @@
         <member name="M:ThirdParty.BouncyCastle.Asn1.DerSequence.#ctor(ThirdParty.BouncyCastle.Asn1.Asn1EncodableVector)">
             create a sequence containing a vector of objects.
         </member>
-        <member name="M:ThirdParty.BouncyCastle.Math.BigInteger.AddMagnitudes(System.Int32[],System.Int32[])">
-            return a = a + b - b preserved.
-        </member>
-        <member name="M:ThirdParty.BouncyCastle.Math.BigInteger.CompareTo(System.Int32,System.Int32[],System.Int32,System.Int32[])">
-            unsigned comparison on two arrays - note the arrays may
-            start with leading zeros.
-        </member>
-        <member name="M:ThirdParty.BouncyCastle.Math.BigInteger.Subtract(System.Int32,System.Int32[],System.Int32,System.Int32[])">
-            returns x = x - y - we assume x is >= y
-        </member>
         <member name="M:ThirdParty.BouncyCastle.Utilities.IO.Pem.PemObjectGenerator.Generate">
             <returns>
             A <see cref="T:ThirdParty.BouncyCastle.Utilities.IO.Pem.PemObject"/>
@@ -8328,6 +9930,16 @@
             A <see cref="T:ThirdParty.BouncyCastle.Utilities.IO.Pem.PemObject"/>
             </returns>
             <exception cref="T:System.IO.IOException"></exception>
+        </member>
+        <member name="M:ThirdParty.BouncyCastle.Math.BigInteger.AddMagnitudes(System.Int32[],System.Int32[])">
+            return a = a + b - b preserved.
+        </member>
+        <member name="M:ThirdParty.BouncyCastle.Math.BigInteger.CompareTo(System.Int32,System.Int32[],System.Int32,System.Int32[])">
+            unsigned comparison on two arrays - note the arrays may
+            start with leading zeros.
+        </member>
+        <member name="M:ThirdParty.BouncyCastle.Math.BigInteger.Subtract(System.Int32,System.Int32[],System.Int32,System.Int32[])">
+            returns x = x - y - we assume x is >= y
         </member>
     </members>
 </doc>

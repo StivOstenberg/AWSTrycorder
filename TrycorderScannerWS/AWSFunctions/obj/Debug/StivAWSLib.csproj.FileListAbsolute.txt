@@ -75,8 +75,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\b
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.IdentityManagement.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.RDS.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.S3.dll
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.SecurityToken.dll
-C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.SimpleDB.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.SimpleNotificationService.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.SQS.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\System.Net.IPNetwork.dll
@@ -102,3 +100,5 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\o
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticLoadBalancing.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticLoadBalancing.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticLoadBalancing.xml
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.SecurityToken.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.SimpleDB.dll

@@ -11,6 +11,20 @@
              
              </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Amazon.S3.AmazonS3Client.GetPreSignedURLInternal(Amazon.S3.Model.GetPreSignedUrlRequest,System.Boolean)" -->
+        <member name="M:Amazon.S3.AmazonS3Client.Marshall(Amazon.S3.Model.GetPreSignedUrlRequest,System.String,System.String,System.Boolean)">
+            <summary>
+            Marshalls the parameters for a presigned url for a preferred signing protocol.
+            </summary>
+            <param name="getPreSignedUrlRequest"></param>
+            <param name="accessKey"></param>
+            <param name="token"></param>
+            <param name="aws4Signing">
+            True if AWS4 signing will be used; if the expiry period in the request exceeds the
+            maximum allowed for AWS4 (one week), an ArgumentException is thrown.
+            </param>
+            <returns></returns>
+        </member>
         <member name="M:Amazon.S3.AmazonS3Client.GetPreSignedURL(Amazon.S3.Model.GetPreSignedUrlRequest)">
             <summary>
             Create a signed URL allowing access to a resource that would 
@@ -33,19 +47,6 @@
             <returns>A string that is the signed http request.</returns>
             <exception cref="T:System.ArgumentException" />
             <exception cref="T:System.ArgumentNullException" />
-        </member>
-        <member name="M:Amazon.S3.AmazonS3Client.Marshall(Amazon.S3.Model.GetPreSignedUrlRequest,System.String,System.String,System.Boolean)">
-            <summary>
-            Marshalls the parameters for a presigned url for a preferred signing protocol.
-            </summary>
-            <param name="getPreSignedUrlRequest"></param>
-            <param name="accessKey"></param>
-            <param name="token"></param>
-            <param name="aws4Signing">
-            True if AWS4 signing will be used; if the expiry period in the request exceeds the
-            maximum allowed for AWS4 (one week), an ArgumentException is thrown.
-            </param>
-            <returns></returns>
         </member>
         <member name="M:Amazon.S3.AmazonS3Client.#ctor">
              <summary>
@@ -494,7 +495,7 @@
         </member>
         <member name="M:Amazon.S3.AmazonS3Client.DeleteBucketReplication(Amazon.S3.Model.DeleteBucketReplicationRequest)">
             <summary>
-            Deletes the replication configuration for the given Amazon S3 bucket.
+            Deletes the replication configuration from the bucket.
             </summary>
             <param name="request">Container for the necessary parameters to execute the DeleteBucketReplication service method.</param>
             
@@ -789,6 +790,44 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the GetACL operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfiguration(System.String)">
+            <summary>
+            Returns the accelerate configuration of a bucket.
+            </summary>
+            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
+            
+            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfiguration(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest)">
+            <summary>
+            Returns the accelerate configuration of a bucket.
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration service method.</param>
+            
+            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfigurationAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns the accelerate configuration of a bucket.
+            </summary>
+            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            
+            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.GetBucketAccelerateConfigurationAsync(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the GetBucketAccelerateConfiguration operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -1596,6 +1635,28 @@
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
         </member>
+        <member name="M:Amazon.S3.AmazonS3Client.ListObjectsV2(Amazon.S3.Model.ListObjectsV2Request)">
+            <summary>
+            Returns some or all (up to 1000) of the objects in a bucket. You can use the request
+            parameters as selection criteria to return a subset of the objects in a bucket. Note:
+            ListObjectsV2 is the revised List Objects API and we recommend you use this revised
+            API for new application development.
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 service method.</param>
+            
+            <returns>The response from the ListObjectsV2 service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.ListObjectsV2Async(Amazon.S3.Model.ListObjectsV2Request,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the ListObjectsV2 operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
         <member name="M:Amazon.S3.AmazonS3Client.ListParts(System.String,System.String,System.String)">
             <summary>
             Lists the parts that have been uploaded for a specific multipart upload.
@@ -1749,6 +1810,25 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the PutBucket operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.PutBucketAccelerateConfiguration(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest)">
+            <summary>
+            Sets the accelerate configuration of an existing bucket.
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration service method.</param>
+            
+            <returns>The response from the PutBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Client.PutBucketAccelerateConfigurationAsync(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the PutBucketAccelerateConfiguration operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -2283,6 +2363,26 @@
             When true, requests will always use path style addressing.
             </summary>
         </member>
+        <member name="P:Amazon.S3.AmazonS3Config.UseAccelerateEndpoint">
+            <summary>
+            Enables S3 accelerate by sending requests to the accelerate endpoint instead of the regular region endpoint. 
+            To use this feature, the bucket name should be DNS compliant names and should not contain periods (.). 
+            The following APIs are not supported and are sent to the regular region endpoint, even if this option is enabled:
+            <ol> 
+            <li>PutBucket</li>
+            <li>ListBuckets</li>
+            <li>DeleteBucket</li>
+            </ol>
+            </summary>
+            <remarks>
+            This option cannot be used at the same time as UseDualstackEndpoint.
+            </remarks>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Config.Validate">
+            <summary>
+            Validate that the config object is properly configured.
+            </summary>
+        </member>
         <member name="M:Amazon.S3.AmazonS3Config.Initialize">
             <summary>
             This method contains custom initializations for the config object.
@@ -2365,9 +2465,27 @@
             <param name="statusCode"></param>
             <param name="amazonId2"></param>
         </member>
+        <member name="M:Amazon.S3.AmazonS3Exception.#ctor(System.String,System.Exception,Amazon.Runtime.ErrorType,System.String,System.String,System.Net.HttpStatusCode,System.String,System.String)">
+            <summary>
+            Construct an instance of AmazonS3Exception
+            </summary>
+            <param name="message"></param>
+            <param name="innerException"></param>
+            <param name="errorType"></param>
+            <param name="errorCode"></param>
+            <param name="requestId"></param>
+            <param name="statusCode"></param>
+            <param name="amazonId2"></param>
+            <param name="amazonCfId"></param>
+        </member>
         <member name="P:Amazon.S3.AmazonS3Exception.AmazonId2">
             <summary>
             A special token that helps AWS troubleshoot problems.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.AmazonS3Exception.AmazonCloudFrontId">
+            <summary>
+            A special token that helps AWS troubleshoot S3 accelerate problems.
             </summary>
         </member>
         <member name="P:Amazon.S3.AmazonS3Exception.ResponseBody">
@@ -2375,10 +2493,67 @@
             The entire response body for this exception, if available.
             </summary>
         </member>
+        <member name="P:Amazon.S3.AmazonS3Exception.Region">
+            <summary>
+            The region that the AmazonS3Exception relates to.
+            </summary>
+        </member>
         <member name="P:Amazon.S3.AmazonS3Exception.Message">
             <summary>
             Gets the exception message.
             </summary>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Exception.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the AmazonS3Exception class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.S3.AmazonS3Exception.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
+        </member>
+        <member name="T:Amazon.S3.BucketAccelerateStatus">
+            <summary>
+            Represents the accelerate status for a bucket.
+            </summary>
+        </member>
+        <member name="F:Amazon.S3.BucketAccelerateStatus.Enabled">
+            <summary>
+            Bucket acceleration is enabled.
+            </summary>
+        </member>
+        <member name="F:Amazon.S3.BucketAccelerateStatus.Suspended">
+            <summary>
+            Bucket acceleration is suspended.
+            </summary>
+        </member>
+        <member name="M:Amazon.S3.BucketAccelerateStatus.#ctor(System.String)">
+            <summary>
+            Construct instance of BucketAccelerateStatus. It is not intended for this constructor to be called. Instead users should call the FindValue.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Amazon.S3.BucketAccelerateStatus.FindValue(System.String)">
+            <summary>
+            Finds the constant for the unique value.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Amazon.S3.BucketAccelerateStatus.op_Implicit(System.String)~Amazon.S3.BucketAccelerateStatus">
+            <summary>
+            Converts the string to an BucketAccelerateStatus
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
         </member>
         <member name="T:Amazon.S3.S3CannedACL">
             <summary>
@@ -2479,7 +2654,12 @@
         </member>
         <member name="F:Amazon.S3.S3Region.EU">
             <summary>
-            Specifies that the S3 Bucket should use EU locality.
+            Specifies that the S3 Bucket should use EU locality which defaults to EU-WEST-1
+            </summary>
+        </member>
+        <member name="F:Amazon.S3.S3Region.EUW1">
+            <summary>
+            Specifies that the S3 Bucket should use the EU-WEST-1 locality.
             </summary>
         </member>
         <member name="F:Amazon.S3.S3Region.EUC1">
@@ -2520,6 +2700,11 @@
         <member name="F:Amazon.S3.S3Region.APN2">
             <summary>
             Specifies that the S3 Bucket should use the AP-NORTHEAST-2 locality.
+            </summary>
+        </member>
+        <member name="F:Amazon.S3.S3Region.APS3">
+            <summary>
+            Specifies that the S3 Bucket should use the AP-SOUTH-1 locality.
             </summary>
         </member>
         <member name="F:Amazon.S3.S3Region.SAE1">
@@ -3253,6 +3438,24 @@
             <param name="maxRetries">The maximum number of retries before throwing
             back a exception. This does not count the initial request.</param>
         </member>
+        <member name="M:Amazon.S3.Internal.AmazonS3RetryPolicy.RetryForExceptionSync(Amazon.Runtime.IExecutionContext,System.Exception)">
+            <summary>
+            Perform the processor-bound portion of the RetryForException logic.
+            This is shared by the sync, async, and APM versions of the RetryForException method.
+            </summary>
+            <param name="executionContext"></param>
+            <param name="exception"></param>
+            <returns>a value if it can be determined, or null if the IO-bound calculations need to be done</returns>
+        </member>
+        <member name="M:Amazon.S3.Internal.AmazonS3RetryPolicy.RetryForExceptionAsync(Amazon.Runtime.IExecutionContext,System.Exception)">
+            <summary>
+            Return true if the request should be retried. Implements additional checks 
+            specific to S3 on top of the checks in DefaultRetryPolicy.
+            </summary>
+            <param name="executionContext">Request context containing the state of the request.</param>
+            <param name="exception">The exception thrown by the previous request.</param>
+            <returns>Return true if the request should be retried.</returns>
+        </member>
         <member name="M:Amazon.S3.Internal.AmazonS3RetryPolicy.RetryForException(Amazon.Runtime.IExecutionContext,System.Exception)">
             <summary>
             Return true if the request should be retried. Implements additional checks 
@@ -3298,6 +3501,16 @@
             <summary>
             Returns information about the AbortMultipartUpload response metadata.
             The AbortMultipartUpload operation has a void result type.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.AccelerateConfiguration">
+            <summary>
+            Bucket accelerate configuration.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.AccelerateConfiguration.Status">
+            <summary>
+            The accelerate status of the bucket.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.ByteRange">
@@ -4697,6 +4910,26 @@
             Gets and sets the AccessControlList property.
             </summary>
         </member>
+        <member name="T:Amazon.S3.Model.GetBucketAccelerateConfigurationRequest">
+            <summary>
+            Container for the parameters to the GetBucketAccelerateConfiguration operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.GetBucketAccelerateConfigurationRequest.BucketName">
+            <summary>
+            The name of the bucket.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.GetBucketAccelerateConfigurationResponse">
+            <summary>
+            The response class for GetBucketAccelerateConfiguration operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.GetBucketAccelerateConfigurationResponse.Status">
+            <summary>
+            The accelerate status of the bucket.
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.GetBucketLocationRequest">
             <summary>
             Container for the parameters to the GetBucketLocation operation.
@@ -5932,6 +6165,16 @@
             </summary>
             <returns>true if ServerSideEncryptionKeyManagementServiceKeyId property is set.</returns>
         </member>
+        <member name="P:Amazon.S3.Model.InitiateMultipartUploadResponse.AbortDate">
+            <summary>
+            Date when multipart upload will become eligible for abort operation by lifecycle.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.InitiateMultipartUploadResponse.AbortRuleId">
+            <summary>
+            Id of the lifecycle rule that makes a multipart upload eligible for abort operation.
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.Initiator">
             <summary>
             <para>Identifies who initiated the multipart upload.</para>
@@ -6054,6 +6297,24 @@
             a different storage class.
             </summary>
         </member>
+        <member name="P:Amazon.S3.Model.LifecycleRule.AbortIncompleteMultipartUpload">
+            <summary>
+            Specifies the days since the initiation of an Incomplete Multipart Upload
+            that Lifecycle will wait before permanently removing all parts of the upload.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.LifecycleRuleAbortIncompleteMultipartUpload">
+            <summary>
+            Specifies the days since the initiation of an Incomplete Multipart Upload
+            that Lifecycle will wait before permanently removing all parts of the upload.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.LifecycleRuleAbortIncompleteMultipartUpload.DaysAfterInitiation">
+            <summary>
+            Indicates the number of days that must pass since initiation for Lifecycle
+            to abort an Incomplete Multipart Upload.
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.LifecycleRuleExpiration">
             <summary>Expiration
             </summary>
@@ -6070,6 +6331,12 @@
              
             </summary>
         </member>
+        <member name="P:Amazon.S3.Model.LifecycleRuleExpiration.ExpiredObjectDeleteMarker">
+            <summary>
+            Indicates whether Amazon S3 will remove a delete marker with no noncurrent versions. If set to true, the delete marker will be expired; if set to false the policy takes no action. This cannot be specified with Days or Date in a Lifecycle Expiration Policy.
+             
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.LifecycleRuleNoncurrentVersionExpiration">
             <summary>
             Noncurrent Version Expiration
@@ -6077,8 +6344,10 @@
         </member>
         <member name="P:Amazon.S3.Model.LifecycleRuleNoncurrentVersionExpiration.NoncurrentDays">
             <summary>
-            Indicates the lifetime, in days, of the objects that are subject to the rule. The value must be a non-zero positive integer.
-             
+            Specifies the number of days an object is noncurrent before Amazon S3 can perform the associated 
+            action. For information about the noncurrent days calculations, see 
+            <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/s3-access-control.html">How Amazon S3 Calculates When an Object Became Noncurrent</a> 
+            in the Amazon Simple Storage Service Developer Guide.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.LifecycleRuleNoncurrentVersionTransition">
@@ -6088,8 +6357,10 @@
         </member>
         <member name="P:Amazon.S3.Model.LifecycleRuleNoncurrentVersionTransition.NoncurrentDays">
             <summary>
-            Indicates the lifetime, in days, of the objects that are subject to the rule. The value must be a non-zero positive integer.
-             
+            Specifies the number of days an object is noncurrent before Amazon S3 can perform the associated 
+            action. For information about the noncurrent days calculations, see 
+            <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/s3-access-control.html">How Amazon S3 Calculates When an Object Became Noncurrent</a> 
+            in the Amazon Simple Storage Service Developer Guide.
             </summary>
         </member>
         <member name="P:Amazon.S3.Model.LifecycleRuleNoncurrentVersionTransition.StorageClass">
@@ -6379,6 +6650,145 @@
             These rolled-up keys are not returned elsewhere in the response.
             </remarks>
         </member>
+        <member name="T:Amazon.S3.Model.ListObjectsV2Request">
+            <summary>
+            Container for the parameters to the ListObjects operation.
+            <para>Returns some or all (up to 1000) of the objects in a bucket. You can use the request parameters as selection criteria to return a
+            subset of the objects in a bucket.</para>
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.BucketName">
+            <summary>
+            The name of the bucket to list.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.Delimiter">
+            <summary>
+            A delimiter is a character you use to group keys.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.MaxKeys">
+            <summary>
+            Sets the maximum number of keys returned in the response. The response might contain fewer keys but will never contain more.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.Prefix">
+            <summary>
+            Limits the response to keys that begin with the specified prefix.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.Encoding">
+            <summary>
+            Requests Amazon S3 to encode the object keys in the response and specifies
+            the encoding method to use. An object key may contain any Unicode character;
+            however, XML 1.0 parser cannot parse some characters, such as characters
+            with an ASCII value from 0 to 10. For characters that are not supported in
+            XML 1.0, you can add this parameter to request that Amazon S3 encode the
+            keys in the response.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.StartAfter">
+            <summary>
+            StartAfter is where you want Amazon S3 to start listing from. Amazon S3 starts
+            listing after this specified key. StartAfter can be any key in the bucket.
+            Cannot be set at the same time as ContinuationToken.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.ContinuationToken">
+            <summary>
+            ContinuationToken indicates Amazon S3 that the list is being continued on this
+            bucket with a token. ContinuationToken is obfuscated and is not a real key.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Request.FetchOwner">
+            <summary>
+            The owner field is not present in ListObjectsV2 responses by default.
+            If you want to return owner field with each key in the result then set this field to true.
+            If not specified, the Owner field on S3Object will be null.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.ListObjectsV2Response">
+            <summary>
+            Returns information about the  ListObjects response and response metadata.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.IsTruncated">
+            <summary>
+            A flag that indicates whether or not Amazon S3 returned all of the results that satisfied 
+            the search criteria.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.S3Objects">
+            <summary>
+            Gets and sets the S3Objects property. Metadata about each object returned.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Name">
+            <summary>
+            Gets and sets the Name property. The name of the bucket that was listed.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Prefix">
+            <summary>
+            Gets and sets the Prefix property.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.MaxKeys">
+            <summary>
+            Gets and sets the MaxKeys property. This is max number of object keys returned by the list operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.CommonPrefixes">
+            <summary>
+            Gets and sets the CommonPrefixes property.
+            CommonPrefixes contains all (if there are any) keys between Prefix and the next occurrence 
+            of the string specified by delimiter
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Delimiter">
+            <summary>
+            Gets and sets the Delimiter property.
+            Causes keys that contain the same string between the prefix and the 
+            first occurrence of the delimiter to be rolled up into a single result 
+            element in the CommonPrefixes collection.
+            </summary>
+            <remarks>
+            These rolled-up keys are not returned elsewhere in the response.
+            </remarks>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.Encoding">
+            <summary>
+            Encoding type used by Amazon S3 to encode object keys in the response.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.KeyCount">
+            <summary>
+            KeyCount is the number of keys returned with this request.
+            KeyCount will always be less than or equal to MaxKeys field.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.ContinuationToken">
+            <summary>
+            ContinuationToken indicates Amazon S3 that the list is being continued
+            on this bucket with a token.
+            ContinuationToken is obfuscated and is not a real key
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.NextContinuationToken">
+            <summary>
+            NextContinuationToken is sent when isTruncated is true which means there
+            are more keys in the bucket that can be listed. The next ListObjectV2 call
+            to Amazon S3 can be continued with this NextContinuationToken.
+            NextContinuationToken is obfuscated and is not a real key.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListObjectsV2Response.StartAfter">
+            <summary>
+            StartAfter is where you want Amazon S3 to start listing from.
+            Amazon S3 starts listing after this specified key.
+            StartAfter can be any key in the bucket.
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.ListPartsRequest">
             <summary>
             Container for the parameters to the ListParts operation.
@@ -6495,6 +6905,16 @@
             <summary>
             The class of storage used to store the object.
              
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListPartsResponse.AbortDate">
+            <summary>
+            Date when multipart upload will become eligible for abort operation by lifecycle.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.ListPartsResponse.AbortRuleId">
+            <summary>
+            Id of the lifecycle rule that makes a multipart upload eligible for abort operation.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.ListVersionsRequest">
@@ -6851,6 +7271,27 @@
             <summary>
             Returns information about the PutObjectAcl response metadata.
             The PutAcl operation has a void result type.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.PutBucketAccelerateConfigurationResponse">
+            <summary>
+            The response for the PutBucketAccelerateConfiguration operation.
+            <para>Adds an object to a bucket.</para>
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.PutBucketAccelerateConfigurationRequest">
+            <summary> 
+            Container for the parameters to the PutBucketAccelerateConfiguration request.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.PutBucketAccelerateConfigurationRequest.BucketName">
+            <summary>
+            The name of the bucket to contain the object.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Model.PutBucketAccelerateConfigurationRequest.AccelerateConfiguration">
+            <summary>
+            Accelerate configuration for the bucket.
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.PutBucketLoggingRequest">
@@ -8007,6 +8448,11 @@
             Any ETag set on the object.
             </summary>
         </member>
+        <member name="P:Amazon.S3.Model.S3Object.BucketName">
+            <summary>
+            The name of the bucket containing this object.
+            </summary>
+        </member>
         <member name="P:Amazon.S3.Model.S3Object.Key">
             <summary>
             The key of the object.
@@ -8113,6 +8559,17 @@
             <param name="requestId"></param>
             <param name="amazonId2"></param>
         </member>
+        <member name="M:Amazon.S3.Model.StreamSizeMismatchException.#ctor(System.String,System.Int64,System.Int64,System.String,System.String,System.String)">
+            <summary>
+            Construct an instance of StreamSizeMismatchException.
+            </summary>
+            <param name="message"></param>
+            <param name="expectedSize"></param>
+            <param name="actualSize"></param>
+            <param name="requestId"></param>
+            <param name="amazonId2"></param>
+            <param name="amazonCfId"></param>
+        </member>
         <member name="M:Amazon.S3.Model.StreamSizeMismatchException.#ctor(System.String,System.Exception,System.Int64,System.Int64,System.String,System.String)">
             <summary>
             Construct an instance of StreamSizeMismatchException.
@@ -8162,6 +8619,23 @@
             <param name="requestId"></param>
             <param name="statusCode"></param>
             <param name="amazonId2"></param>
+        </member>
+        <member name="M:Amazon.S3.Model.StreamSizeMismatchException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the AmazonServiceException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.S3.Model.StreamSizeMismatchException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
         </member>
         <member name="T:Amazon.S3.Model.Tag">
             <summary>Tag
@@ -8477,6 +8951,11 @@
             The list of routing rules that can be used for configuring redirects if certain conditions are meet.
             </summary>
         </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.AbortIncompleteMultipartUploadUnmarshaller">
+            <summary>
+              AbortIncompleteMultipartUpload Unmarshaller
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.AbortMultipartUploadRequestMarshaller">
             <summary>
             Abort Multipart Upload Request Marshaller
@@ -8648,6 +9127,16 @@
             </summary>       
         </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.GetACLResponseUnmarshaller">
+            <summary>
+               Response Unmarshaller for GetACL operation
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.GetBucketAccelerateConfigurationRequestMarshaller">
+            <summary>
+            Get Object Accelerate Configuration Request Marshaller
+            </summary>       
+        </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.GetBucketAccelerateConfigurationResponseUnmarshaller">
             <summary>
                Response Unmarshaller for GetACL operation
             </summary>
@@ -8857,6 +9346,16 @@
                Response Unmarshaller for ListObjects operation
             </summary>
         </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.ListObjectsV2RequestMarshaller">
+            <summary>
+            List Objects Request Marshaller
+            </summary>       
+        </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.ListObjectsV2ResponseUnmarshaller">
+            <summary>
+               Response Unmarshaller for ListObjects operation
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.ListPartsRequestMarshaller">
             <summary>
             List Parts Request Marshaller
@@ -8905,6 +9404,16 @@
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutACLResponseUnmarshaller">
             <summary>
                Response Unmarshaller for PutObjectAcl operation
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutBucketAccelerateConfigurationRequestMarshaller">
+            <summary>
+            Put Object Acl Request Marshaller
+            </summary>       
+        </member>
+        <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutBucketAccelerateConfigurationResponseUnmarshaller">
+            <summary>
+               Response Unmarshaller for PutBucketAccelerate operation
             </summary>
         </member>
         <member name="T:Amazon.S3.Model.Internal.MarshallTransformations.PutBucketLoggingRequestMarshaller">
@@ -9192,6 +9701,23 @@
             </summary>
             <param name="response"></param>
         </member>
+        <member name="M:Amazon.S3.DeleteObjectsException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the DeleteObjectsException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.S3.DeleteObjectsException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
+        </member>
         <member name="T:Amazon.S3.Util.AmazonS3Uri">
             <summary>
             Uri wrapper that can parse out information (bucket, key, region, style) from an
@@ -9229,6 +9755,22 @@
             Constructs a parser for the S3 URI specified as a Uri instance.
             </summary>
             <param name="uri">The S3 URI to be parsed.</param>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Uri.TryParseAmazonS3Uri(System.String,Amazon.S3.Util.AmazonS3Uri@)">
+            <summary>
+            If the given string is an AmazonS3Endpoint return true and set the AmazonS3Uri out parameter.
+            </summary>
+            <param name="uri"></param>
+            <param name="amazonS3Uri"></param>
+            <returns>true if the string is an AmazonS3Endpoint, and the out paramter has been filled in, false otherwise</returns>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Uri.TryParseAmazonS3Uri(System.Uri,Amazon.S3.Util.AmazonS3Uri@)">
+            <summary>
+            If the given Uri is an AmazonS3Endpoint return true and set the AmazonS3Uri out parameter.
+            </summary>
+            <param name="uri"></param>
+            <param name="amazonS3Uri"></param>
+            <returns>true if the Uri is an AmazonS3Endpoint, and the out paramter has been filled in, false otherwise</returns>
         </member>
         <member name="M:Amazon.S3.Util.AmazonS3Uri.IsAmazonS3Endpoint(System.String)">
             <summary>
@@ -9280,6 +9822,16 @@
             <returns>The quad value</returns>
         </member>
         <member name="T:Amazon.S3.Util.AmazonS3Util">
+            <summary>
+            Provides utilities used by the Amazon S3 client implementation.
+            These utilities might be useful to consumers of the Amazon S3
+            library.
+            </summary>
+            <summary>
+            Provides utilities used by the Amazon S3 client implementation.
+            These utilities might be useful to consumers of the Amazon S3
+            library.
+            </summary>
             <summary>
             Provides utilities used by the Amazon S3 client implementation.
             These utilities might be useful to consumers of the Amazon S3
@@ -9365,6 +9917,19 @@
             <seealso href="http://docs.amazonwebservices.com/AmazonS3/2006-03-01/dev/index.html?BucketRestrictions.html">
             S3 v2 Bucket restrictions</seealso>
         </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistAsync(Amazon.S3.IAmazonS3,System.String)">
+            <summary>
+            Determines whether an S3 bucket exists or not.
+            This is done by:
+            1. Creating a PreSigned Url for the bucket. To work with Signature V4 only regions, as
+            well as Signature V4-optional regions, we keep the expiry to within the maximum for V4 
+            (which is one week).
+            2. Making a HEAD request to the Url
+            </summary>
+            <param name="bucketName">The name of the bucket to check.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+            <returns></returns>
+        </member>
         <member name="M:Amazon.S3.Util.AmazonS3Util.DoesS3BucketExist(Amazon.S3.IAmazonS3,System.String)">
             <summary>
             Determines whether an S3 bucket exists or not.
@@ -9443,6 +10008,121 @@
             <param name="copyRequest"></param>
             <param name="putACLRequest"></param>
         </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.ConvertToS3StorageClass(System.String)">
+            <summary>
+            Converts the string representing a storage class that would come back from a ListObjects request
+            to the S3StorageClass enumeration.
+            </summary>
+            <param name="value">Amazon S3 string values for storage class</param>
+            <returns>The converted S3StorageClass enumeration</returns>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.PostUpload(Amazon.S3.Util.S3PostUploadRequest)">
+            <summary>
+            Upload data to Amazon S3 using HTTP POST.
+            </summary>
+            <remarks>
+            For more information, <see href="http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingHTTPPOST.html"/>
+            </remarks>
+            <param name="request">Request object which describes the data to POST</param>
+            <exception cref="T:Amazon.S3.Util.S3PostUploadException">Thrown if the service returns an error</exception>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsAsync(Amazon.S3.IAmazonS3,System.String)">
+            <summary>
+            Deletes an S3 bucket which contains objects.
+            An S3 bucket which contains objects cannot be deleted until all the objects 
+            in it are deleted. This method deletes all the objects in the specified 
+            bucket and then deletes the bucket itself.
+            </summary>
+            <param name="bucketName">The bucket to be deleted.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsAsync(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions)">
+            <summary>
+            Deletes an S3 bucket which contains objects.
+            An S3 bucket which contains objects cannot be deleted until all the objects 
+            in it are deleted. This method deletes all the objects in the specified 
+            bucket and then deletes the bucket itself.
+            </summary>
+            <param name="bucketName">The bucket to be deleted.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+            <param name="deleteOptions">Options to control the behavior of the delete operation.</param>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsAsync(Amazon.S3.IAmazonS3,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the DeleteS3BucketWithObjects operation. 
+            DeleteS3BucketWithObjects deletes an S3 bucket which contains objects.
+            An S3 bucket which contains objects cannot be deleted until all the objects 
+            in it are deleted. This method deletes all the objects in the specified 
+            bucket and then deletes the bucket itself.
+            </summary>
+            <param name="bucketName">The bucket to be deleted.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+            <param name="token">token to check if the operation has been request to cancel.</param>
+            <returns>An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
+            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
+            be used to cancel the operation while it's in progress.</returns>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsAsync(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the DeleteS3BucketWithObjects operation. 
+            DeleteS3BucketWithObjects deletes an S3 bucket which contains objects.
+            An S3 bucket which contains objects cannot be deleted until all the objects 
+            in it are deleted. This method deletes all the objects in the specified 
+            bucket and then deletes the bucket itself.
+            </summary>
+            <param name="bucketName">The bucket to be deleted.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+            <param name="deleteOptions">Options to control the behavior of the delete operation.</param>
+            <param name="token">token to check if the operation has been request to cancel.</param>
+            <returns>An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
+            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
+            be used to cancel the operation while it's in progress.</returns>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsAsync(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions,System.Action{Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate},System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the DeleteS3BucketWithObjects operation. 
+            DeleteS3BucketWithObjects deletes an S3 bucket which contains objects.
+            An S3 bucket which contains objects cannot be deleted until all the objects 
+            in it are deleted. This method deletes all the objects in the specified 
+            bucket and then deletes the bucket itself.
+            </summary>
+            <param name="bucketName">The bucket to be deleted.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+            <param name="deleteOptions">>Options to control the behavior of the delete operation.</param>
+            <param name="updateCallback">An callback that is invoked to send updates while delete operation is in progress.</param>
+            <param name="token">token to check if the operation has been request to cancel.</param>
+            <returns>An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
+            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
+            be used to cancel the operation while it's in progress.</returns>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.InvokeDeleteS3BucketWithObjects(System.Object,System.Threading.CancellationToken)">
+            <summary>
+            Invokes the DeleteS3BucketWithObjectsInternal method.
+            </summary>
+            <param name="state">The Request object that has all the data to complete the operation. </param>
+            <param name="token">token to request the operation to be cancelled.</param>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsInternalAsync(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions,System.Action{Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate},System.Threading.CancellationToken)">
+            <summary>
+            Deletes an S3 bucket which contains objects.
+            An S3 bucket which contains objects cannot be deleted until all the objects 
+            in it are deleted. The function deletes all the objects in the specified 
+            bucket and then deletes the bucket itself.
+            </summary>
+            <param name="bucketName">The bucket to be deleted.</param>
+            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
+            <param name="deleteOptions">Options to control the behavior of the delete operation.</param>
+            <param name="updateCallback">The callback which is used to send updates about the delete operation.</param>
+            <param name="token">token to check if the operation has been request to cancel.</param>
+        </member>
+        <member name="M:Amazon.S3.Util.AmazonS3Util.InvokeS3DeleteBucketWithObjectsUpdateCallback(System.Action{Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate},Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate)">
+            <summary>
+            Invokes the callback which provides updated about the delete operation.
+            </summary>
+            <param name="updateCallback">The callback to be invoked.</param>
+            <param name="update">The data being passed to the callback.</param>
+            8
+        </member>
         <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjects(Amazon.S3.IAmazonS3,System.String)">
             <summary>
             Deletes an S3 bucket which contains objects.
@@ -9464,108 +10144,85 @@
             <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
             <param name="deleteOptions">Options to control the behavior of the delete operation.</param>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.BeginDeleteS3BucketWithObjects(Amazon.S3.IAmazonS3,System.String,System.AsyncCallback,System.Object)">
+        <member name="T:Amazon.S3.Util.BucketRegionDetector">
             <summary>
-            Initiates the asynchronous execution of the DeleteS3BucketWithObjects operation. 
-            DeleteS3BucketWithObjects deletes an S3 bucket which contains objects.
-            An S3 bucket which contains objects cannot be deleted until all the objects 
-            in it are deleted. This method deletes all the objects in the specified 
-            bucket and then deletes the bucket itself.
+            Class to manage and cache the correct region for buckets accessed without an explicit region.
             </summary>
-            <param name="bucketName">The bucket to be deleted.</param>
-            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
-            <param name="callback">An AsyncCallback delegate that is invoked when the operation completes.</param>
-            <param name="state">A user-defined state object that is passed to the callback procedure. Retrieve this object from within the callback procedure using the AsyncState property.</param>
-            <returns>An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
-            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
-            be used to cancel the operation while it's in progress.</returns>
+            <summary>
+            Class to manage and cache the correct region for buckets accessed without an explicit region.
+            </summary>
+            <summary>
+            Class to manage and cache the correct region for buckets accessed without an explicit region.
+            </summary>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.BeginDeleteS3BucketWithObjects(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions,System.AsyncCallback,System.Object)">
+        <member name="P:Amazon.S3.Util.BucketRegionDetector.BucketRegionCache">
             <summary>
-            Initiates the asynchronous execution of the DeleteS3BucketWithObjects operation. 
-            DeleteS3BucketWithObjects deletes an S3 bucket which contains objects.
-            An S3 bucket which contains objects cannot be deleted until all the objects 
-            in it are deleted. This method deletes all the objects in the specified 
-            bucket and then deletes the bucket itself.
+            A cache of BucketName -> RegionEndpoint pairs.
+            The cache is used to make sure that bucket requests are signed for the correct region,
+            even when requesting them without an explicit region.
             </summary>
-            <param name="bucketName">The bucket to be deleted.</param>
-            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
-            <param name="deleteOptions">Options to control the behavior of the delete operation.</param>
-            <param name="callback">An AsyncCallback delegate that is invoked when the operation completes.</param>
-            <param name="state">A user-defined state object that is passed to the callback procedure. Retrieve this object from within the callback procedure using the AsyncState property.</param>
-            <returns>An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
-            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
-            be used to cancel the operation while it's in progress.</returns>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.BeginDeleteS3BucketWithObjects(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions,System.Action{Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate},System.AsyncCallback,System.Object)">
+        <member name="M:Amazon.S3.Util.BucketRegionDetector.GetCorrectRegion(Amazon.S3.Util.AmazonS3Uri,System.Net.HttpStatusCode,System.String)">
             <summary>
-            Initiates the asynchronous execution of the DeleteS3BucketWithObjects operation. 
-            DeleteS3BucketWithObjects deletes an S3 bucket which contains objects.
-            An S3 bucket which contains objects cannot be deleted until all the objects 
-            in it are deleted. This method deletes all the objects in the specified 
-            bucket and then deletes the bucket itself.
+            Detect a bucket region mismatch based on the x-amz-bucket-region header, and the status code provided.
             </summary>
-            <param name="bucketName">The bucket to be deleted.</param>
-            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
-            <param name="deleteOptions">>Options to control the behavior of the delete operation.</param>
-            <param name="updateCallback">An callback that is invoked to send updates while delete operation is in progress.</param>
-            <param name="callback">An AsyncCallback delegate that is invoked when the operation completes.</param>
-            <param name="state">A user-defined state object that is passed to the callback procedure. Retrieve this object from within the callback procedure using the AsyncState property.</param>
-            <returns>An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
-            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
-            be used to cancel the operation while it's in progress.</returns>
+            <param name="requestedBucketUri"></param>
+            <param name="headBucketStatusCode"></param>
+            <param name="xAmzBucketRegionHeaderValue"></param>
+            <returns></returns>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.EndDeleteS3BucketWithObjects(Amazon.S3.Util.IAsyncCancelableResult)">
+        <member name="M:Amazon.S3.Util.BucketRegionDetector.GetCorrectRegion(Amazon.S3.Util.AmazonS3Uri,Amazon.Runtime.AmazonServiceException)">
             <summary>
-            Finishes the asynchronous execution of the DeleteS3BucketWithObjects operation.
+            Detects if the signature is malformed, and the requested bucket is in a Region
+            different from the Region of the request.
             </summary>
-            <param name="asyncCancelableResult">The IAsyncCancelableResult returned by the call to BeginDeleteS3BucketWithObjects.</param>
+            <param name="requestedBucketUri"></param>
+            <param name="serviceException"></param>
+            <returns>the correct region if a mismatch was detected, null otherwise</returns>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.InvokeDeleteS3BucketWithObjects(System.Object)">
+        <member name="M:Amazon.S3.Util.BucketRegionDetector.DetectMismatchWithHeadBucketFallbackAsync(Amazon.S3.Util.AmazonS3Uri,Amazon.Runtime.AmazonServiceException,Amazon.Runtime.ImmutableCredentials)">
             <summary>
-            Invokes the DeleteS3BucketWithObjectsInternal method.
+            Detects if the signature is malformed, and the requested bucket is in a Region
+            different from the Region of the request.
             </summary>
-            <param name="state">The Request object that has all the data to complete the operation. </param>
+            <param name="requestedBucketUri"></param>
+            <param name="serviceException"></param>
+            <param name="credentials"></param>
+            <returns>the correct region if a mismatch was detected, null otherwise</returns>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.DeleteS3BucketWithObjectsInternal(Amazon.S3.IAmazonS3,System.String,Amazon.S3.Util.S3DeleteBucketWithObjectsOptions,System.Action{Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate},Amazon.S3.Util.AsyncCancelableResult)">
-            <summary>
-            Deletes an S3 bucket which contains objects.
-            An S3 bucket which contains objects cannot be deleted until all the objects 
-            in it are deleted. The function deletes all the objects in the specified 
-            bucket and then deletes the bucket itself.
-            </summary>
-            <param name="bucketName">The bucket to be deleted.</param>
-            <param name="s3Client">The Amazon S3 Client to use for S3 specific operations.</param>
-            <param name="deleteOptions">Options to control the behavior of the delete operation.</param>
-            <param name="updateCallback">The callback which is used to send updates about the delete operation.</param>
-            <param name="asyncCancelableResult">An IAsyncCancelableResult that can be used to poll or wait for results, or both; 
-            this value is also needed when invoking EndDeleteS3BucketWithObjects. IAsyncCancelableResult can also 
-            be used to cancel the operation while it's in progress.</param>
+        <member name="M:Amazon.S3.Util.BucketRegionDetector.GetBucketRegionNoPipelineAsync(System.String,Amazon.Runtime.ImmutableCredentials)">
+             <summary>
+             Use a HEAD bucket request to get the region for the given bucket.
+            
+             This method creates an AmazonS3Client from the credentials passed in.
+             It's critical that the AmazonS3Client is not used to make any requests that will
+             be routed through the pipeline.
+             </summary>
+             <param name="bucketName"></param>
+             <param name="credentials"></param>
+             <returns>the value of the x-amz-bucket-region header from the response</returns>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.InvokeS3DeleteBucketWithObjectsUpdateCallback(System.Action{Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate},Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate)">
+        <member name="M:Amazon.S3.Util.BucketRegionDetector.DetectMismatchWithHeadBucketFallback(Amazon.S3.Util.AmazonS3Uri,Amazon.Runtime.AmazonServiceException,Amazon.Runtime.ImmutableCredentials)">
             <summary>
-            Invokes the callback which provides updated about the delete operation.
+            Detects if the signature is malformed, and the requested bucket is in a Region
+            different from the Region of the request.
             </summary>
-            <param name="updateCallback">The callback to be invoked.</param>
-            <param name="update">The data being passed to the callback.</param>
+            <param name="requestedBucketUri"></param>
+            <param name="serviceException"></param>
+            <param name="credentials"></param>
+            <returns>the correct region if a mismatch was detected, null otherwise</returns>
         </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.ConvertToS3StorageClass(System.String)">
-            <summary>
-            Converts the string representing a storage class that would come back from a ListObjects request
-            to the S3StorageClass enumeration.
-            </summary>
-            <param name="value">Amazon S3 string values for storage class</param>
-            <returns>The converted S3StorageClass enumeration</returns>
-        </member>
-        <member name="M:Amazon.S3.Util.AmazonS3Util.PostUpload(Amazon.S3.Util.S3PostUploadRequest)">
-            <summary>
-            Upload data to Amazon S3 using HTTP POST.
-            </summary>
-            <remarks>
-            For more information, <see href="http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingHTTPPOST.html"/>
-            </remarks>
-            <param name="request">Request object which describes the data to POST</param>
-            <exception cref="T:Amazon.S3.Util.S3PostUploadException">Thrown if the service returns an error</exception>
+        <member name="M:Amazon.S3.Util.BucketRegionDetector.GetBucketRegionNoPipeline(System.String,Amazon.Runtime.ImmutableCredentials)">
+             <summary>
+             Use a HEAD bucket request to get the region for the given bucket.
+            
+             This method creates an AmazonS3Client from the credentials passed in.
+             It's critical that the AmazonS3Client is not used to make any requests that will
+             be routed through the pipeline.
+             </summary>
+             <param name="bucketName"></param>
+             <param name="credentials"></param>
+             <returns>the value of the x-amz-bucket-region header from the response</returns>
         </member>
         <member name="T:Amazon.S3.Util.S3EventNotification">
             <summary>
@@ -9743,6 +10400,65 @@
             Gets and sets the UserIdentity property.
             </summary>
         </member>
+        <member name="T:Amazon.S3.Util.S3DeleteBucketWithObjectsOptions">
+            <summary>
+            Options which control the behaviour of the DeleteS3BucketWithObjects operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsOptions.ContinueOnError">
+            <summary>
+            Gets or sets a value which indicates whether the 
+            operation should be aborted if an error is encountered during execution.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsOptions.QuietMode">
+            <summary>
+            Gets or sets a value which indicated whether verbose results shoule be returned to the
+            <see cref="T:System.Action`1" /> callback.
+            If quiet mode is true the callback will receive only keys where the delete operation encountered an error.
+            If quiet mode is false the callback will receive keys for both successful and unsuccessful delete operations.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest">
+            <summary>
+            Internal class used to pass the parameters for DeleteS3BucketWithObjects operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.BucketName">
+            <summary>
+            Name of the bucket to be deleted.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.S3Client">
+            <summary>
+            The Amazon S3 Client to use for S3 specific operations.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.DeleteOptions">
+            <summary>
+            Options to control the behavior of the delete operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.UpdateCallback">
+            <summary>
+            The callback which is used to send updates about the delete operation.
+            </summary>
+        </member>
+        <member name="T:Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate">
+            <summary>
+            Contains updates from DeleteS3BucketWithObjects operation.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate.DeletedObjects">
+            <summary>
+            The list of objects which were successfully deleted.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate.DeleteErrors">
+            <summary>
+            The list of objects for which the delete operation failed.
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Util.AsyncCancelableResult">
             <summary>
             Represents the status of an asynchronous operation. 
@@ -9846,70 +10562,6 @@
             Gets a value that indicated whether the asynchronous operation has been canceled.
             </summary>
         </member>
-        <member name="T:Amazon.S3.Util.S3DeleteBucketWithObjectsOptions">
-            <summary>
-            Options which control the behaviour of the DeleteS3BucketWithObjects operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsOptions.ContinueOnError">
-            <summary>
-            Gets or sets a value which indicates whether the 
-            operation should be aborted if an error is encountered during execution.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsOptions.QuietMode">
-            <summary>
-            Gets or sets a value which indicated whether verbose results shoule be returned to the
-            <see cref="T:System.Action`1" /> callback.
-            If quiet mode is true the callback will receive only keys where the delete operation encountered an error.
-            If quiet mode is false the callback will receive keys for both successful and unsuccessful delete operations.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest">
-            <summary>
-            Internal class used to pass the parameters for DeleteS3BucketWithObjects operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.BucketName">
-            <summary>
-            Name of the bucket to be deleted.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.S3Client">
-            <summary>
-            The Amazon S3 Client to use for S3 specific operations.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.DeleteOptions">
-            <summary>
-            Options to control the behavior of the delete operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.AsyncCancelableResult">
-            <summary>
-            Represents the status of an asynchronous operation. 
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsRequest.UpdateCallback">
-            <summary>
-            The callback which is used to send updates about the delete operation.
-            </summary>
-        </member>
-        <member name="T:Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate">
-            <summary>
-            Contains updates from DeleteS3BucketWithObjects operation.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate.DeletedObjects">
-            <summary>
-            The list of objects which were successfully deleted.
-            </summary>
-        </member>
-        <member name="P:Amazon.S3.Util.S3DeleteBucketWithObjectsUpdate.DeleteErrors">
-            <summary>
-            The list of objects for which the delete operation failed.
-            </summary>
-        </member>
         <member name="T:Amazon.S3.Util.S3PostUploadException">
             <summary>
             An exception detailing a failed HTTP POST upload atempt to Amazon S3.
@@ -9962,6 +10614,23 @@
             </summary>
             <param name="response">The response from S3</param>
             <returns>An S3PostUploadException with the information from the response</returns>
+        </member>
+        <member name="M:Amazon.S3.Util.S3PostUploadException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructs a new instance of the S3PostUploadException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0). </exception>
+        </member>
+        <member name="M:Amazon.S3.Util.S3PostUploadException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info" /> parameter is a null reference (Nothing in Visual Basic). </exception>
         </member>
         <member name="T:Amazon.S3.Util.S3PostUploadError">
             <summary>
@@ -10127,6 +10796,11 @@
             Gets and sets the HostId property.
             </summary>
         </member>
+        <member name="P:Amazon.S3.Util.S3PostUploadResponse.AmzCfId">
+            <summary>
+            Gets and sets the CloudFront request ID.
+            </summary>
+        </member>
         <member name="T:Amazon.S3.Util.S3PostUploadSignedPolicy">
             <summary>
             Utility class for managing and exchanging HTTP POST uploads of objects to Amazon S3.
@@ -10147,6 +10821,15 @@
             <param name="credentials">Credentials to sign the policy with</param>
             <returns>A signed policy object for use with an S3PostUploadRequest.</returns>
         </member>
+        <member name="M:Amazon.S3.Util.S3PostUploadSignedPolicy.GetSignedPolicyV4(System.String,Amazon.Runtime.AWSCredentials,Amazon.RegionEndpoint)">
+            <summary>
+             Given a policy and AWS credentials, produce a S3PostUploadSignedPolicy.
+            </summary>
+            <param name="policy">JSON string representing the policy to sign</param>
+            <param name="credentials">Credentials to sign the policy with</param>
+            <param name="region">Service region endpoint.</param>
+            <returns>A signed policy object for use with an S3PostUploadRequest.</returns>
+        </member>
         <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Policy">
             <summary>
             The policy document which governs what uploads can be done.
@@ -10165,6 +10848,29 @@
         <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.SecurityToken">
             <summary>
             The security token from session or instance credentials.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.SignatureVersion">
+            <summary>
+            The signature version usedd. Either "2" or "4".
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Algorithm">
+            <summary>
+            The signing algorithm used. Required as a field in the post Amazon
+            S3 can re-calculate the signature.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Date">
+            <summary>
+            The date value in ISO8601 format. It is the same date used in
+            creating the signing key.
+            </summary>
+        </member>
+        <member name="P:Amazon.S3.Util.S3PostUploadSignedPolicy.Credential">
+            <summary>
+            In addition to the access key ID, this provides scope information
+            used in calculating the signing key for signature calculation. 
             </summary>
         </member>
         <member name="M:Amazon.S3.Util.S3PostUploadSignedPolicy.GetReadablePolicy">
@@ -10535,7 +11241,7 @@
         </member>
         <member name="M:Amazon.S3.IAmazonS3.DeleteBucketReplication(Amazon.S3.Model.DeleteBucketReplicationRequest)">
             <summary>
-            Deletes the replication configuration for the given Amazon S3 bucket.
+            Deletes the replication configuration from the bucket.
             </summary>
             <param name="request">Container for the necessary parameters to execute the DeleteBucketReplication service method.</param>
             
@@ -10830,6 +11536,44 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the GetACL operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfiguration(System.String)">
+            <summary>
+            Returns the accelerate configuration of a bucket.
+            </summary>
+            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
+            
+            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfiguration(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest)">
+            <summary>
+            Returns the accelerate configuration of a bucket.
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration service method.</param>
+            
+            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfigurationAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns the accelerate configuration of a bucket.
+            </summary>
+            <param name="bucketName">Name of the bucket for which the accelerate configuration is retrieved.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            
+            <returns>The response from the GetBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.GetBucketAccelerateConfigurationAsync(Amazon.S3.Model.GetBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the GetBucketAccelerateConfiguration operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the GetBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -11617,6 +12361,28 @@
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
         </member>
+        <member name="M:Amazon.S3.IAmazonS3.ListObjectsV2(Amazon.S3.Model.ListObjectsV2Request)">
+            <summary>
+            Returns some or all (up to 1000) of the objects in a bucket. You can use the request
+            parameters as selection criteria to return a subset of the objects in a bucket. Note:
+            ListObjectsV2 is the revised List Objects API and we recommend you use this revised
+            API for new application development.
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 service method.</param>
+            
+            <returns>The response from the ListObjectsV2 service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.ListObjectsV2Async(Amazon.S3.Model.ListObjectsV2Request,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the ListObjectsV2 operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the ListObjectsV2 operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
         <member name="M:Amazon.S3.IAmazonS3.ListParts(System.String,System.String,System.String)">
             <summary>
             Lists the parts that have been uploaded for a specific multipart upload.
@@ -11770,6 +12536,25 @@
             </summary>
             
             <param name="request">Container for the necessary parameters to execute the PutBucket operation.</param>
+            <param name="cancellationToken">
+                A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+            </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.PutBucketAccelerateConfiguration(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest)">
+            <summary>
+            Sets the accelerate configuration of an existing bucket.
+            </summary>
+            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration service method.</param>
+            
+            <returns>The response from the PutBucketAccelerateConfiguration service method, as returned by S3.</returns>
+        </member>
+        <member name="M:Amazon.S3.IAmazonS3.PutBucketAccelerateConfigurationAsync(Amazon.S3.Model.PutBucketAccelerateConfigurationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Initiates the asynchronous execution of the PutBucketAccelerateConfiguration operation.
+            </summary>
+            
+            <param name="request">Container for the necessary parameters to execute the PutBucketAccelerateConfiguration operation.</param>
             <param name="cancellationToken">
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
@@ -16375,10 +17160,21 @@
         <member name="P:Amazon.AWSConfigsS3.UseSignatureVersion4">
             <summary>
             Configures if the S3 client should use Signature Version 4 signing with requests.
-            By default, this setting is false, though Signature Version 4 may be used by default
-            in some cases or with some regions. When the setting is true, Signature Version 4
-            will be used for all requests.
+            By default, this setting is true.
+            When the setting is true, Signature Version 4 will be used for all requests.
+            When it is false, Signature Version 2 will be used.
+            Note that when the setting is false, Signature Version 4 may still be used by
+            default in some cases or with some regions.
             </summary>
+        </member>
+        <member name="P:Amazon.AWSConfigsS3.UseSigV4SetExplicitly">
+             <summary>
+             Was the value of the UseSignatureVersion4 property set explicitly?
+             This can be done via configuration or by directly setting the property.
+            
+             This is used to determine if the user set UseSignatureVersion4 to true,
+             or if it's true because the default was changed to true in the SDK.
+             </summary>
         </member>
         <member name="T:Amazon.V4ClientSection">
             <summary>

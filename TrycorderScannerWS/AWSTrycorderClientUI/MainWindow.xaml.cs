@@ -722,7 +722,9 @@ namespace AWSTrycorderClientUI
             string awscredsfile = GetDefaultAWSCredFile();
             if (File.Exists(awscredsfile)) MessageBox.Show(Trycorder.LoadAWSCredentials(awscredsfile), "Credential Load Status");
             else MessageBox.Show("Unable to find " + awscredsfile);
+
             BuildProfileMenuList();
+            
         }
 
 

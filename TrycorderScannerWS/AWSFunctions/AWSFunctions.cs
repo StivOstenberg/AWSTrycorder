@@ -43,6 +43,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.Security.Authentication;
+using System.Threading;
 
 namespace AWSFunctions
 {
@@ -124,20 +125,15 @@ namespace AWSFunctions
                     currentSection[line.Substring(0, idx)] = line.Substring(idx + 1);
             }
 
-
-            //Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
-
             //Build a list of current keys to use to avoid dupes due to changed "profile" names.
-
-
             Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
-
-            foreach (var aprofilename in Amazon.Util.ProfileManager.ListProfileNames())
+            var Profilenameses = Amazon.Util.ProfileManager.ListProfileNames();
+            foreach (var aprofilename in Profilenameses)
             {
                 var acred = Amazon.Util.ProfileManager.GetAWSCredentials(aprofilename).GetCredentials();
-
                 currentaccesskeys.Add(aprofilename, acred.AccessKey);
             }
+
 
             foreach (KeyValuePair<string, Dictionary<string, string>> kvp in ini)
             {
@@ -150,20 +146,24 @@ namespace AWSFunctions
                 newaccessKey = kvp.Value["aws_access_key_id"].ToString();
                 newsecretKey = kvp.Value["aws_secret_access_key"].ToString();
 
-
+                //See if profile already exists.
                 if (Amazon.Util.ProfileManager.ListProfileNames().Contains(newprofileName))
                 {
                     var daP = Amazon.Util.ProfileManager.GetAWSCredentials(newprofileName).GetCredentials();
+                    //See if the profiles with the same name have the same AK and SK.
                     if (daP.AccessKey == newaccessKey & daP.SecretKey == newsecretKey)
                     {
-                        //dey da same
+                        results += newprofileName + " already in store.\n";
+                        continue;
                     }
                     else
-                    {
+                    {// The names are the same, but the data are different.
                         results += newprofileName + " keys do not match existing profile!\n";
+                        continue;
                     }
 
                 }
+
                 else //Profile does not exist by this name.  
                 {
                     if (currentaccesskeys.Values.Contains(newaccessKey))//Do we already have that key?
@@ -179,17 +179,20 @@ namespace AWSFunctions
                         }
 
                         results += newprofileName + " already exists as " + existingprofile + "\n";
+                        continue;
                     }
                     else
                     {
                         if (newaccessKey.Length.Equals(20) & newsecretKey.Length.Equals(40))
                         {
-                            results += newprofileName + " added to credential store!\n";
                             Amazon.Util.ProfileManager.RegisterProfile(newprofileName, newaccessKey, newsecretKey);
+                            results += newprofileName + " added to credential store!\n";
+
                         }
                         else
                         {
                             results += newprofileName + "'s keys are not the correct length!\n";
+                            continue;
                         }
                     }
                 }
@@ -2298,8 +2301,8 @@ namespace AWSFunctions
 
                     disone["StorageType"] = anRDS.StorageType;
                     disone["AllocatedStorage"] = anRDS.AllocatedStorage;
-                    disone["Engine"] = anRDS.StorageType;
-                    disone["EngineVersion"] = anRDS.AllocatedStorage;
+                    disone["Engine"] = anRDS.Engine;
+                    disone["EngineVersion"] = anRDS.EngineVersion;
                     disone["Created"] = anRDS.InstanceCreateTime.ToString();
                     ToReturn.Rows.Add(disone);
                 }
@@ -3598,6 +3601,8 @@ namespace AWSFunctions
 
         public String State { get; set; } = "Idle";
 
+
+        #region Dictionaries
         public Dictionary<string, string> EC2Status = new Dictionary<string, string>
         {
             { "Status","Idle" },
@@ -3687,7 +3692,7 @@ namespace AWSFunctions
             { "Result","" },
             { "Instances","" }
         };
-
+        #endregion
         public string GetTime()
         {
             string CurrentTime = DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToShortTimeString();
