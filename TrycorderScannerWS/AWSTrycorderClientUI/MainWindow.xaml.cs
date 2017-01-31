@@ -869,6 +869,11 @@ namespace AWSTrycorderClientUI
             System.Windows.MessageBox.Show(license,"AWS Trycorder License" );
         }
 
-
+        private void MySQLMI_Click(object sender, RoutedEventArgs e)
+        {
+            var testy = Trycorder.GetComponentDataTable("ec2");
+            var daquery = AWSFunctions.MySQLDBHelper.MySQLBulkInsert(ref testy,"EC2");
+            MessageBox.Show(daquery);
+        }
     }
 }

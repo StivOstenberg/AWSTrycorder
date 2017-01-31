@@ -146,7 +146,7 @@ namespace ScannerEngine
             ToReturn += "RDS :" + Settings.RDSStatus["Status"] + "  " + Settings.RDSStatus["EndTime"] + "  " + Settings.RDSStatus["Instances"] + " RDSs\n";
             ToReturn += "Snapshots :" + Settings.SnapshotsStatus["Status"] + "  " + Settings.SnapshotsStatus["EndTime"] + "  " + Settings.SnapshotsStatus["Instances"] + " Snapshots\n";
             ToReturn += "SNS Subscriptions :" + Settings.SNSSubs["Status"] + "  " + Settings.SNSSubs["EndTime"] + "  " + Settings.SNSSubs["Instances"] + " Subscriptions\n";
-            ToReturn += "Load Balancers:" + Settings.ELBStatus["Status"] + "  " + Settings.SNSSubs["EndTime"] + "  " + Settings.SNSSubs["Instances"] + " Subscriptions\n";
+            ToReturn += "Load Balancers:" + Settings.ELBStatus["Status"] + "  " + Settings.ELBStatus["EndTime"] + "  " + Settings.ELBStatus["ELBs"] + " Load Balancers\n";
 
             if (Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
             return ToReturn;

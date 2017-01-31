@@ -79,3 +79,4 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderCl
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSSDK.Core.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSSDK.Core.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSSDK.Core.xml
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\MySql.Data.dll
