@@ -246,6 +246,15 @@ namespace AWSFunctions
                 {
                     aid = "######## Account Number: unspecified ##########################################\n";
                 }
+
+                // Try to figure out who the credentials belong to.  (Too slow (loading IAM table)
+                //var usertable = GetIAMUsers(aprofilename);
+                //string query = "Access-Keys contains " + acred.AccessKey;
+                //DataRow foundrow = usertable.Select(query)[0];   (query dont not work)
+                //string username = foundrow["Username"].ToString();
+
+
+                //////
                 newconfigfile += aid;
                 newconfigfile += "[" + aprofilename + "]\n";
                 newconfigfile += "aws_access_key_id=" + acred.AccessKey + "\n";
@@ -2317,6 +2326,7 @@ namespace AWSFunctions
                     disone["AllocatedStorage"] = anRDS.AllocatedStorage;
                     disone["Engine"] = anRDS.Engine;
                     disone["EngineVersion"] = anRDS.EngineVersion;
+                    disone["AutoMinorUpgrade"] = anRDS.AutoMinorVersionUpgrade.ToString();
                     disone["Created"] = anRDS.InstanceCreateTime.ToString();
                     ToReturn.Rows.Add(disone);
                 }
@@ -2428,13 +2438,16 @@ namespace AWSFunctions
                         {
 
                             WebRequest request = WebRequest.Create(chekkit);
+                            request.Timeout = 5000;
                             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                             if (response == null )
                             {
                                 CheckDaHealth += "Null Response";
                             }
                             if(response.StatusCode != HttpStatusCode.OK)
-                            { CheckDaHealth += response.StatusDescription; }
+                            {
+                                CheckDaHealth += response.StatusDescription;
+                            }
                             CheckDaHealth += "Ok ";
                         }
                         catch(Exception ex)
@@ -3110,6 +3123,7 @@ namespace AWSFunctions
 
             table.Columns.Add("Engine", typeof(string));
             table.Columns.Add("EngineVersion", typeof(string));
+            table.Columns.Add("AutoMinorUpgrade", typeof(string));
             table.Columns.Add("Created", typeof(string));
 
 
@@ -3564,7 +3578,7 @@ namespace AWSFunctions
             DefaultColumns["EC2"] = new List<string>() { "Profile", "Region", "InstanceName","InstanceID", "AMIDescription", "AvailabilityZone", "Platform", "Status", "Tags", "PrivateIP", "PublicIP", "PublicDNS", "SecurityGroups", "SGNames" };
             DefaultColumns["IAM"] = new List<string>() { "Profile", "UserID", "Username", "ARN", "CreateDate", "PwdEnabled", "PwdLastUsed", "MFA Active", "AccessKey1-Active", "AccessKey1-LastUsedDate", "AccessKey1-LastUsedRegion", "AccessKey1-LastUsedService", "User-Policies", "Access-Keys", "Groups" };
             DefaultColumns["S3"] = new List<string>() { "Profile", "Bucket", "Region", "RegionEndpoint", "AuthRegion", "AuthService", "CreationDate", "LastAccess", "Owner", "EndDate", "EndSizeMax", "EndSizeMaxBytes","Grants", "WebsiteHosting", "Versioning", "Tags" };
-            DefaultColumns["RDS"] = new List<string>() { "Profile", "AvailabilityZone", "InstanceID", "Name", "Status", "EndPoint", "InstanceClass", "IOPS", "AllocatedStorage", "StorageType", "Engine", "EngineVersion", "Created" };
+            DefaultColumns["RDS"] = new List<string>() { "Profile", "AvailabilityZone", "InstanceID", "Name", "Status", "EndPoint", "InstanceClass", "IOPS", "AllocatedStorage", "StorageType", "Engine", "EngineVersion", "AutoMinorUpgrade", "Created" };
             DefaultColumns["VPC"] = new List<string>() {  "Profile", "VpcID", "CidrBlock", "IsDefault", "DHCPOptionsID", "InstanceTenancy", "State", "Tags" }; 
             DefaultColumns["Snapshots"] = new List<string>() { "Profile", "Region", "SnapshotID", "Description", "VolumeID", "VolumeSize-GB", "Encrypted", "OwnerID", "Progress", "StartTime", "State", "Tags" };
             DefaultColumns["Subnets"] = new List<string>() {  "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };

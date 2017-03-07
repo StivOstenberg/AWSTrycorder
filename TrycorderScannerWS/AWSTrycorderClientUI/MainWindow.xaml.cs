@@ -485,6 +485,7 @@ namespace AWSTrycorderClientUI
             var gopher = sender as MenuItem;
             bool state = gopher.IsChecked;
             string thecolumn = gopher.Header.ToString();
+            if (SelectedComponentComboBox.SelectedValue == null) SelectColumncomboBox.SelectedIndex = 0;
             Trycorder.SetColumnVisSetting(SelectedComponentComboBox.SelectedValue.ToString(), thecolumn, state);
             SetColumnVisabiltyinTable(thecolumn, state);
         }
