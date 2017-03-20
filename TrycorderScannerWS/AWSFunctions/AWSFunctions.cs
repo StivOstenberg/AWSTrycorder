@@ -366,7 +366,7 @@ namespace AWSFunctions
             return RegionNames;
         }
         /// <summary>
-        /// Given a Profile and Region, return a table with data about bucket sizes,
+        /// Given a Profile and Region, return a table with data about buckets and bucket sizes,
         /// collected from CloudWatch.
         /// </summary>
         /// <param name="aprofile"></param>
@@ -391,24 +391,24 @@ namespace AWSFunctions
             DataTable metlist = new DataTable();
             try
             {
-                var credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var credential = new StoredProfileAWSCredentials(aprofile);
                 AmazonCloudWatchClient CWClient = new AmazonCloudWatchClient(credential, Endpoint2scan);
                 Amazon.CloudWatch.Model.ListMetricsRequest LMReq = new Amazon.CloudWatch.Model.ListMetricsRequest();               
 
                 //Using to explore the metrics
                 LMReq.Namespace = "AWS/S3";
                 LMReq.MetricName = "BucketSizeBytes";
-                var getmetrics = CWClient.ListMetrics(LMReq).Metrics;
+                var getmetrics = CWClient.ListMetrics(LMReq).Metrics; // And we get the metrics..
 
                 //This is just stuff I used to view data from the List
                 metlist.Columns.Add("MetricName");
                 metlist.Columns.Add("NameSpace");
 
-                //These are the dimensions for S3.
+                //These are the dimensions for S3 bucket what we want.
                 metlist.Columns.Add("Bucketname");
                 metlist.Columns.Add("StorageType");
 
-                foreach (var ametric in getmetrics)
+                foreach (var ametric in getmetrics) // Here, we build a list containing names of buckets and their storage types stored in metlist.
                 {
                     var DR = metlist.NewRow();
                     try
@@ -416,27 +416,23 @@ namespace AWSFunctions
                         DR["MetricName"] = ametric.MetricName;
                         DR["NameSpace"] = ametric.Namespace;
                         var dim = ametric.Dimensions;
-                        //These are the dimensions for S3.
-                        DR["BucketName"] = dim[0].Value;
-                        DR["StorageType"] =  dim[1].Value;
+                        //These are the dimensions for S3.  
+                        DR["StorageType"] =  dim[0].Value;  //We need to capture the storage type for each bucket so we make the appropriate request for the data.
+                        DR["BucketName"] = dim[1].Value;
                         metlist.Rows.Add(DR);
                     }
                     catch(Exception ex)
                     {
-
+                        int woeisme = 1;
                     }
                 }
 
-                // Okay, collect the daters for these here buckets
-
-
-
-
+                // Okay, collect the daters for these here buckets, now that we know their name and storage types.
                 foreach (var abucket in metlist.AsEnumerable())
                 {
                     Amazon.CloudWatch.Model.GetMetricStatisticsRequest GMReq = new Amazon.CloudWatch.Model.GetMetricStatisticsRequest();
-                    string bucketname = abucket[2].ToString();
-                    string storagetype = abucket[3].ToString();
+                    string bucketname = abucket["Bucketname"].ToString();
+                    string storagetype = abucket["StorageType"].ToString();
                     
                     try
                     {
@@ -551,7 +547,12 @@ namespace AWSFunctions
             //Query Cloudwatch to get list of buckets and sizes in this here region
             var Sizetable = S3SizeCloudWatch(aprofile, Region2Scan);
             int sizerows = Sizetable.Rows.Count;
+            if(sizerows>0)
+            {
+                int lookatme = 1;
+                var rabbit = Sizetable.Rows[0];
 
+            }
 
 
             try
@@ -569,9 +570,9 @@ namespace AWSFunctions
 
                 foreach (S3Bucket abucket in response.Buckets)
                 {
-                    DataRow abucketrow = ToReturn.NewRow();
+                    DataRow abucketrow = ToReturn.NewRow(); //Create a new empty row to hold data
                     var name = abucket.BucketName;
-                    DataRow bucketsizedata = AWSTables.GetS3SizesTable().NewRow();
+                    DataRow bucketsizedata = AWSTables.GetS3SizesTable().NewRow();   //Create a new empty row to hold data
                     Boolean havesize = true;
 
                     try//Lookup the record in the Sizetable for this bucket.

@@ -40,6 +40,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.IPNetwork, Version=2.0.4.0, Culture=neutral, PublicKeyToken=764160545cf0d618, processorArchitecture=MSIL">
+      <HintPath>..\packages\IPNetwork2.2.0.4\lib\net40\System.Net.IPNetwork.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms">
       <Aliases>global,swformalias</Aliases>

@@ -73,6 +73,15 @@
              </para>
              </summary>
         </member>
+        <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.Amazon#Runtime#SharedInterfaces#ICoreAmazonSTS#CredentialsFromAssumeRoleAuthentication(System.String,System.String,Amazon.Runtime.AssumeRoleAWSCredentialsOptions)">
+            <summary>
+            <see cref="T:Amazon.Runtime.SharedInterfaces.ICoreAmazonSTS"/>
+            </summary>
+            <param name="roleArn"></param>
+            <param name="roleSessionName"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.#ctor">
              <summary>
              Constructs AmazonSecurityTokenServiceClient with the credentials loaded from the application's
@@ -340,6 +349,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRole">REST API Reference for AssumeRole Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.AssumeRoleAsync(Amazon.SecurityToken.Model.AssumeRoleRequest,System.Threading.CancellationToken)">
             <summary>
@@ -351,6 +361,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRole">REST API Reference for AssumeRole Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.AssumeRoleWithSAML(Amazon.SecurityToken.Model.AssumeRoleWithSAMLRequest)">
             <summary>
@@ -483,6 +494,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithSAML">REST API Reference for AssumeRoleWithSAML Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.AssumeRoleWithSAMLAsync(Amazon.SecurityToken.Model.AssumeRoleWithSAMLRequest,System.Threading.CancellationToken)">
             <summary>
@@ -494,6 +506,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithSAML">REST API Reference for AssumeRoleWithSAML Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.AssumeRoleWithWebIdentity(Amazon.SecurityToken.Model.AssumeRoleWithWebIdentityRequest)">
             <summary>
@@ -657,6 +670,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithWebIdentity">REST API Reference for AssumeRoleWithWebIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.AssumeRoleWithWebIdentityAsync(Amazon.SecurityToken.Model.AssumeRoleWithWebIdentityRequest,System.Threading.CancellationToken)">
             <summary>
@@ -668,6 +682,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithWebIdentity">REST API Reference for AssumeRoleWithWebIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.DecodeAuthorizationMessage(Amazon.SecurityToken.Model.DecodeAuthorizationMessageRequest)">
             <summary>
@@ -730,6 +745,7 @@
             The error returned if the message passed to <code>DecodeAuthorizationMessage</code>
             was invalid. This can happen if the token contains invalid characters, such as linebreaks.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/DecodeAuthorizationMessage">REST API Reference for DecodeAuthorizationMessage Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.DecodeAuthorizationMessageAsync(Amazon.SecurityToken.Model.DecodeAuthorizationMessageRequest,System.Threading.CancellationToken)">
             <summary>
@@ -741,6 +757,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/DecodeAuthorizationMessage">REST API Reference for DecodeAuthorizationMessage Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetCallerIdentity(Amazon.SecurityToken.Model.GetCallerIdentityRequest)">
             <summary>
@@ -749,6 +766,7 @@
             <param name="request">Container for the necessary parameters to execute the GetCallerIdentity service method.</param>
             
             <returns>The response from the GetCallerIdentity service method, as returned by SecurityTokenService.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetCallerIdentity">REST API Reference for GetCallerIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetCallerIdentityAsync(Amazon.SecurityToken.Model.GetCallerIdentityRequest,System.Threading.CancellationToken)">
             <summary>
@@ -760,6 +778,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetCallerIdentity">REST API Reference for GetCallerIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetFederationToken(Amazon.SecurityToken.Model.GetFederationTokenRequest)">
             <summary>
@@ -885,6 +904,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetFederationToken">REST API Reference for GetFederationToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetFederationTokenAsync(Amazon.SecurityToken.Model.GetFederationTokenRequest,System.Threading.CancellationToken)">
             <summary>
@@ -896,6 +916,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetFederationToken">REST API Reference for GetFederationToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetSessionToken">
             <summary>
@@ -968,6 +989,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetSessionToken(Amazon.SecurityToken.Model.GetSessionTokenRequest)">
             <summary>
@@ -1041,6 +1063,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetSessionTokenAsync(System.Threading.CancellationToken)">
             <summary>
@@ -1116,6 +1139,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.AmazonSecurityTokenServiceClient.GetSessionTokenAsync(Amazon.SecurityToken.Model.GetSessionTokenRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1127,6 +1151,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="T:Amazon.SecurityToken.STSAssumeRoleAWSCredentials">
             <summary>
@@ -1374,6 +1399,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRole">REST API Reference for AssumeRole Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.AssumeRoleAsync(Amazon.SecurityToken.Model.AssumeRoleRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1385,6 +1411,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRole">REST API Reference for AssumeRole Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.AssumeRoleWithSAML(Amazon.SecurityToken.Model.AssumeRoleWithSAMLRequest)">
             <summary>
@@ -1517,6 +1544,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithSAML">REST API Reference for AssumeRoleWithSAML Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.AssumeRoleWithSAMLAsync(Amazon.SecurityToken.Model.AssumeRoleWithSAMLRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1528,6 +1556,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithSAML">REST API Reference for AssumeRoleWithSAML Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.AssumeRoleWithWebIdentity(Amazon.SecurityToken.Model.AssumeRoleWithWebIdentityRequest)">
             <summary>
@@ -1691,6 +1720,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithWebIdentity">REST API Reference for AssumeRoleWithWebIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.AssumeRoleWithWebIdentityAsync(Amazon.SecurityToken.Model.AssumeRoleWithWebIdentityRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1702,6 +1732,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/AssumeRoleWithWebIdentity">REST API Reference for AssumeRoleWithWebIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.DecodeAuthorizationMessage(Amazon.SecurityToken.Model.DecodeAuthorizationMessageRequest)">
             <summary>
@@ -1764,6 +1795,7 @@
             The error returned if the message passed to <code>DecodeAuthorizationMessage</code>
             was invalid. This can happen if the token contains invalid characters, such as linebreaks.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/DecodeAuthorizationMessage">REST API Reference for DecodeAuthorizationMessage Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.DecodeAuthorizationMessageAsync(Amazon.SecurityToken.Model.DecodeAuthorizationMessageRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1775,6 +1807,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/DecodeAuthorizationMessage">REST API Reference for DecodeAuthorizationMessage Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetCallerIdentity(Amazon.SecurityToken.Model.GetCallerIdentityRequest)">
             <summary>
@@ -1783,6 +1816,7 @@
             <param name="request">Container for the necessary parameters to execute the GetCallerIdentity service method.</param>
             
             <returns>The response from the GetCallerIdentity service method, as returned by SecurityTokenService.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetCallerIdentity">REST API Reference for GetCallerIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetCallerIdentityAsync(Amazon.SecurityToken.Model.GetCallerIdentityRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1794,6 +1828,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetCallerIdentity">REST API Reference for GetCallerIdentity Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetFederationToken(Amazon.SecurityToken.Model.GetFederationTokenRequest)">
             <summary>
@@ -1919,6 +1954,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetFederationToken">REST API Reference for GetFederationToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetFederationTokenAsync(Amazon.SecurityToken.Model.GetFederationTokenRequest,System.Threading.CancellationToken)">
             <summary>
@@ -1930,6 +1966,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetFederationToken">REST API Reference for GetFederationToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetSessionToken">
             <summary>
@@ -2002,6 +2039,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetSessionToken(Amazon.SecurityToken.Model.GetSessionTokenRequest)">
             <summary>
@@ -2075,6 +2113,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetSessionTokenAsync(System.Threading.CancellationToken)">
             <summary>
@@ -2150,6 +2189,7 @@
             STS in that region. For more information, see <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html">Activating
             and Deactivating AWS STS in an AWS Region</a> in the <i>IAM User Guide</i>.
             </exception>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="M:Amazon.SecurityToken.IAmazonSecurityTokenService.GetSessionTokenAsync(Amazon.SecurityToken.Model.GetSessionTokenRequest,System.Threading.CancellationToken)">
             <summary>
@@ -2161,6 +2201,7 @@
                 A cancellation token that can be used by other objects or threads to receive notice of cancellation.
             </param>
             <returns>The task object representing the asynchronous operation.</returns>
+            <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sts-2011-06-15/GetSessionToken">REST API Reference for GetSessionToken Operation</seealso>
         </member>
         <member name="T:Amazon.SecurityToken.Model.Credentials">
             <summary>
