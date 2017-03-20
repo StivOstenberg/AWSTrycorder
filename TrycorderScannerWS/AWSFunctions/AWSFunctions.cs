@@ -216,13 +216,23 @@ namespace AWSFunctions
 
         public string GetFileSize(double byteCount)
         {
-            string size = "0 Bytes";
-            if (byteCount >= 1073741824.0)
-                size = String.Format("{0:##.##}", byteCount / 1073741824.0) + " GB";
-            else if (byteCount >= 1048576.0)
-                size = String.Format("{0:##.##}", byteCount / 1048576.0) + " MB";
-            else if (byteCount >= 1024.0)
-                size = String.Format("{0:##.##}", byteCount / 1024.0) + " KB";
+            double kB = 1000;
+            double MB = Math.Pow(kB, 2);
+            double GB = Math.Pow(kB, 3);
+            double TB = Math.Pow(kB, 4);
+            double PB = Math.Pow(kB, 5);
+
+            string size = "0 Bytes"; 
+            if (byteCount >= PB)
+                size = String.Format("{0:##.##}", byteCount / PB) + " PB";
+            else if (byteCount >= TB)
+                size = String.Format("{0:##.##}", byteCount / TB) + " TB";
+            else if (byteCount >= GB)
+                size = String.Format("{0:##.##}", byteCount / GB) + " GB";
+            else if (byteCount >= MB)
+                size = String.Format("{0:##.##}", byteCount / MB) + " MB";
+            else if (byteCount >= kB)
+                size = String.Format("{0:##.##}", byteCount / kB) + " kB";
             else if (byteCount > 0 && byteCount < 1024.0)
                 size = byteCount.ToString() + " Bytes";
 
