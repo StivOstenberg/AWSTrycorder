@@ -216,6 +216,7 @@ namespace AWSFunctions
 
         public string GetFileSize(double byteCount)
         {
+            //Note these are based on human numbers, not multiples of 1024 which have different names.
             double kB = 1000;
             double MB = Math.Pow(kB, 2);
             double GB = Math.Pow(kB, 3);
@@ -493,7 +494,7 @@ namespace AWSFunctions
                             var max = ap.Maximum;
                             var av = ap.Average;
                             var ts = ap.Timestamp;
-
+                            
                             if (firstpass)
                             {
                                 firstpass = false;
@@ -555,7 +556,7 @@ namespace AWSFunctions
 
 
             //Query Cloudwatch to get list of buckets and sizes in this here region
-            var Sizetable = S3SizeCloudWatch(aprofile, Region2Scan);
+            var Sizetable = S3SizeCloudWatch(aprofile, Region2Scan);//This is calling another of my functions to get data.
             int sizerows = Sizetable.Rows.Count;
             if(sizerows>0)
             {
@@ -636,7 +637,7 @@ namespace AWSFunctions
                         if (region.Equals(""))
                         {
                             
-                            region = "us-east-1";
+                            region = "us-east-1";//Because a region is required even if not relevant.
                         }
 
                         if (!region.Contains(Endpoint2scan.SystemName))
@@ -678,6 +679,7 @@ namespace AWSFunctions
                         string website = "";
                         //Now start pulling der einen data.
 
+                        //Here we are pulling the lists of people who have access to this bucket...
                         GetACLRequest GACR = new GetACLRequest();
                         GACR.BucketName = name;
                         var ACL = BS3Client.GetACL(GACR);
@@ -700,11 +702,13 @@ namespace AWSFunctions
                             }
                         }
 
+                        //Here we are pulling the information about the bucket website address if it exists.
                         GetBucketWebsiteRequest GBWReq = new GetBucketWebsiteRequest();
                         GBWReq.BucketName = name;
                         GetBucketWebsiteResponse GBWRes = BS3Client.GetBucketWebsite(GBWReq);
-
                         defaultpage = GBWRes.WebsiteConfiguration.IndexDocumentSuffix;
+
+                        
 
 
                         if (defaultpage != null)
@@ -720,6 +724,7 @@ namespace AWSFunctions
                         abucketrow["AuthService"] = authservice;
 
                         abucketrow["CreationDate"] = createddate.ToString();
+                        
                         abucketrow["LastAccess"] = lastaccess;
                         abucketrow["Owner"] = owner;
                         abucketrow["Grants"] = grants;
@@ -2175,6 +2180,8 @@ namespace AWSFunctions
             }
             foreach (var rabbit in MyData.Values)
             {
+                var debugme = rabbit.Rows[0];
+
                 ToReturn.Merge(rabbit);
             }
             var end = DateTime.Now;
@@ -2220,11 +2227,11 @@ namespace AWSFunctions
                     //var dater = Network2IpRange(asubnet.CidrBlock);
                     System.Net.IPNetwork danetwork = System.Net.IPNetwork.Parse(asubnet.CidrBlock);
 
-                    disone["[Network]"] = danetwork.Network;
-                    disone["[Netmask]"] = danetwork.Netmask;
-                    disone["[Broadcast]"] = danetwork.Broadcast;
-                    disone["[FirstUsable]"] = danetwork.FirstUsable;
-                    disone["[LastUsable]"] = danetwork.LastUsable;
+                    disone["_Network"] = danetwork.Network;
+                    disone["_Netmask"] = danetwork.Netmask;
+                    disone["_Broadcast"] = danetwork.Broadcast;
+                    disone["_FirstUsable"] = danetwork.FirstUsable;
+                    disone["_LastUsable"] = danetwork.LastUsable;
 
                     ///
                     disone["DefaultForAZ"] = asubnet.DefaultForAz.ToString();
@@ -2251,6 +2258,10 @@ namespace AWSFunctions
             {
                 string rabbit = "";
             }
+
+            var debugme = ToReturn.Rows[0];
+
+
             return ToReturn;
         }
 
@@ -2691,9 +2702,19 @@ namespace AWSFunctions
             //Scan one column
             else
             {
+                DataTable newt = new DataTable();
                 if (casesensitive)
                 {
-                    var newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                    
+                    try
+                    {
+                         newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                        var debugme = newt.Rows[0][11];
+                    }
+                    catch
+                    {
+
+                    }
                     if (newt.Rows.Count > 0) ToReturn = newt;
                     else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
                     {
@@ -2703,7 +2724,11 @@ namespace AWSFunctions
                 }
                 else
                 {
-                    var newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().Contains(filterstring)).CopyToDataTable();
+                    try
+                    {
+                        newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().Contains(filterstring)).CopyToDataTable();
+                    }
+                    catch { }
                     if (newt.Rows.Count > 0) ToReturn = newt;
                     else//If empty search,  copy the source table to keep column names, then clear to indicate no values found.
                     {
@@ -3450,11 +3475,12 @@ namespace AWSFunctions
             ToReturn.Columns.Add("Cidr", typeof(string));
             ToReturn.Columns.Add("AvailableIPCount", typeof(string));
 
-            ToReturn.Columns.Add("[Network]", typeof(string));
-            ToReturn.Columns.Add("[Netmask]", typeof(string));
-            ToReturn.Columns.Add("[Broadcast]", typeof(string));
-            ToReturn.Columns.Add("[FirstUsable]", typeof(string));
-            ToReturn.Columns.Add("[LastUsable]", typeof(string));
+            //These columns are derived data, not actually pulled from AWS.
+            ToReturn.Columns.Add("_Network", typeof(string));
+            ToReturn.Columns.Add("_Netmask", typeof(string));
+            ToReturn.Columns.Add("_Broadcast", typeof(string));
+            ToReturn.Columns.Add("_FirstUsable", typeof(string));
+            ToReturn.Columns.Add("_LastUsable", typeof(string));
 
 
 

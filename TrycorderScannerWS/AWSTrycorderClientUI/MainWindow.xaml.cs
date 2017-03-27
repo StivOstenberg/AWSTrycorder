@@ -234,6 +234,7 @@ namespace AWSTrycorderClientUI
         public void BuildComponentMenuList()
         {
             System.Windows.Controls.MenuItem Proot = (System.Windows.Controls.MenuItem)this.TopMenu.Items[3];
+            Proot.Items.Clear();
             System.Windows.Controls.MenuItem mit = new System.Windows.Controls.MenuItem();
             mit.Header = "Select All";
             mit.StaysOpenOnClick = true;
@@ -254,6 +255,8 @@ namespace AWSTrycorderClientUI
                 mi.StaysOpenOnClick = true;
                 Proot.Items.Add(mi);
             }
+
+
         }
 
         public void BuildColumnMenuList()
@@ -477,6 +480,8 @@ namespace AWSTrycorderClientUI
             {
                 SelectedComponentComboBox.SelectedIndex = 0;
             }
+            //Iffen we disabled the component that is currently selected in the Combobox, what to do?
+            if (SelectedComponentComboBox.SelectedValue == null) SelectedComponentComboBox.SelectedIndex = 0;
         }
 
         private void ColumnChecked(object sender, RoutedEventArgs e)
