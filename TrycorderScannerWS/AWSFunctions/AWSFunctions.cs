@@ -19,6 +19,8 @@ using Amazon;
 using Amazon.EC2.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+using Amazon.Route53;
+using Amazon.Route53.Model;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -1278,16 +1280,6 @@ namespace AWSFunctions
         }
 
 
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         /// Given a List, convert to string with each item on list on separate row.
         /// </summary>
@@ -1467,7 +1459,7 @@ namespace AWSFunctions
                 {
                     foreach (var anevent in instat.Events)
                     {
-                        eventlist.Add(anevent.Description);
+                        eventlist.Add(anevent.Description + " : " + anevent.NotAfter.ToString());
                     }
                 }
                 String platform = "";
@@ -2157,6 +2149,37 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public DataTable ScanDNS(IEnumerable<string> Profiles2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetDNSDetailTable();
+
+
+
+            return ToReturn;
+        }
+
+        public DataTable GetDNS(string aprofile)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetDNSDetailTable();
+            string accountid = GetAccountID(aprofile);
+            Amazon.Runtime.AWSCredentials credential;
+            try
+            {
+                credential = GetCredentials(aprofile);
+                var getem = new AmazonRoute53Client(credential);
+
+                //Get list of Zones
+                
+                //Get List of records
+                
+
+            }
+            catch (Exception ex)
+            {
+                string rabbit = "";
+            }
+            return ToReturn;
+        }
 
 
         public DataTable ScanSubnets(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
@@ -2180,7 +2203,7 @@ namespace AWSFunctions
             }
             foreach (var rabbit in MyData.Values)
             {
-                var debugme = rabbit.Rows[0];
+
 
                 ToReturn.Merge(rabbit);
             }
@@ -2259,7 +2282,7 @@ namespace AWSFunctions
                 string rabbit = "";
             }
 
-            var debugme = ToReturn.Rows[0];
+
 
 
             return ToReturn;
@@ -2615,6 +2638,31 @@ namespace AWSFunctions
             string dur = duration.TotalSeconds.ToString();
             return ToReturn;
         }
+
+        /// <summary>
+        /// Using function to get credentials, so we can handle different credential stores...  In Progress.
+        /// </summary>
+        /// <param name="aprofile"></param>
+        /// <returns></returns>
+        public AWSCredentials GetCredentials(string aprofile)
+        {
+            var chain = new Amazon.Runtime.CredentialManagement.CredentialProfileStoreChain();
+            AWSCredentials awsCredentials;
+            if (chain.TryGetAWSCredentials(aprofile, out awsCredentials))
+            {
+                // use awsCredentials
+                return awsCredentials;
+            }
+            else
+            {
+                return awsCredentials;
+            }
+
+
+
+
+        }
+        
         public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
         {
             if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
@@ -3099,6 +3147,8 @@ namespace AWSFunctions
                     return GetVPCDetailsTable();
                 case "elb":
                     return GetELBsDetailTable();
+                case "dns":
+                    return GetDNSDetailTable();
                 default:
                     return GetEC2DetailsTable();
             }
@@ -3542,7 +3592,29 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+        public static DataTable GetDNSDetailTable()
+        {
+            DataTable ToReturn = new DataTable();
 
+            ToReturn.Columns.Add("AccountID", typeof(string));//
+            ToReturn.Columns.Add("Profile", typeof(string));
+
+
+            ToReturn.Columns.Add("Name", typeof(string));
+            ToReturn.Columns.Add("Type", typeof(string));
+            ToReturn.Columns.Add("Value", typeof(string));
+            ToReturn.Columns.Add("EvalTargetHealth", typeof(string));
+            ToReturn.Columns.Add("HealthCheckID", typeof(string));
+            ToReturn.Columns.Add("TTL", typeof(string));
+            ToReturn.Columns.Add("Region", typeof(string));
+            ToReturn.Columns.Add("Weight", typeof(string));
+            ToReturn.Columns.Add("Geolocation", typeof(string));
+            ToReturn.Columns.Add("SetID", typeof(string));
+
+
+            ToReturn.TableName = "DNSTable";
+            return ToReturn;
+        }
 
         public static string Shrug = "¯\\_(ツ)_/¯";
     }
@@ -3621,6 +3693,7 @@ namespace AWSFunctions
             DefaultColumns["Subnets"] = new List<string>() {  "Profile", "VpcID", "VPCName", "SubnetID", "SubnetName", "AvailabilityZone", "Cidr", "AvailableIPCount", "=Network", "=Netmask", "=Broadcast", "=FirstUsable", "=LastUsable", "DefaultForAZ", "MapPubIPonLaunch", "State", "Tags" };
             DefaultColumns["SNSSubs"] = new List<string>() {  "Profile", "Endpoint", "Protocol","TopicName", "TopicARN" , "CrossAccount" };
             DefaultColumns["ELB"] = new List<string>() { "Profile", "Name", "Region" , "Instances" , "Listeners", "HealthCheck", "Status"};
+            DefaultColumns["DNS"] = new List<string>() { "Profile", "Name", "Type", "Value", "TTL" };
         }
     
         /// <summary>
@@ -3637,7 +3710,8 @@ namespace AWSFunctions
             {"Snapshots",true },
             {"SNSSubs",true },
             {"Subnets",true},
-            {"ELB",true}
+            {"ELB",true},
+            {"DNS",true}
         };
 
         public DateTime ScanStart = DateTime.Now;
@@ -3747,6 +3821,15 @@ namespace AWSFunctions
             { "EndTime","" },
             { "Result","" },
             { "Instances","" }
+        };
+
+        public Dictionary<string, string> DNSStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Records","" }
         };
 
         public Dictionary<string, string> SNSSubs = new Dictionary<string, string>

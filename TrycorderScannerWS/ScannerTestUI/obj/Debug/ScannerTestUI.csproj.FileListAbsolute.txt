@@ -71,3 +71,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.ElasticLoadBalancing.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.ElasticLoadBalancing.xml
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\MySql.Data.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Route53.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Route53.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Debug\AWSSDK.Route53.xml

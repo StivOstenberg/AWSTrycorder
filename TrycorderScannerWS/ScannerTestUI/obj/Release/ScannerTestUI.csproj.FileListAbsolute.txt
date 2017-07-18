@@ -39,3 +39,10 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI.csproj.GenerateResource.Cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI.exe
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.ElasticLoadBalancing.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\MySql.Data.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.ElasticLoadBalancing.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.ElasticLoadBalancing.xml
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.Route53.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.Route53.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.Route53.xml

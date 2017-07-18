@@ -43,3 +43,7 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderCl
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Release\AWSTrycorder.csproj.GenerateResource.Cache
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Release\AWSTrycorder.exe
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Release\AWSTrycorder.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Release\AWSSDK.ElasticLoadBalancing.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Release\MySql.Data.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Release\AWSSDK.ElasticLoadBalancing.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Release\AWSSDK.ElasticLoadBalancing.xml

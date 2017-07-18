@@ -156,5 +156,12 @@ namespace ScannerTestUI
             var datable = Scanner.GetELBs(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
             DasGrid.ItemsSource = datable.DefaultView;
         }
+
+        private void DNSsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            IEnumerable<string> myprofile = new string[] { ProfilesComboBox.SelectedItem.ToString() };
+            var datable = Scanner.ScanDNS(myprofile);
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
     }
 }

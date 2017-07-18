@@ -28,6 +28,7 @@
                     <MenuItem x:Name="ListEBSMenuItem" Header="ListEBS" HorizontalAlignment="Left" Width="144.8" Click="ListEBSMenuItem_Click"  />
                     <MenuItem x:Name="S3SizesMenuItem" Header="ListS3Sizes" HorizontalAlignment="Left" Width="144.8" Click="S3SizesMenuItem_Click" />
                     <MenuItem x:Name="ELBsMenuItem" Header="ListELBs" HorizontalAlignment="Left" Width="144.8" Click="ELBsMenuItem_Click"  />
+                    <MenuItem x:Name="DNSsMenuItem" Header="ListDNSs" HorizontalAlignment="Left" Width="144.8" Click="DNSsMenuItem_Click"   />
                     <MenuItem x:Name="CreateUserRequest" Header="CreateUser" HorizontalAlignment="Left" Width="144.8" Click="CreateUserRequest_Click"  />
 
                 </MenuItem>
