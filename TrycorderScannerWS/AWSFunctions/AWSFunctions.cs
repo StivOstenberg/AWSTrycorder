@@ -1284,7 +1284,7 @@ namespace AWSFunctions
 
         public DataTable ScanENIs(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
         {
-            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("ENIs");
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("eni");
             var start = DateTime.Now;
             ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
             var myscope = ProfilesandRegions2Scan.AsEnumerable();
@@ -3849,6 +3849,7 @@ namespace AWSFunctions
             DefaultColumns["SNSSubs"] = new List<string>() {  "Profile", "Endpoint", "Protocol","TopicName", "TopicARN" , "CrossAccount" };
             DefaultColumns["ELB"] = new List<string>() { "Profile", "Name", "Region" , "Instances" , "Listeners", "HealthCheck", "Status"};
             DefaultColumns["DNS"] = new List<string>() { "Profile", "Name", "Type", "Value", "TTL" };
+            DefaultColumns["ENI"] = new List<string>() { "Profile", "Region", "InstanceID", "Status", "IPv4Public" };
         }
     
         /// <summary>
@@ -3866,7 +3867,8 @@ namespace AWSFunctions
             {"SNSSubs",true },
             {"Subnets",true},
             {"ELB",true},
-            {"DNS",true}
+            {"DNS",true},
+            {"ENI",true}
         };
 
         public DateTime ScanStart = DateTime.Now;
@@ -3922,6 +3924,15 @@ namespace AWSFunctions
             { "EndTime","" },
             { "Result","" },
             { "Volumes","" }
+        };
+
+        public Dictionary<string, string> ENIStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "NetworkInterfaces","" }
         };
 
         public Dictionary<string, string> S3Status = new Dictionary<string, string>

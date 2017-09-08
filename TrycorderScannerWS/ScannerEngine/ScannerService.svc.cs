@@ -55,6 +55,7 @@ namespace ScannerEngine
         static DataTable SnapshotsTable = AWSFunctions.AWSTables.GetComponentTable("Snapshots");
         static DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
         static DataTable ELBTable = AWSFunctions.AWSTables.GetComponentTable("ELB");
+        static DataTable ENITable = AWSFunctions.AWSTables.GetComponentTable("ENI");
 
         static AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
@@ -119,6 +120,8 @@ namespace ScannerEngine
                     return VPCTable;
                 case "elb":
                     return ELBTable;
+                case "eni":
+                    return ENITable;
                 default:
                     return EC2Table;
 
@@ -223,6 +226,7 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(SnapshotsTable.Copy());
                     DaWorks.Tables.Add(SNSSubscriptionTable.Copy());
                     DaWorks.Tables.Add(ELBTable.Copy());
+                    DaWorks.Tables.Add(ENITable.Copy());
                 }
                 catch(Exception ex)
                 {
@@ -280,6 +284,32 @@ namespace ScannerEngine
 
             if (Settings.State.Equals("Scanning...")) return("Already Running!");//Dont run if already running.  What if we croak?
             Settings.ScanStart = DateTime.Now;
+
+
+            //ENI Background Worker Setup.
+            if (Settings.Components["ENI"])
+            {
+                Settings.ENIStatus["Status"] = "Scanning...";
+                Settings.ENIStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanENIs(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    ENITable.Clear();
+                    ENITable.Merge(e.Result as DataTable);
+                    Settings.ENIStatus["Status"] = "Idle";
+                    Settings.ENIStatus["EndTime"] = Settings.GetTime();
+                    Settings.ENIStatus["NetworkInterfaces"] = EBSTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else ENITable.Clear();
+
 
 
             //EBS Background Worker Setup.
