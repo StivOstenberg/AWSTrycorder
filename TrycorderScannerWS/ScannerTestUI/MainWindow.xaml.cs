@@ -163,5 +163,11 @@ namespace ScannerTestUI
             var datable = Scanner.ScanDNS(myprofile);
             DasGrid.ItemsSource = datable.DefaultView;
         }
+
+        private void ENIsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.GetENIs(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
     }
 }

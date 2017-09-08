@@ -1,0 +1,6 @@
+
+*.pdb
+
+TrycorderScannerWS/AWSFunctions/bin/Debug/
+
+TrycorderScannerWS/AWSFunctions/bin/Release/AWSSDK\.ElasticLoadBalancing\.dll

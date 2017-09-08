@@ -85,7 +85,16 @@ namespace AWSTrycorderClientUI
 
         private void updateStatusTimer_Tick(object sender, EventArgs e)
         {
-            string statusreport = Trycorder.GetDetailedStatus();
+            string statusreport = "";
+            try
+            {
+                 statusreport = Trycorder.GetDetailedStatus();
+            }
+            catch(Exception ex)
+            {
+                
+
+            }
             if (statusreport.ToLower().Contains("scanning"))
             {
                 ScanButton.Content = "Scanning";

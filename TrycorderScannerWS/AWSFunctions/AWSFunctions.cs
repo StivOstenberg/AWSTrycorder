@@ -30,6 +30,7 @@ using Amazon.SQS.Model;
 using Amazon.CloudWatch;
 
 
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -1280,6 +1281,122 @@ namespace AWSFunctions
         }
 
 
+
+        public DataTable ScanENIs(IEnumerable<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetComponentTable("ENIs");
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan.AsEnumerable();
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 256;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetENIs(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                ToReturn.Merge(rabbit);
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+
+        public DataTable GetENIs(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSTables.GetENIsDetailTable();
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+                var ec2 = new Amazon.EC2.AmazonEC2Client(credential, Endpoint2scan);
+                var NIr = ec2.DescribeNetworkInterfaces(new DescribeNetworkInterfacesRequest());
+
+                foreach (var aninterface in NIr.NetworkInterfaces)
+                {
+                    var arow = ToReturn.NewRow();
+                    arow["AccountID"] = accountid;
+                    arow["Profile"] = aprofile;
+                    arow["Region"] = Region2Scan;
+                    
+                    arow["NetworkInterfaceID"] = aninterface.NetworkInterfaceId ;
+                    arow["SubnetID"] = aninterface.SubnetId;
+                    arow["VPCID"] = aninterface.VpcId ;
+                    arow["Zone"] = aninterface.AvailabilityZone ;
+
+
+                    try { arow["IPv4Public"] = aninterface.Association.PublicIp; }
+                    catch { arow["IPv4Public"] = "-"; }
+
+
+                    try { arow["InstanceID"] = aninterface.Attachment.InstanceId; }
+                    catch { arow["InstanceID"] = ""; }
+                    
+
+                    arow["Description"] = aninterface.Description ;
+                    arow["Status"] = aninterface.Status ;
+                    
+                    arow["PrimaryPrivateipv4"] = aninterface.PrivateIpAddress ;
+                    
+                    
+                    
+                    arow["PrivateDNS"] = aninterface.PrivateDnsName ;
+                    arow["Source-DestCheck"] = aninterface.SourceDestCheck.ToString() ;
+
+                    //arow["IPv6ips"] = aninterface. ;
+                    //arow["SecurityGroups"] = aninterface. ;
+                    
+                    //arow["SecondaryPrivateipv4s"] = aninterface. ;
+                    ToReturn.Rows.Add(arow);
+
+                }
+               
+
+                    
+
+                
+
+            }
+            catch (Exception ex)
+            {
+                WriteToEventLog("Network Interfaces on " + aprofile + " failed:\n" + ex.Message, EventLogEntryType.Error);
+            }
+
+
+
+
+            return ToReturn;
+
+        }
+
+
+
+
+
+
         /// <summary>
         /// Given a List, convert to string with each item on list on separate row.
         /// </summary>
@@ -1459,7 +1576,7 @@ namespace AWSFunctions
                 {
                     foreach (var anevent in instat.Events)
                     {
-                        eventlist.Add(anevent.Description + " : " + anevent.NotAfter.ToString());
+                        eventlist.Add(anevent.Description + " : \nNot after " + anevent.NotAfter.ToShortDateString() +" not before "+ anevent.NotBefore.ToShortDateString());
                     }
                 }
                 String platform = "";
@@ -3149,6 +3266,8 @@ namespace AWSFunctions
                     return GetELBsDetailTable();
                 case "dns":
                     return GetDNSDetailTable();
+                case "eni":
+                    return GetENIsDetailTable();
                 default:
                     return GetEC2DetailsTable();
             }
@@ -3186,6 +3305,42 @@ namespace AWSFunctions
 
             return table;
         }
+
+
+        public static DataTable GetENIsDetailTable()
+        {
+            DataTable table = new DataTable();
+            table.TableName = "NetworkInterfaceTable";
+            // Here we create a DataTable .
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("Region", typeof(string));
+            table.Columns.Add("InstanceID", typeof(string));
+            table.Columns.Add("Zone", typeof(string));
+
+            table.Columns.Add("NetworkInterfaceID", typeof(string));
+            table.Columns.Add("SubnetID", typeof(string));
+            table.Columns.Add("VPCID", typeof(string));
+            table.Columns.Add("SecurityGroups", typeof(string));
+            table.Columns.Add("Description", typeof(string));
+            table.Columns.Add("Status", typeof(string));
+
+            table.Columns.Add("IPv4Public", typeof(string));
+            table.Columns.Add("PrimaryPrivateipv4", typeof(string));
+            table.Columns.Add("SecondaryPrivateipv4s", typeof(string));
+            table.Columns.Add("IPv6ips", typeof(string));
+
+            table.Columns.Add("PrivateDNS", typeof(string));
+            table.Columns.Add("Source-DestCheck", typeof(string));
+
+
+
+            //Can we set the view on this table to expand IEnumerables?
+            DataView mydataview = table.DefaultView;
+
+            return table;
+        }
+
 
         public static DataTable GetRDSDetailsTable()
         {
