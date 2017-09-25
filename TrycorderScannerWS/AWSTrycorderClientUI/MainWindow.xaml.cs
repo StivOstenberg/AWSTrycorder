@@ -73,6 +73,10 @@ namespace AWSTrycorderClientUI
             BuildComponentMenuList();
             ConfigureComponentSelectComboBox();
 
+            SearchTypeComboBox.Items.Clear();
+            SearchTypeComboBox.Items.Add("Contains");
+            SearchTypeComboBox.Items.Add("Not Contain");
+            SearchTypeComboBox.SelectedIndex = 0;
             ///Get a timer to update status on UI.
             /// 
             DispatcherTimer UpdateStatusTimer = new DispatcherTimer();
@@ -637,6 +641,8 @@ namespace AWSTrycorderClientUI
             DasGrid.ItemsSource = DaTable.DefaultView;
             SelectColumncomboBox.Items.Clear();
             SelectColumncomboBox.Items.Add("_Any_");
+
+            
             foreach (DataColumn head in DaTable.Columns)
             {
                 SelectColumncomboBox.Items.Add(head.ColumnName);
@@ -756,13 +762,16 @@ namespace AWSTrycorderClientUI
 
         private void DoScan()
         {
+
             try
             {
                 var Table2Scan = GetSelectedDatatable(SelectedComponentComboBox.SelectedItem.ToString());
                 string filterstring = SearchStringTextbox.Text;
                 string column2filter = SelectColumncomboBox.SelectedItem.ToString();
+                bool contains = false;
+                if (SearchTypeComboBox.SelectedValue.Equals("Contains")) contains = true;
                 bool casesense = (bool)CaseCheckbox.IsChecked;
-                var filttab = Trycorder.FilterDataTablebyCol(Table2Scan, column2filter, filterstring, casesense);
+                var filttab = Trycorder.FilterDataTablebyCol(Table2Scan, column2filter, filterstring, casesense,contains);
                 DasGrid.ItemsSource = filttab.DefaultView;
 
 

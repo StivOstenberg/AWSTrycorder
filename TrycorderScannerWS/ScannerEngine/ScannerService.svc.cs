@@ -202,7 +202,8 @@ namespace ScannerEngine
             var A = String.Equals("Idle", Settings.EBSStatus["Status"]);
             var T = String.Equals("Idle", Settings.SnapshotsStatus["Status"]);
             var B = String.Equals("Idle", Settings.ELBStatus["Status"]);
-            if (E & S & I & N & R & A & T & B)
+            var eni = String.Equals("Idle", Settings.ENIStatus["Status"]);
+            if (E & S & I & N & R & A & T & B & eni)
             {
                 Settings.State = "Idle";
                 Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
@@ -572,21 +573,22 @@ namespace ScannerEngine
         /// <param name="filterstring"></param>
         /// <param name="casesensitive">set to false to ignore case</param>
         /// <returns></returns>
-        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
+        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive, bool contains)
         {
             return Scanner.FilterDataTable(Table2Filter, filterstring, casesensitive);
         }
-        
+
         /// <summary>
         /// Given a datatable NAME returns a filtered datatable based on current datatable in the scanner.
         /// </summary>
         /// <param name="ComponentName"></param>
         /// <param name="filterstring"></param>
         /// <param name="casesensitive"></param>
+        /// <param name="contains"></param>
         /// <returns></returns>
-        public DataTable FilterScannerDataTable(string ComponentName, string filterstring, bool casesensitive)
+        public DataTable FilterScannerDataTable(string ComponentName, string filterstring, bool casesensitive, bool contains)
         {
-            DataTable ToReturn = FilterDataTable(GetComponentDataTable(ComponentName), filterstring, casesensitive);
+            DataTable ToReturn = FilterDataTable(GetComponentDataTable(ComponentName), filterstring, casesensitive, contains);
             return ToReturn;
             
         }
@@ -598,15 +600,16 @@ namespace ScannerEngine
         /// <param name="column2filter"></param>
         /// <param name="filterstring"></param>
         /// <param name="caseinsensitive"></param>
+        ///  <param name="contains"></param>
         /// <returns></returns>
-        public DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool casesensitive)
+        public DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool casesensitive ,bool contains)
         {
             string currentname = Table2Filter.TableName;
             string currentsize = Table2Filter.Rows.Count.ToString();
 
             DataTable ToReturn = Table2Filter.Copy();
             ToReturn.Clear();
-            var dareturn = Scanner.FilterDataTable(Table2Filter, column2filter, filterstring, casesensitive);
+            var dareturn = Scanner.FilterDataTable(Table2Filter, column2filter, filterstring, casesensitive,contains);
             ToReturn.Merge(dareturn );
             string newsize = ToReturn.Rows.Count.ToString();
             if (currentsize.Equals(newsize)) ToReturn.TableName = currentname;
@@ -614,9 +617,9 @@ namespace ScannerEngine
             return ToReturn;
         }
 
-        public DataTable FilterScannerDataTablebyCol(String Table2Filter, string column2filter, string filterstring, bool casesensitive)
+        public DataTable FilterScannerDataTablebyCol(String Table2Filter, string column2filter, string filterstring, bool casesensitive,bool contains)
         {
-            DataTable ToReturn = FilterDataTablebyCol(GetComponentDataTable(Table2Filter), column2filter,filterstring, casesensitive);
+            DataTable ToReturn = FilterDataTablebyCol(GetComponentDataTable(Table2Filter), column2filter,filterstring, casesensitive, contains);
             return ToReturn;
 
         }

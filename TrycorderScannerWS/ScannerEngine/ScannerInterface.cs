@@ -59,16 +59,16 @@ namespace ScannerEngine
         String GetStatus();
 
         [OperationContract]
-        DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive);
+        DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool caseinsensitive, bool contains);
 
         [OperationContract]
-        DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive);
+        DataTable FilterDataTablebyCol(DataTable Table2Filter, string column2filter, string filterstring, bool caseinsensitive, bool contains);
 
         [OperationContract]
-        DataTable FilterScannerDataTable(string  Table2Filter, string filterstring, bool caseinsensitive);
+        DataTable FilterScannerDataTable(string  Table2Filter, string filterstring, bool caseinsensitive, bool contains);
 
         [OperationContract]
-        DataTable FilterScannerDataTablebyCol(string Table2Filter, string column2filter, string filterstring, bool caseinsensitive);
+        DataTable FilterScannerDataTablebyCol(string Table2Filter, string column2filter, string filterstring, bool caseinsensitive, bool contains);
 
 
         [OperationContract]

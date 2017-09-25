@@ -1564,6 +1564,7 @@ namespace AWSFunctions
                 {
                     tags.Add(atag.Key + ": " + atag.Value);
                     if (atag.Key.Equals("Name")) instancename = atag.Value;
+                    tags.Sort();
                 }
 
                 Dictionary<string, string> taglist = new Dictionary<string, string>();
@@ -2779,8 +2780,14 @@ namespace AWSFunctions
 
 
         }
-        
+
         public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive)
+        {
+            return FilterDataTable(Table2Filter, filterstring, casesensitive, true);
+            //Added true above on overloaded function for compatibility, as I am trying to add "not contain" to Trycorder.
+        }
+
+        public DataTable FilterDataTable(DataTable Table2Filter, string filterstring, bool casesensitive, bool contains)
         {
             if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
             DataTable ToReturn = Table2Filter.Copy();
@@ -2789,33 +2796,75 @@ namespace AWSFunctions
             string currentname = Table2Filter.TableName;
             int originalnumberofrows = Table2Filter.Rows.Count;
 
-            //Loop through Data table provided by datarows
-            foreach (DataRow arow in Table2Filter.AsEnumerable())
+            //Loop through Data table provided by datarows looking for records containing string.
+            if (contains)
             {
-                //Loop through each column in datarow.
-                foreach (DataColumn acolumn in Table2Filter.Columns)
+                foreach (DataRow arow in Table2Filter.AsEnumerable())
                 {
-                    string temp = arow[acolumn].ToString();
+                    //Loop through each column in datarow.
+                    foreach (DataColumn acolumn in Table2Filter.Columns)
+                    {
+                        string temp = arow[acolumn].ToString();
 
-                    if (casesensitive)
-                    {
-                        if (arow[acolumn].ToString().Contains(filterstring))
+                        if (casesensitive)
                         {
-                            ToReturn.ImportRow(arow);
-                            break;
+                            if (arow[acolumn].ToString().Contains(filterstring))
+                            {
+                                if (contains) ToReturn.ImportRow(arow);
+                                break;
+                            }
+
+                        }
+                        else
+                        {
+                            if (arow[acolumn].ToString().ToUpper().Contains(filterstring.ToUpper()))
+                            {
+                                if (contains) ToReturn.ImportRow(arow);
+                                break;
+                            }
+
                         }
                     }
-                    else
+
+                    //If match (case or caseless) add datarow to toreturn and break search of columns.
+                }
+            }
+            else  // Loop through looking for rows that do NOT contain string.
+            {
+
+                foreach (DataRow arow in Table2Filter.AsEnumerable())
+                {
+                    bool matchfound = false;
+                    foreach (DataColumn acolumn in Table2Filter.Columns)
                     {
-                        if (arow[acolumn].ToString().ToUpper().Contains(filterstring.ToUpper()))
+                        if (casesensitive)
                         {
-                            ToReturn.ImportRow(arow);
-                            break;
+                            if (arow[acolumn].ToString().Contains(filterstring))
+                            {
+                                matchfound = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (arow[acolumn].ToString().ToUpper().Contains(filterstring.ToUpper()))
+                            {
+                                matchfound = true;
+                                break;
+                            }
                         }
                     }
+                    if(!matchfound)
+                    {
+                        ToReturn.ImportRow(arow);
+                    }
+
+
                 }
 
-                //If match (case or caseless) add datarow to toreturn and break search of columns.
+
+
+
             }
 
 
@@ -2823,45 +2872,24 @@ namespace AWSFunctions
 
             return ToReturn;
         }
-        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter, string filterstring, bool casesensitive)
+        public DataTable FilterDataTable(DataTable Table2Filter, string column2filter, string filterstring, bool casesensitive, bool contains)
         {
             DataTable ToReturn = new DataTable();
             string currentname = Table2Filter.TableName;
             int originalnumberofrows = Table2Filter.Rows.Count;
-
             if (Table2Filter.Rows.Count < 1) return Table2Filter;// No data to process..  Boring!
             bool anycolumn = false;
             if (column2filter.Contains("_Any_"))
             {
                 anycolumn = true;
             }
-            //Lets try to build sum queeries.
 
-
-
-            string CASEquery = "p=> ";
-            string nocasequery = "p=> ";
             int colno = Table2Filter.Columns.Count;
 
-            for (int i = 0; i < Table2Filter.Columns.Count; i++)
-            {
-                if (i == colno)
-                {
-                    CASEquery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().Contains(FilterTagText.Text) ; ";
-                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().ToLower().Contains(FilterTagText.Text) ; ";
-                }
-                else
-                {
-                    CASEquery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().Contains(FilterTagText.Text) || ";
-                    nocasequery += @"p.Field<string>(""+Table2Filter.Columns[i]+  "").ToString().ToLower().Contains(FilterTagText.Text) || ";
-                }
-            }
-
-
-            //Scan any columns.  
+            //Scan any columns for string.  
             if (anycolumn)
             {
-                return (FilterDataTable(Table2Filter, filterstring, casesensitive));
+                return (FilterDataTable(Table2Filter, filterstring, casesensitive,contains));
             }
 
             //Scan one column
@@ -2873,7 +2901,14 @@ namespace AWSFunctions
                     
                     try
                     {
-                         newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                        if (contains)
+                        {
+                            newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                        }
+                        else
+                        {
+                            newt = Table2Filter.AsEnumerable().Where(p => !p.Field<string>(column2filter).ToString().ToUpper().Contains(filterstring.ToUpper())).CopyToDataTable();
+                        }
                         var debugme = newt.Rows[0][11];
                     }
                     catch
@@ -2892,6 +2927,7 @@ namespace AWSFunctions
                     try
                     {
                         newt = Table2Filter.AsEnumerable().Where(p => p.Field<string>(column2filter).ToString().Contains(filterstring)).CopyToDataTable();
+                        
                     }
                     catch { }
                     if (newt.Rows.Count > 0) ToReturn = newt;
