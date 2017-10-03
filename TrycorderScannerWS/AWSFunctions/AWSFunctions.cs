@@ -2765,7 +2765,53 @@ namespace AWSFunctions
 
 
 
+        public DataTable ScanBeans(List<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetBeanstalksTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan;
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 256;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetBeans(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                WriteToEventLog("Failed scanning Beanstalks\n" + ex.Message, EventLogEntryType.Error);
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                    foreach (DataRow arow in rabbit.Rows)
+                    {
+                        try
+                        {
+                            ToReturn.ImportRow(arow);
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteToEventLog(arow[0] + "\n" + ex.Message, EventLogEntryType.Error);
+                        }
+                    }
+                }
+                catch
+                {
+                    //whyforfail
 
+                }
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
 
         public DataTable GetBeans(string aprofile, string Region2Scan)
         {
@@ -2851,8 +2897,158 @@ namespace AWSFunctions
 
 
 
+        public DataTable ScanASGs(List<KeyValuePair<string, string>> ProfilesandRegions2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetASGsTable();
+            var start = DateTime.Now;
+            ConcurrentDictionary<string, DataTable> MyData = new ConcurrentDictionary<string, DataTable>();
+            var myscope = ProfilesandRegions2Scan;
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = 256;
+            try
+            {
+                Parallel.ForEach(myscope, po, (KVP) => {
+                    MyData.TryAdd((KVP.Key + ":" + KVP.Value), GetASGs(KVP.Key, KVP.Value));
+                });
+            }
+            catch (Exception ex)
+            {
+                ToReturn.TableName = ex.Message.ToString();
+                WriteToEventLog("Failed scanning ASGs\n" + ex.Message, EventLogEntryType.Error);
+                return ToReturn;
+            }
+            foreach (var rabbit in MyData.Values)
+            {
+                try
+                {
+                    foreach (DataRow arow in rabbit.Rows)
+                    {
+                        try
+                        {
+                            ToReturn.ImportRow(arow);
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteToEventLog(arow[0] + "\n" + ex.Message, EventLogEntryType.Error);
+                        }
+                    }
+                }
+                catch
+                {
+                    //whyforfail
+
+                }
+            }
+            var end = DateTime.Now;
+            var duration = end - start;
+            string dur = duration.TotalSeconds.ToString();
+            return ToReturn;
+        }
+        public DataTable GetASGs(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetASGsTable();
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
 
 
+                var ASGClient = new Amazon.AutoScaling.AmazonAutoScalingClient(credential, Endpoint2scan);
+                var listem = ASGClient.DescribeAutoScalingGroups();
+                var booger = listem.AutoScalingGroups;
+                
+
+                //var BeanApps = beaners.DescribeApplications();
+               // var BeanEnvs = beaners.DescribeEnvironments();
+
+                //var req = new DescribeEnvironmentResourcesRequest();
+
+                //var Bean = beaners.DescribeEnvironmentResources();
+
+
+                foreach (var Agroup in listem.AutoScalingGroups)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    disone["AccountID"] = GetAccountID(aprofile);
+                    disone["Profile"] = aprofile;
+                    disone["Region"] = Region2Scan;
+                    disone["ASGName"] = Agroup.AutoScalingGroupName;
+
+                    disone["LaunchConfig"] = Agroup.LaunchConfigurationName;
+                    disone["Instances-Desired"] =
+                    disone["Instances-Min"] = Agroup.MinSize;
+                    disone["Instances-Max"] = Agroup.MaxSize;
+
+                    disone["DefCooldown"] = Agroup.DefaultCooldown;
+                    disone["HlthChk Grace"] = Agroup.HealthCheckGracePeriod;
+
+                    List<string> Taglist = new List<string>();
+                    foreach(var atag in Agroup.Tags)
+                    {
+                        Taglist.Add(atag.Key + " ::: " + atag.Value + "   Propagate:" + atag.PropagateAtLaunch.ToString());
+                    }
+                    Taglist.Sort();
+
+                    disone["Tags"] = List2String(Taglist);
+
+                    disone["AZs"] = List2String( Agroup.AvailabilityZones);
+
+                    List<string> Instancelist = new List<string>();
+                    foreach (var aninstance in Agroup.Instances)
+                    {
+                        Instancelist.Add(aninstance.InstanceId + "   :  " + aninstance.AvailabilityZone + " :" + aninstance.HealthStatus);
+                    }
+                    Instancelist.Sort();
+                    disone["InstanceIDs"] = List2String(Instancelist);        // ID,LifeCycle,Health  sorted?
+                        
+                    //Get configurations settings...
+                    //DescribeConfigurationSettingsRequest requestitude = new DescribeConfigurationSettingsRequest();
+                    //requestitude.ApplicationName = abeanstalk.ApplicationName;
+                    //requestitude.TemplateName = abeanstalk.ConfigurationTemplates[0];
+                    //var g1 = beaners.DescribeConfigurationSettings(requestitude);
+                    //var hurm = g1.ConfigurationSettings;
+
+
+
+
+
+
+
+
+                    ToReturn.Rows.Add(disone);
+                }
+
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                var breaker = "rabbit";
+                breaker = ex.Message;
+            }
+
+
+
+
+            return ToReturn;
+
+        }
 
 
 
@@ -3405,13 +3601,41 @@ namespace AWSFunctions
                     return GetDNSDetailTable();
                 case "eni":
                     return GetENIsDetailTable();
-                case "beanstalk":
+                case "beans":
                     return GetBeanstalksTable();
+                case "asgs":
+                    return GetASGsTable();
                 default:
                     return GetEC2DetailsTable();
             }
         }
+        public static DataTable GetASGsTable()
+        {
+            DataTable table = new DataTable();
+            table.TableName = "AutoScalingGroupTable";
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("Region", typeof(string));
 
+
+            table.Columns.Add("ASGName", typeof(string));
+            table.Columns.Add("LaunchConfig", typeof(string));
+            table.Columns.Add("Instances", typeof(int));
+            table.Columns.Add("Instances-Desired", typeof(int));
+            table.Columns.Add("Instances-Min", typeof(int));
+            table.Columns.Add("Instances-Max", typeof(int));
+            table.Columns.Add("AZs", typeof(string));
+            table.Columns.Add("DefCooldown", typeof(int));
+            table.Columns.Add("HlthChk Grace", typeof(int));
+            table.Columns.Add("Tags", typeof(string));
+            table.Columns.Add("InstanceIDs", typeof(string));  // ID,LifeCycle,Health  sorted?
+
+
+
+            DataView mydataview = table.DefaultView;
+
+            return table;
+        }
         public static DataTable GetELBsDetailTable()
         {
             DataTable table = new DataTable();
@@ -4009,6 +4233,8 @@ namespace AWSFunctions
             DefaultColumns["ELB"] = new List<string>() { "Profile", "Name", "Region" , "Instances" , "Listeners", "HealthCheck", "Status"};
             DefaultColumns["DNS"] = new List<string>() { "Profile", "Name", "Type", "Value", "TTL" };
             DefaultColumns["ENI"] = new List<string>() { "Profile", "Region", "InstanceID", "Status", "IPv4Public" };
+            DefaultColumns["ASGs"] = new List<string>() { "Profile", "Region", "ASGName", "Tags" , "InstanceIDs" };
+            DefaultColumns["Beans"] = new List<string>() { "Profile", "Region", "ApplicationName", "Description" };
         }
     
         /// <summary>
@@ -4027,7 +4253,9 @@ namespace AWSFunctions
             {"Subnets",true},
             {"ELB",true},
             {"DNS",true},
-            {"ENI",true}
+            {"ENI",true},
+            {"Beans",true},
+            {"ASGs",true}
         };
 
         public DateTime ScanStart = DateTime.Now;
@@ -4058,6 +4286,24 @@ namespace AWSFunctions
 
 
         #region Dictionaries
+        public Dictionary<string, string> ASGsStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "ASGs","" }
+        };
+
+        public Dictionary<string, string> BeansStatus = new Dictionary<string, string>
+        {
+            { "Status","Idle" },
+            { "StartTime","" },
+            { "EndTime","" },
+            { "Result","" },
+            { "Beans","" }
+        };
+
         public Dictionary<string, string> EC2Status = new Dictionary<string, string>
         {
             { "Status","Idle" },
@@ -4091,7 +4337,7 @@ namespace AWSFunctions
             { "StartTime","" },
             { "EndTime","" },
             { "Result","" },
-            { "NetworkInterfaces","" }
+            { "ENIs","" }
         };
 
         public Dictionary<string, string> S3Status = new Dictionary<string, string>

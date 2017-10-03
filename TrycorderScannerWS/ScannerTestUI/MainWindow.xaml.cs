@@ -175,5 +175,11 @@ namespace ScannerTestUI
             var datable= Scanner.GetBeans(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
             DasGrid.ItemsSource = datable.DefaultView;
         }
+
+        private void ASGsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable = Scanner.GetASGs(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
     }
 }

@@ -56,6 +56,8 @@ namespace ScannerEngine
         static DataTable SNSSubscriptionTable = AWSFunctions.AWSTables.GetComponentTable("SNSSubs");
         static DataTable ELBTable = AWSFunctions.AWSTables.GetComponentTable("ELB");
         static DataTable ENITable = AWSFunctions.AWSTables.GetComponentTable("ENI");
+        static DataTable BeanTable = AWSFunctions.AWSTables.GetComponentTable("Beans");
+        static DataTable ASGsTable = AWSFunctions.AWSTables.GetComponentTable("ASGs");
 
         static AWSFunctions.ScannerSettings Settings= new AWSFunctions.ScannerSettings();
         AWSFunctions.ScanAWS Scanner = new AWSFunctions.ScanAWS();
@@ -122,6 +124,10 @@ namespace ScannerEngine
                     return ELBTable;
                 case "eni":
                     return ENITable;
+                case "beans":
+                    return BeanTable;
+                case "asgs":
+                    return ASGsTable;
                 default:
                     return EC2Table;
 
@@ -150,6 +156,9 @@ namespace ScannerEngine
             ToReturn += "Snapshots :" + Settings.SnapshotsStatus["Status"] + "  " + Settings.SnapshotsStatus["EndTime"] + "  " + Settings.SnapshotsStatus["Instances"] + " Snapshots\n";
             ToReturn += "SNS Subscriptions :" + Settings.SNSSubs["Status"] + "  " + Settings.SNSSubs["EndTime"] + "  " + Settings.SNSSubs["Instances"] + " Subscriptions\n";
             ToReturn += "Load Balancers:" + Settings.ELBStatus["Status"] + "  " + Settings.ELBStatus["EndTime"] + "  " + Settings.ELBStatus["ELBs"] + " Load Balancers\n";
+            ToReturn += "ENIs:" + Settings.ENIStatus["Status"] + "  " + Settings.ENIStatus["EndTime"] + "  " + Settings.ENIStatus["ENIs"] + " Load Balancers\n";
+            ToReturn += "Beans:" + Settings.BeansStatus["Status"] + "  " + Settings.BeansStatus["EndTime"] + "  " + Settings.BeansStatus["Beans"] + " Beanstalks\n";
+            ToReturn += "ASGs:" + Settings.ASGsStatus["Status"] + "  " + Settings.ASGsStatus["EndTime"] + "  " + Settings.ASGsStatus["ASGs"] + " AutoScaling Groups\n";
 
             if (Settings.ScanDone-Settings.ScanStart>TimeSpan.FromSeconds(5))ToReturn += LastScan();
             return ToReturn;
@@ -203,7 +212,9 @@ namespace ScannerEngine
             var T = String.Equals("Idle", Settings.SnapshotsStatus["Status"]);
             var B = String.Equals("Idle", Settings.ELBStatus["Status"]);
             var eni = String.Equals("Idle", Settings.ENIStatus["Status"]);
-            if (E & S & I & N & R & A & T & B & eni)
+            var beans = String.Equals("Idle", Settings.BeansStatus["Status"]);
+            var asgs = String.Equals("Idle", Settings.ASGsStatus["Status"]);
+            if (E & S & I & N & R & A & T & B & eni & beans & asgs)
             {
                 Settings.State = "Idle";
                 Scanner.WriteToEventLog("AWS Scanner completed " + DateTime.Now.TimeOfDay);
@@ -228,6 +239,8 @@ namespace ScannerEngine
                     DaWorks.Tables.Add(SNSSubscriptionTable.Copy());
                     DaWorks.Tables.Add(ELBTable.Copy());
                     DaWorks.Tables.Add(ENITable.Copy());
+                    DaWorks.Tables.Add(BeanTable.Copy());
+                    DaWorks.Tables.Add(ASGsTable.Copy());
                 }
                 catch(Exception ex)
                 {
@@ -286,6 +299,55 @@ namespace ScannerEngine
             if (Settings.State.Equals("Scanning...")) return("Already Running!");//Dont run if already running.  What if we croak?
             Settings.ScanStart = DateTime.Now;
 
+
+            //ASG Background Worker Setup.
+            if (Settings.Components["ASGs"])
+            {
+                Settings.ASGsStatus["Status"] = "Scanning...";
+                Settings.ASGsStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanASGs(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    ASGsTable.Clear();
+                    ASGsTable.Merge(e.Result as DataTable);
+                    Settings.ASGsStatus["Status"] = "Idle";
+                    Settings.ASGsStatus["EndTime"] = Settings.GetTime();
+                    Settings.ASGsStatus["ASGs"] = ASGsTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else ASGsTable.Clear();
+
+
+            //Beanstalks Background Worker Setup.
+            if (Settings.Components["Beans"])
+            {
+                Settings.BeansStatus["Status"] = "Scanning...";
+                Settings.BeansStatus["StartTime"] = Settings.GetTime();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    e.Result = Scanner.ScanBeans(Settings.GetEnabledProfileandRegions);
+                };
+                //The task what executes when the backgroundworker completes.
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    BeanTable.Clear();
+                    BeanTable.Merge(e.Result as DataTable);
+                    Settings.BeansStatus["Status"] = "Idle";
+                    Settings.BeansStatus["EndTime"] = Settings.GetTime();
+                    Settings.BeansStatus["Beans"] = BeanTable.Rows.Count.ToString();
+                    CheckOverallStatus();
+                };
+                worker.RunWorkerAsync();
+            }
+            else BeanTable.Clear();
 
             //ENI Background Worker Setup.
             if (Settings.Components["ENI"])
