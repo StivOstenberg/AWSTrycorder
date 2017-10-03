@@ -31,6 +31,7 @@
                     <MenuItem x:Name="DNSsMenuItem" Header="ListDNSs" HorizontalAlignment="Left" Width="144.8" Click="DNSsMenuItem_Click"   />
                     <MenuItem x:Name="CreateUserRequest" Header="CreateUser" HorizontalAlignment="Left" Width="144.8" Click="CreateUserRequest_Click"  />
                     <MenuItem x:Name="ENIsMenuItem" Header="ListENIs" HorizontalAlignment="Left" Width="144.8" Click="ENIsMenuItem_Click"    />
+                    <MenuItem x:Name="BeanStalkMenuItem" Header="ListBeanStalks" HorizontalAlignment="Left" Width="144.8" Click="BeanStalkMenuItem_Click"    />
 
                 </MenuItem>
                 <MenuItem Header="WebService">

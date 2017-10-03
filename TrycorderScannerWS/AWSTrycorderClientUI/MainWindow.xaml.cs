@@ -114,6 +114,7 @@ namespace AWSTrycorderClientUI
                 if (SelectedComponentComboBox.SelectedValue != null)SelectedComponentComboBox.SelectedValue=selkie ;
                 UpdateTable();
                 DoScan();
+                HideColumns();
             }
 
         }
@@ -898,6 +899,12 @@ namespace AWSTrycorderClientUI
             var testy = Trycorder.GetComponentDataTable("ec2");
             var daquery = AWSFunctions.MySQLDBHelper.MySQLBulkInsert(ref testy,"EC2");
             MessageBox.Show(daquery);
+        }
+
+        private void SearchTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DoScan();
+            HideColumns();
         }
     }
 }

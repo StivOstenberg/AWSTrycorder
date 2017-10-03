@@ -17,6 +17,8 @@
 using Amazon;
 
 using Amazon.EC2.Model;
+using Amazon.ElasticBeanstalk;
+using Amazon.ElasticBeanstalk.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.Route53;
@@ -1498,7 +1500,7 @@ namespace AWSFunctions
             int count = instatresponse.InstanceStatuses.Count();
 
             //Build data dictionary of instances
-            Dictionary<String, Instance> Bunchadata = new Dictionary<string, Instance>();
+            Dictionary<String, Amazon.EC2.Model.Instance> Bunchadata = new Dictionary<string, Amazon.EC2.Model.Instance>();
             foreach (var urtburgle in DescResult.Reservations)
             {
                 foreach (var instancedata in urtburgle.Instances)
@@ -1515,7 +1517,7 @@ namespace AWSFunctions
             {
                 
                 string instanceid = instat.InstanceId;
-                Instance thisinstance = new Instance();
+                Amazon.EC2.Model.Instance thisinstance = new Amazon.EC2.Model.Instance();
                 try
                 {
                     thisinstance = Bunchadata[instanceid];
@@ -2757,6 +2759,105 @@ namespace AWSFunctions
             return ToReturn;
         }
 
+
+
+
+
+
+
+
+
+        public DataTable GetBeans(string aprofile, string Region2Scan)
+        {
+            DataTable ToReturn = AWSFunctions.AWSTables.GetBeanstalksTable();
+
+            string accountid = GetAccountID(aprofile);
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+            Amazon.Runtime.AWSCredentials credential;
+
+            try
+            {
+                credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);             
+                var beaners = new Amazon.ElasticBeanstalk.AmazonElasticBeanstalkClient(credential, Endpoint2scan);
+
+                var BeanApps = beaners.DescribeApplications();
+                var BeanEnvs = beaners.DescribeEnvironments();
+
+                var req = new DescribeEnvironmentResourcesRequest();
+                
+                //var Bean = beaners.DescribeEnvironmentResources();
+
+
+                foreach (var abeanstalk in BeanApps.Applications)
+                {
+                    DataRow disone = ToReturn.NewRow();
+                    disone["AccountID"] = GetAccountID(aprofile);
+                    disone["Profile"] = aprofile;
+                    disone["Region"] = Region2Scan;
+                    disone["ApplicationName"] = abeanstalk.ApplicationName;
+                    disone["DateCreated"] = abeanstalk.DateCreated.ToShortDateString();
+                    disone["DateUpdated"] = abeanstalk.DateUpdated.ToShortDateString();
+                    disone["Description"] = abeanstalk.Description;
+                    disone["Versions"] = List2String(  abeanstalk.Versions);
+
+                    var lookatme = abeanstalk.ResourceLifecycleConfig;
+                    
+                    
+                    //Get configurations settings...
+                    //DescribeConfigurationSettingsRequest requestitude = new DescribeConfigurationSettingsRequest();
+                    //requestitude.ApplicationName = abeanstalk.ApplicationName;
+                    //requestitude.TemplateName = abeanstalk.ConfigurationTemplates[0];
+                    //var g1 = beaners.DescribeConfigurationSettings(requestitude);
+                    //var hurm = g1.ConfigurationSettings;
+                    
+
+                    
+
+                    
+
+
+
+                    ToReturn.Rows.Add(disone);
+                }
+
+
+
+
+
+            }
+            catch(Exception ex)
+            {
+                var breaker= "rabbit";
+                breaker = ex.Message;
+            }
+
+
+
+
+            return ToReturn;
+
+        }
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Using function to get credentials, so we can handle different credential stores...  In Progress.
         /// </summary>
@@ -3304,6 +3405,8 @@ namespace AWSFunctions
                     return GetDNSDetailTable();
                 case "eni":
                     return GetENIsDetailTable();
+                case "beanstalk":
+                    return GetBeanstalksTable();
                 default:
                     return GetEC2DetailsTable();
             }
@@ -3342,7 +3445,27 @@ namespace AWSFunctions
             return table;
         }
 
+        public static DataTable GetBeanstalksTable()
+        {
+            DataTable table = new DataTable();
+            table.TableName = "BeanstalkTable";
+            table.Columns.Add("AccountID", typeof(string));
+            table.Columns.Add("Profile", typeof(string));
+            table.Columns.Add("Region", typeof(string));
 
+
+            table.Columns.Add("ApplicationName", typeof(string));
+            table.Columns.Add("DateCreated", typeof(string));
+            table.Columns.Add("DateUpdated", typeof(string));
+            table.Columns.Add("Description", typeof(string));
+            table.Columns.Add("Versions", typeof(string));
+
+
+
+            DataView mydataview = table.DefaultView;
+
+            return table;
+        }
         public static DataTable GetENIsDetailTable()
         {
             DataTable table = new DataTable();

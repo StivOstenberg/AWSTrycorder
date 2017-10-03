@@ -109,3 +109,6 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\b
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.Route53.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.Route53.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.Route53.xml
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticBeanstalk.dll
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticBeanstalk.pdb
+C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.ElasticBeanstalk.xml

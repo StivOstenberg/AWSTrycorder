@@ -169,5 +169,11 @@ namespace ScannerTestUI
             var datable = Scanner.GetENIs(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
             DasGrid.ItemsSource = datable.DefaultView;
         }
+
+        private void BeanStalkMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var datable= Scanner.GetBeans(ProfilesComboBox.SelectedItem.ToString(), RegionListcomboBox.SelectedItem.ToString());
+            DasGrid.ItemsSource = datable.DefaultView;
+        }
     }
 }
