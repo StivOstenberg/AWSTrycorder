@@ -676,7 +676,7 @@ namespace AWSFunctions
                         }
 
                         var createddate = abucket.CreationDate;
-                        string owner = "";
+                        string owner = ""; 
                         string grants = "";
                         string tags = "";
                         string lastaccess = "";
@@ -713,7 +713,12 @@ namespace AWSFunctions
                         GetBucketWebsiteResponse GBWRes = BS3Client.GetBucketWebsite(GBWReq);
                         defaultpage = GBWRes.WebsiteConfiguration.IndexDocumentSuffix;
 
-                        
+                        GetBucketLoggingRequest GBL = new GetBucketLoggingRequest();
+                        GBL.BucketName = name;
+                        GetBucketLoggingResponse GBLRes = BS3Client.GetBucketLogging(GBL);
+                        var LogBucket = GBLRes.BucketLoggingConfig.TargetBucketName;
+                        if (!String.IsNullOrEmpty(GBLRes.BucketLoggingConfig.TargetPrefix))
+                            LogBucket = LogBucket + "/" + GBLRes.BucketLoggingConfig.TargetPrefix;
 
 
                         if (defaultpage != null)
@@ -761,7 +766,11 @@ namespace AWSFunctions
 
 
                         abucketrow["WebsiteHosting"] = website;
-                        abucketrow["Logging"] = "X";
+
+                        if(String.IsNullOrEmpty(LogBucket)) abucketrow["Logging"] = "Disabled";
+                        else {
+                            abucketrow["Logging"] = LogBucket;
+                        }
                         abucketrow["Events"] = "X";
                         abucketrow["Versioning"] = "X";
                         abucketrow["LifeCycle"] = "X";

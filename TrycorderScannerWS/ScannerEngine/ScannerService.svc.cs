@@ -412,8 +412,12 @@ namespace ScannerEngine
                 //The task what executes when the backgroundworker completes.
                 worker.RunWorkerCompleted += (s, e) =>
                 {
-                    EC2Table.Clear();
-                    EC2Table.Merge(e.Result as DataTable);
+                    try
+                    {
+                        EC2Table.Clear();
+                        EC2Table.Merge(e.Result as DataTable);
+                    }
+                    catch { };
                     Settings.EC2Status["Status"] = "Idle";
                     Settings.EC2Status["EndTime"] = Settings.GetTime();
                     Settings.EC2Status["Instances"] = EC2Table.Rows.Count.ToString();
