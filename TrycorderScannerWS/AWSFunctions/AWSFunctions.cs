@@ -682,6 +682,7 @@ namespace AWSFunctions
                         string lastaccess = "";
                         string defaultpage = "";
                         string website = "";
+                        string logging = "";
                         //Now start pulling der einen data.
 
                         //Here we are pulling the lists of people who have access to this bucket...
@@ -719,6 +720,21 @@ namespace AWSFunctions
                         var LogBucket = GBLRes.BucketLoggingConfig.TargetBucketName;
                         if (!String.IsNullOrEmpty(GBLRes.BucketLoggingConfig.TargetPrefix))
                             LogBucket = LogBucket + "/" + GBLRes.BucketLoggingConfig.TargetPrefix;
+
+                        GetBucketTaggingRequest GBTReq = new GetBucketTaggingRequest();
+                        GBTReq.BucketName = name;
+                        GetBucketTaggingResponse GBTRes = BS3Client.GetBucketTagging(GBTReq);
+                        if (GBTRes.TagSet.Count>0)
+                        {
+                            bool anotheritem = false;
+                            foreach(var pair in GBTRes.TagSet)
+                            {
+                                if (anotheritem) tags += "\n";
+                                tags += pair.Key.ToString() + " : " + pair.Value.ToString();
+                                anotheritem = true;
+
+                            }
+                        }
 
 
                         if (defaultpage != null)
@@ -775,7 +791,7 @@ namespace AWSFunctions
                         abucketrow["Versioning"] = "X";
                         abucketrow["LifeCycle"] = "X";
                         abucketrow["Replication"] = "X";
-                        abucketrow["Tags"] = "X";
+                        abucketrow["Tags"] = tags;
                         abucketrow["RequesterPays"] = "X";
                         ToReturn.Rows.Add(abucketrow.ItemArray);
                     }
