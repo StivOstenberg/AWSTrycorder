@@ -1,4 +1,6 @@
 # AWSTrycorder
+ I have not updated this for the new API components, so not sure what state it is in.  
+ 
  The AWS Trycorder uses the credentials defined for AWS on your system to scan all listed profiles and regions and collect information from all of them (or the ones you select) and put all that data into a single datatable for each component.  Allows you to list ALL your EC2 instances, for example, and search for any that have reboots scheduled.  Lets you identify which machine is using an IP Address.  Lets you list all your RDS instances, along with their endpoints. List all users on all your accounts and see when they last accessed the system, and which component they accessed.  Find out which IAM users have MFA set up...  List S3 buckets and their sizes.
  
     AWS Trycorder will output to Excel.
@@ -10,8 +12,6 @@ Requires .NET Framework 4 or later.
 Going to "release" this version as it seems to work pretty reliably.  It has some issues where sometimes after a scan, the tables are returned empty.
 
 This version is multithreaded, so it runs much faster than the prototype.
-
-Also, set up a website at "trycorder.stiv.com" where I can post some documentation and a precompiled executable.
 
 Some notes on Security:
   The Trycorder Scan Engine runs as a self hosted web application inside the Trycorder application.   It runs on the 127.0.0 network of your computer so the UI can talk to it.   At some point I will achieve a better understanding of the whole WCF hosted service, and I will decouple from the UI and allow remote access.  At this point, be aware that other processes running locally on your system might be able to access the service.   Not likely, but letting you know.
