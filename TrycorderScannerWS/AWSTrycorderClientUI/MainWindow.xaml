@@ -28,7 +28,7 @@
 
             </MenuItem>
         </Menu>
-        <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2" AlternatingRowBackground="Aqua"/>
+        <DataGrid x:Name="DasGrid" Margin="0,27,0.2,33.2" AlternatingRowBackground="LightGray"/>
         <TextBox x:Name="SearchStringTextbox" Margin="0,0,62,8" TextWrapping="Wrap" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="209" TextChanged="SearchStringTextbox_TextChanged"/>
         <ComboBox x:Name="SelectColumncomboBox" Margin="0,0,408,8" HorizontalAlignment="Right" Width="120" Height="22" VerticalAlignment="Bottom" SelectionChanged="SelectColumncomboBox_SelectionChanged"/>
         <CheckBox x:Name="CaseCheckbox" Content="CS" Margin="0,0,10.2,9.2" ToolTip="Check to make case sensitive" Height="16" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="47" IsChecked="True" Unchecked="CaseCheckbox_Unchecked" Checked="CaseCheckbox_Checked" />

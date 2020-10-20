@@ -35,3 +35,7 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\MySql.Data.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSSDK.ElasticLoadBalancing.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSSDK.ElasticLoadBalancing.xml
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.csprojAssemblyReference.cache
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.csproj.CoreCompileInputs.cache
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.dll
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.pdb

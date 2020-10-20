@@ -72,7 +72,7 @@ namespace AWSTrycorderClientUI
             BuildRegionMenuList();
             BuildComponentMenuList();
             ConfigureComponentSelectComboBox();
-
+            
             SearchTypeComboBox.Items.Clear();
             SearchTypeComboBox.Items.Add("Contains");
             SearchTypeComboBox.Items.Add("Not Contain");
@@ -766,10 +766,19 @@ namespace AWSTrycorderClientUI
 
             try
             {
+                //This was erroring out because this code ran before item was set. 
+                if (SelectColumncomboBox.SelectedItem == null)
+                {
+                    return;
+                }
+
                 var Table2Scan = GetSelectedDatatable(SelectedComponentComboBox.SelectedItem.ToString());
                 string filterstring = SearchStringTextbox.Text;
                 string column2filter = SelectColumncomboBox.SelectedItem.ToString();
                 bool contains = false;
+
+                if (SearchTypeComboBox.SelectedValue == null)return ;
+
                 if (SearchTypeComboBox.SelectedValue.Equals("Contains")) contains = true;
                 bool casesense = (bool)CaseCheckbox.IsChecked;
                 var filttab = Trycorder.FilterDataTablebyCol(Table2Scan, column2filter, filterstring, casesense,contains);
@@ -855,8 +864,14 @@ namespace AWSTrycorderClientUI
 
         private void ExcelMI_Click(object sender, RoutedEventArgs e)
         {
-            string egsportfile = saveas();
+            
             var all = Trycorder.ScanResults().Tables;
+            if (all.Count == 0)
+            {
+                System.Windows.MessageBox.Show("Please to allow a scan to complete,\n or all your base will belong to us!", "Export to Excel");
+                return;
+            }
+            string egsportfile = saveas();
             Dictionary<string, DataTable> Outputter = new Dictionary<string, DataTable>();
             foreach (DataTable something in all)
             {
@@ -864,6 +879,7 @@ namespace AWSTrycorderClientUI
                 Outputter.Add(namebert, something);
             }
             var result = StivFunk.ExportToExcel(Outputter, egsportfile);
+
             System.Windows.MessageBox.Show(result, "Export to Excel");
             
         }
@@ -882,7 +898,8 @@ namespace AWSTrycorderClientUI
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
+//    (at your option) any later version.  You must leave copyright data 
+//     from original author in the files.
 
 //    This program is distributed in the hope that it will be useful,
  //   but WITHOUT ANY WARRANTY; without even the implied warranty of

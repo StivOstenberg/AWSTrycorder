@@ -52,6 +52,7 @@ using System.Threading;
 
 using System.Text;
 using MySql.Data.MySqlClient;
+using System.Windows.Forms;
 
 namespace AWSFunctions
 {
@@ -135,6 +136,8 @@ namespace AWSFunctions
 
             //Build a list of current keys to use to avoid dupes due to changed "profile" names.
             Dictionary<string, string> currentaccesskeys = new Dictionary<string, string>();
+
+
             var Profilenameses = Amazon.Util.ProfileManager.ListProfileNames();
             foreach (var aprofilename in Profilenameses)
             {
@@ -1375,11 +1378,22 @@ namespace AWSFunctions
                     arow["Zone"] = aninterface.AvailabilityZone ;
 
 
-                    try { arow["IPv4Public"] = aninterface.Association.PublicIp; }
+                    try 
+                    {
+                        if (aninterface.Association != null)
+                        {
+                            arow["IPv4Public"] = aninterface.Association.PublicIp;
+                        }
+                        else arow["IPv4Public"] = "-";
+                    }
                     catch { arow["IPv4Public"] = "-"; }
 
 
-                    try { arow["InstanceID"] = aninterface.Attachment.InstanceId; }
+                    try { 
+                        if(aninterface.Attachment!=null)
+                        arow["InstanceID"] = aninterface.Attachment.InstanceId;
+                        else arow["InstanceID"] = "";
+                    }
                     catch { arow["InstanceID"] = ""; }
                     
 
@@ -2629,8 +2643,16 @@ namespace AWSFunctions
                     }
                 }
                 String platform = "";
-                try { platform = thisinstance.Platform.Value; }
+                try { 
+                    if(thisinstance.Platform !=null) platform = thisinstance.Platform.Value;
+                    else platform = "Linux";
+                }
                 catch { platform = "Linux"; }
+
+
+
+
+
                 if (String.IsNullOrEmpty(platform)) platform = "Linux";
 
 
@@ -3301,6 +3323,7 @@ namespace AWSFunctions
 
         public string ExportToExcel(Dictionary<string, DataTable> DataTables, string ExcelFilePath)
         {
+            var failedtables = "";
 
             try
             {
@@ -3308,44 +3331,57 @@ namespace AWSFunctions
                 // load excel, and create a new workbook
                 var wb = Excel.Workbooks.Add();
 
-
+                if(DataTables.Keys.Count==0)
+                {
+                    
+                    return("Sorry Spanky,  scan not completed yet   \n\n Export failed!");
+                }
                 foreach (string DT2WS in DataTables.Keys)
                 {
-                    wb.Sheets.Add();
-                    int ColumnsCount;
-                    var aDT = DataTables[DT2WS];
-
-                    if (aDT == null || (ColumnsCount = aDT.Columns.Count) == 0)
-                        throw new Exception("ExportToExcel: Null or empty input table!\n");
-
-                    // single worksheet
-                    Microsoft.Office.Interop.Excel._Worksheet Worksheet = Excel.ActiveSheet;
-                    Worksheet.Name = DT2WS;
-
-                    object[] Header = new object[ColumnsCount];
-
-                    // column headings               
-                    for (int i = 0; i < ColumnsCount; i++)
+                    try
                     {
-                        Header[i] = aDT.Columns[i].ColumnName;
-                    }
+                        wb.Sheets.Add();
+                        int ColumnsCount=0;
+                        var aDT = DataTables[DT2WS];
 
-                    Microsoft.Office.Interop.Excel.Range HeaderRange = Worksheet.get_Range((Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[1, 1]), (Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[1, ColumnsCount]));
-                    HeaderRange.Value = Header;
-                    //HeaderRange.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightGray);
-                    HeaderRange.Font.Bold = true;
+                        if (aDT == null || (ColumnsCount = aDT.Columns.Count) == 0)
+                        {
+                            failedtables += DT2WS.ToString() + " was empty table";
+                        }
+                        else ColumnsCount = aDT.Columns.Count;
 
-                    // DataCells
-                    int RowsCount = aDT.Rows.Count;
-                    object[,] Cells = new object[RowsCount, ColumnsCount];
+                        // single worksheet
+                        Microsoft.Office.Interop.Excel._Worksheet Worksheet = Excel.ActiveSheet;
+                        Worksheet.Name = DT2WS;
 
-                    for (int j = 0; j < RowsCount; j++)
+                        object[] Header = new object[ColumnsCount];
+
+                        // column headings               
                         for (int i = 0; i < ColumnsCount; i++)
-                            Cells[j, i] = aDT.Rows[j][i];
+                        {
+                            Header[i] = aDT.Columns[i].ColumnName;
+                        }
 
-                    Worksheet.get_Range((Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[2, 1]), (Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[RowsCount + 1, ColumnsCount])).Value = Cells;
-                    Worksheet.get_Range((Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[2, 1]), (Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[RowsCount + 1, ColumnsCount])).NumberFormat = "@";
+                        Microsoft.Office.Interop.Excel.Range HeaderRange = Worksheet.get_Range((Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[1, 1]), (Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[1, ColumnsCount]));
+                        HeaderRange.Value = Header;
+                        //HeaderRange.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightGray);
+                        HeaderRange.Font.Bold = true;
 
+                        // DataCells
+                        int RowsCount = aDT.Rows.Count;
+                        object[,] Cells = new object[RowsCount, ColumnsCount];
+
+                        for (int j = 0; j < RowsCount; j++)
+                            for (int i = 0; i < ColumnsCount; i++)
+                                Cells[j, i] = aDT.Rows[j][i];
+
+                        Worksheet.get_Range((Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[2, 1]), (Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[RowsCount + 1, ColumnsCount])).Value = Cells;
+                        Worksheet.get_Range((Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[2, 1]), (Microsoft.Office.Interop.Excel.Range)(Worksheet.Cells[RowsCount + 1, ColumnsCount])).NumberFormat = "@";
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
                 }
 
 

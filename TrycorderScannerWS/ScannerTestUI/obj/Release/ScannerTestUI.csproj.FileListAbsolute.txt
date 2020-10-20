@@ -46,3 +46,10 @@ C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.Route53.dll
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.Route53.pdb
 C:\Users\s.ostenberg\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\bin\Release\AWSSDK.Route53.xml
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI.csprojAssemblyReference.cache
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\MainWindow.g.cs
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\App.g.cs
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI_MarkupCompile.cache
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI_MarkupCompile.lref
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI.exe
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerTestUI\obj\Release\ScannerTestUI.pdb
