@@ -53,6 +53,8 @@ using System.Threading;
 using System.Text;
 using MySql.Data.MySqlClient;
 using System.Windows.Forms;
+using Amazon.GuardDuty;
+using Amazon.GuardDuty.Model;
 
 namespace AWSFunctions
 {
@@ -2544,7 +2546,7 @@ namespace AWSFunctions
             }
             catch (Exception ex)
             {
-                string test = "";//Quepaso? 
+                string test = ex.Message.ToString();//Quepaso? 
             }
 
             //Get a list of the InstanceIDs.
@@ -2554,7 +2556,17 @@ namespace AWSFunctions
                 indatarequest.InstanceIds.Sort();
             }
 
-            DescribeInstancesResponse DescResult = ec2.DescribeInstances();
+
+            DescribeInstancesResponse DescResult = new DescribeInstancesResponse();
+            try
+            {
+                DescResult = ec2.DescribeInstances();
+            }
+            catch(Exception ex)
+            {
+
+                return ToReturn;
+            }
 
             int count = instatresponse.InstanceStatuses.Count();
 
@@ -3105,6 +3117,58 @@ namespace AWSFunctions
 
         }
 
+
+
+        /// <Summary>
+        /// Testing grabbing GuardDuty data  ((Not finished or working!!))
+        /// </Summary>
+        /// <param name="aprofile"></param>
+        /// <returns></returns>
+        public string GuardGetter(string aprofile, string Region2Scan)
+        {
+            string accountid = GetAccountID(aprofile);
+            //DataTable ToReturn = AWSTables.GetCertDetailsTable();
+            Amazon.Runtime.AWSCredentials credential;
+            credential = new Amazon.Runtime.StoredProfileAWSCredentials(aprofile);
+            
+
+            RegionEndpoint Endpoint2scan = RegionEndpoint.USEast1;
+            //Convert the Region2Scan to an AWS Endpoint.
+            foreach (var aregion in RegionEndpoint.EnumerableAllRegions)
+            {
+                if (aregion.DisplayName.Equals(Region2Scan))
+                {
+                    Endpoint2scan = aregion;
+                    continue;
+                }
+            }
+
+
+            
+            AmazonGuardDutyConfig GuardConf = new AmazonGuardDutyConfig();
+            AmazonGuardDutyClient Guardbert = new AmazonGuardDutyClient(credential,Endpoint2scan);
+
+            //need to collect all detectors if more than 50....
+
+            var listdetreq = new ListDetectorsRequest();
+            var listdet = Guardbert.ListDetectors(listdetreq);
+
+
+            // For each detector, we need to loop through all findings if more than 50.
+
+            var findingreq = new ListFindingsRequest();
+            ListFindingsResponse findinglist = Guardbert.ListFindings(findingreq);
+
+
+            
+
+            
+
+
+
+            return "Boy Howdy!";
+        }
+        
 
 
 

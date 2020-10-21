@@ -146,3 +146,4 @@ C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debu
 C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\StivAWSLib.csproj.CopyComplete
 C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\AWSFunctions.dll
 C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\obj\Debug\AWSFunctions.pdb
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\AWSFunctions\bin\Debug\AWSSDK.GuardDuty.xml

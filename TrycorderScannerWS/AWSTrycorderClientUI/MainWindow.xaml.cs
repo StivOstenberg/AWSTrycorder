@@ -635,8 +635,12 @@ namespace AWSTrycorderClientUI
         private void UpdateTable()
         {
             string IChooseYou = "";
-            try { IChooseYou = SelectedComponentComboBox.SelectedValue.ToString(); }
-            catch { IChooseYou = ""; }
+            if(SelectedComponentComboBox.SelectedValue!=null)
+            {
+                IChooseYou = SelectedComponentComboBox.SelectedValue.ToString();
+            }
+            else { IChooseYou = ""; }
+
             DataTable DaTable = GetSelectedDatatable(IChooseYou);
             TrycorderMainWindow.Title = "AWSTrycorder - " + DaTable.TableName + " - " + Trycorder.LastScan();
             DasGrid.ItemsSource = DaTable.DefaultView;
@@ -771,6 +775,8 @@ namespace AWSTrycorderClientUI
                 {
                     return;
                 }
+
+                if (SelectedComponentComboBox.SelectedItem == null) return;
 
                 var Table2Scan = GetSelectedDatatable(SelectedComponentComboBox.SelectedItem.ToString());
                 string filterstring = SearchStringTextbox.Text;

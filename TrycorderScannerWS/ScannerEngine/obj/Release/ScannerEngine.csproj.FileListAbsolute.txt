@@ -39,3 +39,10 @@ C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Rel
 C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.csproj.CoreCompileInputs.cache
 C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.dll
 C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.pdb
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\ScannerEngine.dll.config
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\ScannerEngine.dll
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\ScannerEngine.pdb
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSFunctions.dll.config
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\bin\AWSSDK.Core.xml
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.csproj.Fody.CopyLocal.cache
+C:\Users\stiv\Source\Repos\AWSTrycorder\TrycorderScannerWS\ScannerEngine\obj\Release\ScannerEngine.csproj.CopyComplete

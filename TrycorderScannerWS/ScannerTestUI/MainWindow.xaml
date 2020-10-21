@@ -33,7 +33,7 @@
                     <MenuItem x:Name="ENIsMenuItem" Header="ListENIs" HorizontalAlignment="Left" Width="144.8" Click="ENIsMenuItem_Click"    />
                     <MenuItem x:Name="BeanStalkMenuItem" Header="ListBeanStalks" HorizontalAlignment="Left" Width="144.8" Click="BeanStalkMenuItem_Click"    />
                     <MenuItem x:Name="ASGsMenuItem" Header="ListASGs" HorizontalAlignment="Left" Width="144.8" Click="ASGsMenuItem_Click"    />
-
+                    <MenuItem x:Name="GuardDutysMenuItem" Header="ListGuards" HorizontalAlignment="Left" Width="144.8" Click="GuardDutysMenuItem_Click"    />
                 </MenuItem>
                 <MenuItem Header="WebService">
                     <MenuItem x:Name="initializeMenuItem" Header="Initialize" HorizontalAlignment="Left" Width="144.8" IsCheckable="True" Click="initializeMenuItem_Click"/>
