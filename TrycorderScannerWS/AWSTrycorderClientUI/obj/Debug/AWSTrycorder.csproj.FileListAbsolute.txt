@@ -133,3 +133,6 @@ C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerW
 C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Debug\AWSTrycorder.exe
 C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\obj\Debug\AWSTrycorder.pdb
 C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\AWSTrycorder.pdb
+C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\System.Buffers.xml
+C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\System.Memory.xml
+C:\Users\StivOstenberg\source\repos\StivOstenberg\AWSTrycorder\TrycorderScannerWS\AWSTrycorderClientUI\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
